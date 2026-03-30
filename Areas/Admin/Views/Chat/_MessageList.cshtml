@@ -1,0 +1,21 @@
+﻿@model IEnumerable<Petshop_frontend.Models.Message>
+
+@foreach (var item in Model)
+{
+    @* Nếu SenderType là Admin hoặc Staff thì cho sang bên phải *@
+    var isMe = item.SenderType == "Admin" || item.SenderType == "Staff";
+
+    <div class="direct-chat-msg @(isMe ? "right" : "")">
+        <div class="direct-chat-info clearfix">
+            <span class="direct-chat-name @(isMe ? "pull-right" : "pull-left")">
+                @(isMe ? "Admin" : "Khách hàng")
+            </span>
+            <span class="direct-chat-timestamp @(isMe ? "pull-left" : "pull-right")">
+                @item.CreatedAt?.ToString("HH:mm")
+            </span>
+        </div>
+        <div class="direct-chat-text">
+            @item.MessageText
+        </div>
+    </div>
+}

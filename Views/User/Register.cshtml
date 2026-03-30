@@ -1,0 +1,83 @@
+﻿@model Petshop_frontend.Models.RegisterViewModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Đăng ký thành viên";
+}
+
+<h4 class="text-center mb-4">🐾 Tạo tài khoản mới</h4>
+
+<form asp-action="Register" method="post" id="registerForm">
+
+    <div class="row">
+        @* Tên đăng nhập *@
+        <div class="col-md-12 mb-3">
+            <label asp-for="Username" class="form-label fw-bold">Tên đăng nhập *</label>
+            <input asp-for="Username" class="form-control" placeholder="Ít nhất 3 ký tự..." />
+            <span asp-validation-for="Username" class="text-danger small"></span>
+        </div>
+
+        @* Email *@
+        <div class="col-md-12 mb-3">
+            <label asp-for="Email" class="form-label fw-bold">Địa chỉ Email *</label>
+            <input asp-for="Email" type="email" class="form-control" placeholder="example@gmail.com" />
+            <span asp-validation-for="Email" class="text-danger small"></span>
+        </div>
+
+        @* Mật khẩu *@
+        <div class="col-md-6 mb-3">
+            <label asp-for="Password" class="form-label fw-bold">Mật khẩu *</label>
+            <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" />
+            <span asp-validation-for="Password" class="text-danger small"></span>
+        </div>
+
+        @* Xác nhận mật khẩu - Trường cực kỳ quan trọng *@
+        <div class="col-md-6 mb-3">
+            <label asp-for="ConfirmPassword" class="form-label fw-bold">Xác nhận *</label>
+            <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="••••••••" />
+            <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+        </div>
+
+        @* Họ tên *@
+        <div class="col-md-12 mb-3">
+            <label asp-for="FullName" class="form-label fw-bold">Họ và tên</label>
+            <input asp-for="FullName" class="form-control" placeholder="Nhập tên của bạn" />
+            <span asp-validation-for="FullName" class="text-danger small"></span>
+        </div>
+
+        @* Số điện thoại *@
+        <div class="col-md-12 mb-3">
+            <label asp-for="Phone" class="form-label fw-bold">Số điện thoại</label>
+            <input asp-for="Phone" class="form-control" placeholder="Ví dụ: 0987..." />
+            <span asp-validation-for="Phone" class="text-danger small"></span>
+        </div>
+    </div>
+
+    @* Thông báo lỗi tổng quát từ Server *@
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3 shadow-sm border-0"></div>
+
+    <button type="submit" class="btn btn-primary w-100 btn-auth mt-3 py-2 fw-bold">ĐĂNG KÝ NGAY</button>
+
+    <div class="mt-3 text-center">
+        <span class="text-muted small">Đã có tài khoản?</span>
+        <a asp-action="Login" class="fw-bold text-decoration-none ms-1">Đăng nhập</a>
+    </div>
+</form>
+
+@section Scripts {
+    @* 1. Nạp jQuery trước *@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @* 2. Nạp bộ lọc Front-end (Client-side Validation) *@
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Tự động kiểm tra và ẩn/hiện lỗi ngay khi người dùng đang gõ phím
+            $("form").each(function () {
+                var $(this).validate().settings.onkeyup = function (element) {
+                    $(element).valid();
+                };
+            });
+        });
+    </script>
+}

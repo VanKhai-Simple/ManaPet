@@ -1,0 +1,78 @@
+﻿@model Petshop_frontend.Models.LoginViewModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<h4 class="text-center mb-4">Đăng nhập tài khoản</h4>
+
+<form asp-action="Login" method="post">
+    
+
+    <div class="mb-3">
+        <label asp-for="Username" class="form-label">Tên đăng nhập</label>
+        <input asp-for="Username" class="form-control" placeholder="Nhập username..." />
+        <span asp-validation-for="Username" class="text-danger small"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label">Mật khẩu</label>
+        <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" />
+        <span asp-validation-for="Password" class="text-danger small"></span>
+    </div>
+
+    <div class="text-center mt-3">
+        <p>Hoặc đăng nhập với:</p>
+        <a asp-controller="User" asp-action="GoogleLogin" class="btn btn-outline-danger w-100 mb-2 shadow-sm">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="18" class="me-2" />
+            Đăng nhập với Google
+        </a>
+        <a asp-controller="User" asp-action="FacebookLogin" class="btn btn-primary w-100 mb-2 shadow-sm" style="background-color: #1877F2; border: none;">
+            <i class="fab fa-facebook-f me-2"></i> Đăng nhập với Facebook
+        </a>
+    </div>
+
+    <div class="mt-2 text-end">
+        <a asp-action="ForgotPassword" class="small text-muted">Quên mật khẩu?</a>
+    </div>
+
+    @* Thông báo lỗi tổng quát từ Server *@
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3 shadow-sm border-0"></div>
+
+    <div class="mb-3 form-check">
+        <input asp-for="RememberMe" class="form-check-input" />
+        <label asp-for="RememberMe" class="form-check-label">Ghi nhớ đăng nhập</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100 btn-auth">ĐĂNG NHẬP</button>
+
+    <div class="mt-4 text-center">
+        <span>Bạn chưa có tài khoản?</span><br />
+        <a asp-action="Register" class="fw-bold text-decoration-none">Đăng ký ngay</a>
+    </div>
+
+</form>
+
+
+@section Scripts {
+    @* 1. Nạp jQuery trước *@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @* 2. Nạp bộ lọc Front-end (Client-side Validation) *@
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Lặp qua tất cả các form trên trang
+            $("form").each(function () {
+                // Lấy đối tượng validator của form hiện tại
+                var validator = $(this).validate();
+
+                // Cấu hình lại để nó kiểm tra lỗi ngay khi buông phím (onkeyup)
+                validator.settings.onkeyup = function (element) {
+                    $(element).valid();
+                };
+            });
+        });
+    </script>
+}

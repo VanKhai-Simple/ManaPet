@@ -1,0 +1,134 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Mana Pet</title>
+
+    <link rel="icon" type="image/png" href="~/Images/logo-mana-pet.png">
+
+    @* <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> *@
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    @* Google font *@
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="~/css/css.css" rel="stylesheet" />
+    <link href="~/css/header.css" rel="stylesheet" />
+    <link href="~/css/footer.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Petshop_frontend.styles.css" asp-append-version="true" />
+</head>
+<body>
+
+    @Html.Partial("_Header")
+
+    <div class="main-content">
+        @RenderBody()
+    </div>
+
+    @Html.Partial("_Footer")
+
+    
+
+    @* <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> *@
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+    @* Chat box *@
+    <script>
+        function toggleChatBox() {
+            // Sử dụng jQuery để ẩn/hiện
+            $("#customer-chat-box").fadeToggle(300);
+         }
+
+        $(document).ready(function () {
+            // 1. Định danh khách (Dùng localStorage để F5 không bị mất hội thoại)
+            let sessionId = localStorage.getItem("ManaPet_Session");
+            if (!sessionId) {
+                sessionId = "SESS_" + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem("ManaPet_Session", sessionId);
+            }
+
+            // 2. Lấy UserId nếu đã login (Razor truyền vào)
+            // Nếu @User.Identity.IsAuthenticated là false thì dùng null
+            let currentUserId = @(User.Identity.IsAuthenticated? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value : "null");
+
+            var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+
+            connection.on("ReceiveMessage", function (role, message, time, sId) {
+                let mySessionId = localStorage.getItem("ManaPet_Session");
+
+                // Chỉ hiện nếu là Admin trả lời HOẶC chính mình nhắn
+                if (role === "Admin" || sId === mySessionId) {
+                    let isAdmin = (role === "Admin");
+                    let msgClass = isAdmin ? "msg-bot" : "msg-user"; // bot bên trái, user bên phải
+
+                    $("#customer-messages").append(`<div class="${msgClass}">${message}</div>`);
+
+                    // Cuộn xuống
+                    $("#customer-messages").scrollTop($("#customer-messages")[0].scrollHeight);
+                }
+            });
+
+        connection.start().then(function () {
+            console.log("SignalR Connected!");
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+                    // Tìm đoạn này trong code của bạn và sửa lại:
+        $("#btn-customer-send").click(function () {
+            let msg = $("#customer-input").val();
+            let sessionId = localStorage.getItem("ManaPet_Session"); // Đảm bảo lấy lại đúng sessionId
+                    // Thêm dấu nháy kép "" bao quanh giá trị Razor
+        let currentUserId = "@(User.Identity.IsAuthenticated? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value : "")";
+
+        console.log("Current User ID:", currentUserId); // F12 xem nó có ra số/chuỗi ID không
+
+            // Xác định role để gửi lên Hub
+            let role = currentUserId ? "Customer" : "Guest";
+
+            if (msg.trim() !== "") {
+                // TRUYỀN ĐÚNG 4 THAM SỐ: sessionId, msg, currentUserId, role
+                connection.invoke("SendMessage", sessionId, msg, currentUserId, role)
+                          .catch(err => console.error("Lỗi gửi tin:", err));
+
+                $("#customer-input").val("").focus();
+            }
+        });
+
+            $("#customer-input").keypress(function (e) {
+            // Phím Enter có mã code là 13
+            if (e.which == 13) {
+                // Kích hoạt sự kiện click của nút gửi
+                $("#btn-customer-send").click();
+
+                // Ngăn chặn hành động mặc định (như xuống dòng hoặc reload trang)
+                e.preventDefault();
+            }
+        });
+        });
+    </script>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+
+</body>
+</html>
+
+
+    
+

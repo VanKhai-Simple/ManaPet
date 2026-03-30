@@ -1,0 +1,196 @@
+﻿
+<style>
+    .customer-chat-container {
+        position: fixed;
+        bottom: 85px; /* Nằm trên các nút floating */
+        right: 20px;
+        width: 320px;
+        height: 450px;
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chat-header {
+        background: #1e73be;
+        padding: 12px 15px;
+    }
+
+    .chat-body {
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .msg-bot {
+        background: #e9ecef;
+        padding: 8px 12px;
+        border-radius: 15px 15px 15px 0;
+        max-width: 85%;
+        align-self: flex-start;
+        font-size: 14px;
+    }
+
+    .msg-user {
+        background: #007bff;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 15px 15px 0 15px;
+        max-width: 85%;
+        align-self: flex-end;
+        font-size: 14px;
+    }
+</style>
+@* --- FOOTER --- *@
+<footer class="footer text-white pt-5 pb-0 mb-0" style="background-color: #1e73befc;">
+    <div class="container-fluid px-lg-5">
+        <div class="row g-4">
+
+            <div class="col-xl-3 col-lg-6 px-lg-4">
+                <h6 class="fw-bold mb-4 fs-5">SƠ LƯỢC VỀ MANA PET</h6>
+                <p class="mb-3">
+                    <strong>Mana Pet</strong> là trại nhân giống cung cấp thú cảnh lớn tại Việt Nam. Mana Pet hiện tại có 2 cửa hàng chính tại <span class="highlight-orange">428 Minh Khai, Quận Hai Bà Trưng, Tp. Hà Nội</span>; <span class="highlight-orange">961 Phạm Văn Đồng, Thủ Đức, Tp.Hcm</span>.
+                </p>
+                <p class="mb-4">
+                    Ngoài ra, trại nhân giống chính của <strong>Mana Pet</strong> có tại Sóc Sơn Hà Nội và Thủ Dầu Một, Bình Dương đang sở hữu hơn 500 con giống với các loại thú cảnh lớn nhỏ khác nhau.
+                </p>
+            </div>
+
+            <div class="col-xl-3 col-lg-6 px-lg-4">
+                <h6 class="fw-bold mb-4 fs-5">THÔNG TIN LIÊN HỆ</h6>
+                <div class=" contact-list">
+                    <p class="my-3"><i class="fas fa-map-marker-alt me-2"></i> <strong>Cửa Hàng Miền Nam:</strong> 961 Phạm Văn Đồng, Thủ Đức, Tp.Hcm.</p>
+                    <p class="my-3"><i class="fas fa-map-marker-alt me-2"></i> <strong>Trại nhân giống MN:</strong> Huỳnh Văn Lũy, Thủ Dầu Một, Bình Dương.</p>
+                    <p class="my-3"><i class="fas fa-map-marker-alt me-2"></i> <strong>Cửa Hàng Miền Bắc:</strong> Số 428 Minh Khai, Hai Bà Trưng, Tp.Hà Nội.</p>
+                    <p class="mb-0"><i class="fas fa-map-marker-alt me-2"></i> <strong>Trại nhân giống MB:</strong> Thôn Đức Hậu, Xã Đức Hòa, Sóc Sơn, Tp.Hà Nội.</p>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-6 px-lg-4">
+				<h6 class="fw-bold mb-4 fs-5">CHÍNH SÁCH MUA BÁN</h6>
+                <ul class="list-unstyled mb-4">
+                    <li class="my-3"><a href="#" class="text-white text-decoration-none">Chính sách bảo mật</a></li>
+                    <li class="my-3"><a href="#" class="text-white text-decoration-none">Chính sách vận chuyển và thanh toán</a></li>
+                    <li class="my-3"><a href="#" class="text-white text-decoration-none">Chính sách đổi trả và bảo hành</a></li>
+                    <li class="my-3"><a href="#" class="text-white text-decoration-none">Chính sách hỗ trợ trả góp 0%</a></li>
+                </ul>
+                <div class="d-grid gap-2 mb-3">
+                    <a href="#" class="btn btn-danger btn-sm rounded-pill fw-bold py-2"><i class="fas fa-gift me-2"></i>ĐĂNG KÝ KHUYẾN MẠI</a>
+                    <a href="tel:0123456789" class="btn btn-light btn-sm rounded-pill text-danger fw-bold py-2"><i class="fas fa-phone-alt me-2"></i>HOTLINE: 0123.456.789</a>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-6">
+                <h6 class="fw-bold mb-4 fs-5">PETHOUSE TRÊN MXH</h6>
+
+                <div class="row g-4 mb-3">
+                    <div class="col-12">
+                        <div class=" mb-1 opacity-75">Shop Hà Nội</div>
+                        <div class="rounded overflow-hidden shadow-sm" style="height: 300px;">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d29799.15933680168!2d105.864536!3d20.996849!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ad00244f094b%3A0x47e48f87ea99fcc4!2zUGV0IEhvdXNlIC0gQ-G7rWEgSMOgbmcgVGjDuiBDxrBuZw!5e0!3m2!1svi!2sus!4v1773059820783!5m2!1svi!2sus" 
+                                    width="100%" 
+                                    height="100%" 
+                                    style="border:0;" 
+                                    allowfullscreen=""
+                                    display: block;
+                                    loading="lazy" 
+                                    referrerpolicy="no-referrer-when-downgrade">
+                                </iframe>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class=" mb-1 opacity-75">Shop TpHcm</div>
+                        <div class="rounded overflow-hidden shadow-sm" style="height: 300px;">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d489.7933934493686!2d106.753325!3d10.861179!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317527003a98ad23%3A0xd8471ce52ee25f7e!2zUGV0IEhvdXNlIFPDoGkgR8Oybg!5e0!3m2!1svi!2sus!4v1773051921349!5m2!1svi!2sus" 
+                                    width="100%" 
+                                    height="100%" 
+                                    style="border:0;" 
+                                    allowfullscreen="" 
+                                    display: block;
+                                    loading="lazy" 
+                                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="social-icons-footer d-flex justify-content-end gap-2 mb-3">
+                    <a href="#" class="icon-circle border border-white text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 14px;"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="icon-circle border border-white text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 14px;"><i class="fab fa-tiktok"></i></a>
+                    <a href="#" class="icon-circle border border-white text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 14px;"><i class="fas fa-phone-alt"></i></a>
+                    <a href="#" class="icon-circle border border-white text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 14px;"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+
+        </div>
+
+        @* --- THANH BOTTOM CUỐI CÙNG (Gồm Payment & Copyright) --- *@
+        <div class="footer-bottom border-top border-white border-opacity-10 py-3 mt-4" style="background-color: #224dcc;">
+            <div class="container-fluid d-flex flex-column align-items-center gap-2">
+                <div class="payment-methods d-flex gap-3 fs-4">
+                    <i class="fab fa-cc-visa" title="Visa"></i>
+                    <i class="fab fa-cc-mastercard" title="Mastercard"></i>
+                    <i class="fab fa-cc-jcb" title="JCB"></i>
+                    <i class="fab fa-cc-amazon-pay" title="Amazon Pay"></i>
+                    <i class="fas fa-wallet" title="Ví điện tử"></i>
+                </div>
+                <div class="copyright  opacity-75">
+                    Copyright 2026 © <strong>ManaPet - Trại nhân giống thú cưng</strong>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</footer>
+
+@* Nút cuộn lên đầu trang (Góc phải dưới cùng) *@
+<button id="backToTop" class="btn btn-scroll-top rounded-circle position-fixed shadow-lg"
+        style="bottom: 20px; right: 20px; background-color: #1564cb; color: white; width: 45px; height: 45px; z-index: 1000; display: none; border: none;">
+    <i class="fas fa-angle-up"></i>
+</button>
+
+<div class="floating-contact-group">
+    <button type="button" onclick="toggleChatBox()" class="floating-btn btn-staff-float" style="border:none; outline:none;">
+        <i class="fas fa-headset"></i>
+        <span>Chat với nhân viên</span>
+    </button>
+
+    <a href="https://zalo.me/0379889868" target="_blank" class="floating-btn btn-zalo-float">
+        <i class="fab fa-whatsapp"></i>
+        <span>Chat Zalo</span>
+    </a>
+
+    <a href="https://m.me/pethouse" target="_blank" class="floating-btn btn-fb-float">
+        <i class="fab fa-facebook-f"></i>
+        <span>Chat Facebook</span>
+    </a>
+
+    <a href="tel:0379889868" class="floating-btn btn-phone-float">
+        <i class="fas fa-phone-alt"></i>
+        <span>Hotline: 0379889868</span>
+    </a>
+</div>
+
+@* --- BOX CHAT CỦA KHÁCH HÀNG (Ẩn mặc định) --- *@
+<div id="customer-chat-box" class="customer-chat-container shadow-lg" style="display: none;">
+    <div class="chat-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+            <i class="fas fa-circle text-success" style="font-size: 10px;"></i>
+            <strong class="text-white">Hỗ trợ ManaPet</strong>
+        </div>
+        <button onclick="toggleChatBox()" class="btn-close btn-close-white" style="font-size: 12px;"></button>
+    </div>
+    <div id="customer-messages" class="chat-body p-3 bg-light">
+        <div class="msg-bot">Chào bạn! ManaPet có thể giúp gì cho bạn?</div>
+    </div>
+    <div class="chat-footer p-2 bg-white border-top d-flex gap-2">
+        <input type="text" id="customer-input" class="form-control form-control-sm" placeholder="Nhập tin nhắn...">
+        <button id="btn-customer-send" class="btn btn-primary btn-sm"><i class="fas fa-paper-plane"></i></button>
+    </div>
+</div>
+

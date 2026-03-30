@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>ManaPet | Admin Dashboard</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+    @* <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="/dist/css/AdminLTE.min.css">
+    <link rel="stylesheet" href="/dist/css/skins/_all-skins.min.css">
+
+    @RenderSection("Styles", required: false)
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+    <div class="wrapper">
+
+        <header class="main-header">
+            <a asp-area="" asp-controller="Home" asp-action="Index" class="logo">
+                <!-- Mini logo cho thanh sidebar khi thu nhỏ (50x50 pixels) -->
+                <span class="logo-mini">
+                    <img src="/Images/logo-mana-pet.png" alt="MP" style="width: 40px; height: auto; padding: 5px;" />
+                </span>
+                <!-- Logo lớn cho giao diện bình thường -->
+                <span class="logo-lg">
+                    <img src="/Images/logo-mana-pet.png" alt="ManaPet" style="width: 30px; height: auto; margin-right: 5px;" />
+                    <b>Mana</b>Pet
+                </span>
+            </a>
+
+            <nav class="navbar navbar-static-top">
+                <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                    <span class="sr-only"></span>
+                </a>
+
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown user user-menu">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <!-- Icon User -->
+                                @if (string.IsNullOrEmpty(User.FindFirst("Avatar")?.Value))
+                                {
+                                    <i class="fa-solid fa-circle-user" style="font-size: 18px; color: #fff; margin-right: 5px; vertical-align: middle;"></i>
+                                }
+                                else
+                                {
+                                    <img src="@User.FindFirst("Avatar").Value" class="user-image" alt="User Image">
+                                }
+                                <span class="hidden-xs">@User.FindFirst("FullName")?.Value</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <!-- User image -->
+                                <li class="user-header" style="height: auto; padding: 15px;">
+                                    @if (string.IsNullOrEmpty(User.FindFirst("Avatar")?.Value))
+                                    {
+                                        <i class="fa-solid fa-circle-user" style="font-size: 60px; color: #fff; margin-bottom: 10px;"></i>
+                                    }
+                                    else
+                                    {
+                                        <img src="@User.FindFirst("Avatar").Value" class="img-circle" alt="User Image">
+                                    }
+                                    <p>
+                                        @User.FindFirst("FullName")?.Value
+                                        <small>Quyền: @User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</small>
+                                    </p>
+                                </li>
+                                <!-- Menu Footer-->
+                                <li class="user-footer">
+                                    <div class="pull-left">
+                                        <a href="#" class="btn btn-default btn-flat">Hồ sơ</a>
+                                    </div>
+                                    <div class="pull-right">
+                                        <a asp-area="" asp-controller="User" asp-action="Logout" class="btn btn-default btn-flat">Đăng xuất</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
+        <aside class="main-sidebar">
+            <section class="sidebar">
+                <div class="user-panel">
+                    <div class="pull-left image">
+                        @if (string.IsNullOrEmpty(User.FindFirst("Avatar")?.Value))
+                        {
+                            <i class="fa-solid fa-circle-user" style="font-size: 40px; color: #b8c7ce;"></i>
+                        }
+                        else
+                        {
+                            <img src="@User.FindFirst("Avatar").Value" class="img-circle" alt="User Image">
+                        }
+                    </div>
+                    <div class="pull-left info">
+                        <p>@User.FindFirst("FullName")?.Value</p>
+                        <a href="#"><i class="fa fa-circle text-success"></i> Trực tuyến</a>
+                    </div>
+                </div>
+
+                <ul class="sidebar-menu">
+                    <li class="header">DANH MỤC QUẢN LÝ</li>
+                    <li class="active"><a asp-area="Admin" asp-controller="Home" asp-action="Index"><i class="fa fa-dashboard"></i> <span>Bảng điều khiển</span></a></li>
+                    <li><a href="#"><i class="fa fa-paw"></i> <span>Quản lý Thú cưng</span></a></li>
+                    <li><a href="#"><i class="fa fa-shopping-cart"></i> <span>Quản lý Đơn hàng</span></a></li>
+                    <li><a href="#"><i class="fa fa-users"></i> <span>Quản lý Khách hàng</span></a></li>
+                    <li class="header">HỆ THỐNG</li>
+                    <li><a href="#"><i class="fa fa-gears"></i> <span>Cấu hình</span></a></li>
+                    <!-- Mục Chat với khách hàng -->
+                    <li>
+                        <a asp-area="Admin" asp-controller="Chat" asp-action="Index">
+                            <i class="fa fa-comments-o"></i> <span>Hỗ trợ khách hàng</span>
+                            <span class="pull-right-container">
+                                @* Sau này dùng Viewbag hoặc Component để truyền số lượng tin nhắn chưa đọc vào đây *@
+                                <small class="label pull-right bg-red" id="chat-count">0</small>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </section>
+        </aside>
+
+        <div class="content-wrapper">
+            @RenderBody()
+        </div>
+
+        <footer class="main-footer">
+            <div class="pull-right hidden-xs"><b>Version</b> 1.0</div>
+            <strong>Copyright &copy; 2026 <a href="#">ManaPet Team</a>.</strong> All rights reserved.
+        </footer>
+    </div>
+
+
+    <script src="/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+
+    <!-- 2. Bootstrap JS (Bạn có thể dùng dòng của bạn hoặc bản đi kèm AdminLTE) -->
+    @* <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script> *@
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- 3. Các Plugin khác của AdminLTE -->
+    <script src="/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+    <script src="/plugins/fastclick/fastclick.min.js"></script>
+
+    <!-- 4. File Core của AdminLTE để chạy hiệu ứng SideBar -->
+    <script src="/dist/js/app.min.js"></script>
+
+
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
