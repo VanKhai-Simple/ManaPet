@@ -37,7 +37,11 @@ builder.Services.AddAuthentication(options =>
 {
     options.AppId = builder.Configuration["FacebookAuth:AppId"];
     options.AppSecret = builder.Configuration["FacebookAuth:AppSecret"];
-    options.SignInScheme = "ExternalCookies"; // Facebook cũng cần dòng này
+    options.SignInScheme = "ExternalCookies"; 
+});
+
+builder.Services.AddSignalR(options => {
+    options.EnableDetailedErrors = true; // Cho phép thấy nội dung lỗi từ HubException
 });
 
 builder.Services.AddAuthorization(); 

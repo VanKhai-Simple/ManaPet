@@ -8,13 +8,16 @@
                     <ul class="nav nav-pills nav-stacked" id="conversation-list">
                         @foreach (var item in Model)
                         {
+                            // Nếu GuestSessionId null (do khách đã login), lấy UserId làm định danh tạm
+                            var finalId = !string.IsNullOrEmpty(item.GuestSessionId) ? item.GuestSessionId : item.UserId.ToString();
+
                             <li>
-                                <!-- Ví dụ cấu trúc danh sách bên trái -->
                                 <a href="javascript:void(0)"
-                                   onclick="loadChat(@item.Id, '@item.GuestSessionId')"
-                                   data-session="@item.GuestSessionId"
-                                   class="list-group-item">
-                                    @item.User?.Username (hoặc @item.GuestSessionId)
+                                   onclick="loadChat(@item.Id, '@finalId')"
+                                   data-session="@finalId"
+                                   class="list-group-item conversation-item">
+                                    <strong>@(item.User?.UserProfile?.FullName ?? item.User?.Username ?? item.GuestSessionId)</strong>
+                                    <span class="badge label-danger unread-count-badge" style="display:none; float:right;">0</span>
                                 </a>
                             </li>
                         }
@@ -48,41 +51,38 @@
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
     <script>
-        // 1. Khai báo biến toàn cục
+        // 1. Khai báo biến toàn cục (PHẢI Ở NGOÀI CÙNG)
         var currentGuestSessionId = "";
-        var currentConnId = ""; // Dùng nếu bạn muốn quản lý theo ConnectionId (tùy chọn)
-
-        // Khởi tạo SignalR
         var connection = new signalR.HubConnectionBuilder()
             .withUrl("/chatHub")
             .withAutomaticReconnect()
             .build();
 
-        // 2. Hàm khi Click vào danh sách khách hàng bên trái
+        // 2. Hàm loadChat PHẢI ĐỂ NGOÀI document.ready để HTML gọi được
         function loadChat(id, guestSessionId) {
-            currentGuestSessionId = guestSessionId; // LƯU QUAN TRỌNG: Để biết đang chat với ai
+            currentGuestSessionId = guestSessionId;
 
-            $(".direct-chat-msg").remove(); // Xóa tin nhắn cũ trên giao diện (nếu có)
-            $("#chat-box").show(); // Hiện khung chat
+            // Highlight dòng đang chọn và xóa thông báo
+            $(".list-group-item").removeClass("active text-warning font-weight-bold");
+            let $activeItem = $(`a[data-session='${guestSessionId}']`);
+            $activeItem.addClass("active");
+            $activeItem.find(".unread-count-badge").text("0").hide();
 
-            // Gọi Controller lấy tin nhắn cũ (PartialView)
+            $("#chat-box").show();
+            // Clear tin cũ trước khi load mới cho đỡ lag
+            $("#messagesList").html('<div class="text-center"><i class="fa fa-spinner fa-spin"></i> Đang tải...</div>');
+
             $("#messagesList").load("/Admin/Chat/GetMessages/" + id, function () {
                 $(this).scrollTop($(this)[0].scrollHeight);
             });
-
-            // Cập nhật tên khách hàng lên tiêu đề khung chat (tùy chọn)
-            // $("#chat-customer-name").text("Đang chat với: " + guestSessionId);
         }
 
         $(document).ready(function () {
-            // 3. Lắng nghe tin nhắn Real-time từ Hub
+            // 3. Lắng nghe tin nhắn Real-time
             connection.on("ReceiveMessage", function (role, message, time, sId) {
-                // ADMIN HIỆN TIN KHI:
-                // - Tin đó của Admin gửi (để mình thấy tin mình vừa nhắn)
-                // - HOẶC tin đó của đúng khách hàng mình đang mở (sId khớp)
-                if (role === "Admin" || sId === currentGuestSessionId) {
+                // Hiển thị tin nếu đang mở đúng người đó HOẶC mình là Admin vừa gửi
+                if (sId === currentGuestSessionId || (role === "Admin" && currentGuestSessionId !== "")) {
                     let isMe = (role === "Admin");
-
                     let html = `
                         <div class="direct-chat-msg ${isMe ? 'right' : ''}">
                             <div class="direct-chat-info clearfix">
@@ -94,48 +94,35 @@
 
                     $("#messagesList").append(html);
                     $("#messagesList").scrollTop($("#messagesList")[0].scrollHeight);
-                } else {
-                    // LOGIC THÔNG BÁO: Nếu khách khác nhắn, bạn có thể làm hiệu ứng nháy đèn ở danh sách bên trái
-                    console.log("Khách " + sId + " vừa nhắn tin mới!");
-                    $(`a[data-session='${sId}']`).addClass("text-warning font-weight-bold");
+                }
+
+                // Nếu khách khác nhắn thì báo chuông/badge
+                if (role !== "Admin" && sId !== currentGuestSessionId) {
+                    let $item = $(`a[data-session='${sId}']`);
+                    $item.addClass("text-warning font-weight-bold");
+                    let $badge = $item.find(".unread-count-badge");
+                    let count = parseInt($badge.text()) || 0;
+                    $badge.text(count + 1).show();
                 }
             });
 
-            // 4. Bắt đầu kết nối
+            // 4. Kết nối Hub
             connection.start().catch(err => console.error("Admin SignalR Error: ", err));
 
-            // 5. Sự kiện Click nút Gửi bên Admin
-                    $("#sendButton").click(function () {
-            let msg = $("#messageInput").val();
-
-            // Debug thử xem giá trị có bị rỗng không
-            console.log("Admin gửi tin:", {
-                target: currentGuestSessionId,
-                content: msg
+            // 5. Nút gửi
+            $("#sendButton").click(function () {
+                let msg = $("#messageInput").val();
+                if (msg.trim() !== "" && currentGuestSessionId !== "") {
+                    connection.invoke("SendMessage", currentGuestSessionId, msg, "", "Admin")
+                        .then(() => {
+                            $("#messageInput").val("").focus();
+                        })
+                        .catch(err => console.error(err));
+                }
             });
 
-            if (msg.trim() !== "" && currentGuestSessionId !== "") {
-                // THAY null BẰNG "" ĐỂ TRÁNH LỖI MAPPING
-                connection.invoke("SendMessage", currentGuestSessionId, msg, "", "Admin")
-                    .then(() => {
-                        console.log("Đã gửi thành công lên Hub");
-                        $("#messageInput").val("").focus();
-                    })
-                    .catch(err => {
-                        console.error("Lỗi chi tiết từ SignalR:", err.toString());
-                        alert("Không thể gửi tin nhắn. Hãy kiểm tra Console (F12)");
-                    });
-            } else if (currentGuestSessionId === "") {
-                alert("Vui lòng chọn một khách hàng từ danh sách bên trái!");
-            }
-        });
-
-            // Enter để gửi
             $("#messageInput").keypress(function (e) {
-                if (e.which == 13) {
-                    $("#sendButton").click();
-                    e.preventDefault();
-                }
+                if (e.which == 13) { $("#sendButton").click(); e.preventDefault(); }
             });
         });
     </script>

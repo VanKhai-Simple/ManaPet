@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Petshop_frontend.Models;
 
 namespace Petshop_frontend.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class ChatController : Controller
     {
         private readonly ManaPet _db;
@@ -23,7 +25,20 @@ namespace Petshop_frontend.Areas.Admin.Controllers
                 .OrderByDescending(c => c.CreatedAt)
                 .ToListAsync();
 
-            return View(conversations);
+            var filteredList = conversations
+                .GroupBy(c => c.UserId ?? (object)c.GuestSessionId)
+                .Select(g => g.First()) // Lấy bản ghi mới nhất của người đó
+                .ToList();
+
+            var unreadCounts = await _db.Messages
+                .Where(m => m.SenderType != "Admin" && m.IsRead == false)
+                .GroupBy(m => m.ConversationId)
+                .Select(g => new { ConversationId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.ConversationId, x => x.Count);
+
+            ViewBag.UnreadCounts = unreadCounts;
+
+            return View(filteredList);
         }
 
         
@@ -31,16 +46,36 @@ namespace Petshop_frontend.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMessages(int id)
         {
-            var messages = await _db.Messages
-                .Where(m => m.ConversationId == id)
-                .OrderBy(m => m.CreatedAt)
+            try
+            {
+                var unreadMessages = await _db.Messages
+                .Where(m => m.ConversationId == id && m.SenderType != "Admin" && m.IsRead == false)
                 .ToListAsync();
-            return PartialView("_MessageList", messages);
+
+                    if (unreadMessages.Any())
+                    {
+                        unreadMessages.ForEach(m => m.IsRead = true);
+                        await _db.SaveChangesAsync();
+                    }
+
+                var messages = await _db.Messages
+                    .Where(m => m.ConversationId == id)
+                    .OrderBy(m => m.CreatedAt)
+                    .ToListAsync();
+                return PartialView("_MessageList", messages);
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi khi lấy tin nhắn: " + ex.Message);
+                return StatusCode(500, "Lỗi máy chủ");
+            }
+
         }
 
         [HttpPost]
         public async Task<IActionResult> SaveMessage(int conversationId, string text)
-        {
+        {   
             if (string.IsNullOrEmpty(text)) return BadRequest();
 
             var msg = new Message

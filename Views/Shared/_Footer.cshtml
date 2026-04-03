@@ -45,6 +45,55 @@
         align-self: flex-end;
         font-size: 14px;
     }
+
+    /* Container chính */
+    #customer-messages {
+        display: flex;
+        flex-direction: column;
+        padding: 15px;
+        gap: 10px;
+        background: #ffffff;
+    }
+
+    .message-wrapper {
+        display: flex;
+        flex-direction: column;
+        max-width: 75%;
+        margin-bottom: 5px;
+    }
+
+    /* Tin nhắn của mình (Bên phải) */
+    .from-me {
+        align-self: flex-end;
+        align-items: flex-end;
+    }
+
+        .from-me .message-content {
+            background: linear-gradient(135deg, #0084ff, #0072ff);
+            color: white;
+            border-radius: 18px 18px 4px 18px; /* Bo góc kiểu Messenger */
+            padding: 8px 15px;
+        }
+
+    /* Tin nhắn Admin/Bot (Bên trái) */
+    .from-admin {
+        align-self: flex-start;
+        align-items: flex-start;
+    }
+
+        .from-admin .message-content {
+            background: #e4e6eb;
+            color: black;
+            border-radius: 18px 18px 18px 4px;
+            padding: 8px 15px;
+        }
+
+    .message-time {
+        font-size: 10px;
+        color: #8e8e8e;
+        margin-top: 2px;
+        padding: 0 5px;
+    }
 </style>
 @* --- FOOTER --- *@
 <footer class="footer text-white pt-5 pb-0 mb-0" style="background-color: #1e73befc;">

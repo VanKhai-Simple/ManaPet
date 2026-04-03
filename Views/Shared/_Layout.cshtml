@@ -45,82 +45,22 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
-    @* Chat box *@
+
     <script>
-        function toggleChatBox() {
-            // Sử dụng jQuery để ẩn/hiện
-            $("#customer-chat-box").fadeToggle(300);
-         }
 
-        $(document).ready(function () {
-            // 1. Định danh khách (Dùng localStorage để F5 không bị mất hội thoại)
-            let sessionId = localStorage.getItem("ManaPet_Session");
-            if (!sessionId) {
-                sessionId = "SESS_" + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem("ManaPet_Session", sessionId);
-            }
-
-            // 2. Lấy UserId nếu đã login (Razor truyền vào)
-            // Nếu @User.Identity.IsAuthenticated là false thì dùng null
-            let currentUserId = @(User.Identity.IsAuthenticated? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value : "null");
-
-            var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
-
-            connection.on("ReceiveMessage", function (role, message, time, sId) {
-                let mySessionId = localStorage.getItem("ManaPet_Session");
-
-                // Chỉ hiện nếu là Admin trả lời HOẶC chính mình nhắn
-                if (role === "Admin" || sId === mySessionId) {
-                    let isAdmin = (role === "Admin");
-                    let msgClass = isAdmin ? "msg-bot" : "msg-user"; // bot bên trái, user bên phải
-
-                    $("#customer-messages").append(`<div class="${msgClass}">${message}</div>`);
-
-                    // Cuộn xuống
-                    $("#customer-messages").scrollTop($("#customer-messages")[0].scrollHeight);
-                }
-            });
-
-        connection.start().then(function () {
-            console.log("SignalR Connected!");
-        }).catch(function (err) {
-            return console.error(err.toString());
-        });
-
-                    // Tìm đoạn này trong code của bạn và sửa lại:
-        $("#btn-customer-send").click(function () {
-            let msg = $("#customer-input").val();
-            let sessionId = localStorage.getItem("ManaPet_Session"); // Đảm bảo lấy lại đúng sessionId
-                    // Thêm dấu nháy kép "" bao quanh giá trị Razor
-        let currentUserId = "@(User.Identity.IsAuthenticated? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value : "")";
-
-        console.log("Current User ID:", currentUserId); // F12 xem nó có ra số/chuỗi ID không
-
-            // Xác định role để gửi lên Hub
-            let role = currentUserId ? "Customer" : "Guest";
-
-            if (msg.trim() !== "") {
-                // TRUYỀN ĐÚNG 4 THAM SỐ: sessionId, msg, currentUserId, role
-                connection.invoke("SendMessage", sessionId, msg, currentUserId, role)
-                          .catch(err => console.error("Lỗi gửi tin:", err));
-
-                $("#customer-input").val("").focus();
-            }
-        });
-
-            $("#customer-input").keypress(function (e) {
-            // Phím Enter có mã code là 13
-            if (e.which == 13) {
-                // Kích hoạt sự kiện click của nút gửi
-                $("#btn-customer-send").click();
-
-                // Ngăn chặn hành động mặc định (như xuống dòng hoặc reload trang)
-                e.preventDefault();
-            }
-        });
-        });
+        var currentUserId = "@(User.Identity.IsAuthenticated? User.FindFirst("UserId")?.Value : "")";
+        if (currentUserId !== "") {
+            // Có thể thêm logic kiểm tra nếu session này thuộc về guest thì mới xóa
+            // Nhưng cách nhanh nhất là xóa luôn để Hub tạo lại bộ đôi (UserId + SessionId) mới chuẩn
+            localStorage.removeItem("ManaPet_Session");
+        }
+        window.chatConfig = {
+            // userId: "@(User.Identity.IsAuthenticated? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value : "")",
+            userId: "@(User.Identity.IsAuthenticated? User.FindFirst("UserId")?.Value : "")",
+            userRole: "@(User.Identity.IsAuthenticated? User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value : "Guest")"
+        };
+        // console.log("Check Bridge Layout:", window.chatConfig);
     </script>
-
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
