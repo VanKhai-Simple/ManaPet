@@ -48,106 +48,149 @@ if (window.location.hash && window.location.hash == '#_=_') {
 
 
 //Chat box
-// Hàm này để ngoài cùng để nút onclick="toggleChatBox()" luôn gọi được
+// --- CHAT SYSTEM CLIENT ---
+
+// 1. BIẾN TOÀN CỤC (Phải nằm ngoài cùng để không bị reset)
+var clientConvId = 0;
+var chatConnection = null;
+
+// 2. HÀM ĐÓNG/MỞ (Đưa ra ngoài để onclick gọi được)
 function toggleChatBox() {
     const chatBox = $("#customer-chat-box");
+
+    // NẾU CHƯA ĐĂNG NHẬP
+    if (!window.chatConfig.isLoggedIn) {
+        chatBox.html(`
+            <div class="chat-header d-flex justify-content-between align-items-center">
+                <strong class="text-white">Hỗ trợ ManaPet</strong>
+                <button onclick="$('#customer-chat-box').hide()" class="btn-close btn-close-white"></button>
+            </div>
+            <div class="chat-guest-overlay" style="padding: 20px; text-align: center; background:white; height:300px; display: flex; flex-direction: column; justify-content: center;">
+                <i class="fas fa-lock mb-3" style="font-size:30px; color:#ccc;"></i>
+                <h4>Bạn cần đăng nhập!</h4>
+                <p>Vui lòng đăng nhập để chat với nhân viên hỗ trợ.</p>
+                <a href="/User/Login" class="btn btn-primary btn-sm">Đến trang Đăng nhập</a>
+            </div>
+        `);
+        chatBox.fadeToggle(300);
+        return;
+    }
+
+    // NẾU ĐÃ ĐĂNG NHẬP
     chatBox.fadeToggle(300, function () {
-        // Nếu khung chat hiện lên thì mới đi bốc dữ liệu cũ
-        if (chatBox.is(":visible")) {
-            console.log("Đã mở chat, đang gọi openChat...");
-            openChat();
+        if ($(this).is(":visible")) {
+            initChat();
         }
     });
 }
 
-async function openChat() {
+// 3. KHỞI TẠO CHAT
+async function initChat() {
     const uId = window.chatConfig.userId;
-    const sId = localStorage.getItem("ManaPet_Session");
 
-    console.log("Đang lấy lịch sử cho:", { uId, sId }); // Log cái này xem uId có còn rỗng không
+    if (uId === "0" || uId === "") {
+        console.error("Chưa có UserId hợp lệ");
+        return;
+    }
 
-    const res = await fetch(`/User/GetChatHistory?sessionId=${sId}&userId=${uId}`);
-    const result = await res.json();
+    // Nếu đã có ID rồi thì chỉ cần đảm bảo kết nối SignalR còn sống
+    if (clientConvId !== 0) {
+        if (!chatConnection) setupSignalR();
+        return;
+    }
 
-    console.log("Kết quả từ Server:", result); // Nếu success: false hoặc data rỗng thì lỗi ở Controller
+    
+    try {
+        const res = await fetch(`/api/chat/GetHistory/${uId}`);
+        const result = await res.json();
 
-    if (result.success && result.data) {
-        const chatBody = document.getElementById("customer-messages");
-        chatBody.innerHTML = ""; // Xóa trắng để load mới
+        if (result.success) {
+            clientConvId = result.conversationId;
+            const chatBody = document.getElementById("customer-messages");
+            chatBody.innerHTML = ""; // Xóa tin nhắn "Chào bạn" mặc định nếu muốn
 
-        result.data.forEach(msg => {
-            // Đảm bảo hàm này của ông đang chạy đúng
-            appendMessageToUI(msg.sender, msg.text, msg.time);
-        });
+            result.data.forEach(msg => appendMsgUI(msg.sender, msg.text, msg.time));
+            setupSignalR();
+        }
+    } catch (err) {
+        console.error("Lỗi load lịch sử:", err);
     }
 }
 
-function appendMessageToUI(senderType, message, time) {
+// 4. KẾT NỐI SIGNALR
+function setupSignalR() {
+    if (chatConnection) return;
+
+    chatConnection = new signalR.HubConnectionBuilder()
+        .withUrl("/chatHub")
+        .withAutomaticReconnect()
+        .build();
+
+    chatConnection.on("ReceiveMessage", function (role, message, time, convId, targetUserId) {
+        // Chỉ nhận tin từ Admin và đúng cuộc hội thoại này
+        if (convId === clientConvId && role === "Admin") {
+            appendMsgUI(role, message, time);
+        }
+    });
+
+    chatConnection.start().catch(err => console.error("SignalR Start Error:", err));
+}
+
+// 5. HIỂN THỊ TIN NHẮN
+function appendMsgUI(sender, text, time) {
     const chatBody = document.getElementById("customer-messages");
     if (!chatBody) return;
 
-    const isAdmin = (senderType === "Admin");
+    const isMe = (sender !== "Admin");
 
     const msgHtml = `
-        <div class="message-wrapper ${isAdmin ? 'from-admin' : 'from-me'}">
-            <div class="message-content shadow-sm">
-                ${message}
+        <div style="display: flex; flex-direction: column; margin-bottom: 10px; align-items: ${isMe ? 'flex-end' : 'flex-start'}">
+            <div style="max-width: 75%; padding: 8px 12px; border-radius: 15px; 
+                        background: ${isMe ? '#0084ff' : '#e4e6eb'}; 
+                        color: ${isMe ? '#fff' : '#000'}; word-wrap: break-word;">
+                ${text}
             </div>
-            <span class="message-time">${time}</span>
+            <span style="font-size: 10px; color: gray; margin-top: 2px;">${time}</span>
         </div>`;
 
     chatBody.insertAdjacentHTML('beforeend', msgHtml);
     chatBody.scrollTop = chatBody.scrollHeight;
 }
 
+// 6. SỰ KIỆN GỬI TIN (Dùng $(document).ready để gán sự kiện 1 lần)
 $(document).ready(function () {
-    // 1. Khởi tạo Session cho khách
-    let sessionId = localStorage.getItem("ManaPet_Session");
-    if (!sessionId) {
-        sessionId = "SESS_" + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem("ManaPet_Session", sessionId);
-    }
+    $(document).on("click", "#btn-customer-send", function () {
+        let input = $("#customer-input");
+        let msg = input.val();
 
-    // 2. Kết nối SignalR
-    var connection = new signalR.HubConnectionBuilder()
-        .withUrl("/chatHub")
-        .build();
+        if (msg.trim() === "" || clientConvId === 0) return;
 
-    connection.on("ReceiveMessage", function (role, message, time, sId) {
-        let mySessionId = localStorage.getItem("ManaPet_Session");
-        let myUserId = window.chatConfig.userId;
+        let now = new Date();
+        let timeStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
 
-        if (role === "Admin" || sId === mySessionId || (myUserId !== "" && sId === myUserId)) {
-            // Dùng chung một hàm duy nhất để giao diện luôn ĐẸP như nhau
-            appendMessageToUI(role, message, time);
+        // Hiện tin nhắn ngay (Optimistic UI)
+        appendMsgUI("Customer", msg, timeStr);
+        input.val("").focus();
+
+        // Gửi lên Hub
+        if (chatConnection && chatConnection.state === signalR.HubConnectionState.Connected) {
+            chatConnection.invoke("SendMessage", clientConvId, parseInt(window.chatConfig.userId), msg, "Customer")
+                .catch(err => console.error("Lỗi SendMessage:", err));
+        } else {
+            console.error("SignalR chưa kết nối!");
+            // Thử kết nối lại nếu mất
+            setupSignalR();
         }
     });
 
-    connection.start().then(() => console.log("Chat Connected!")).catch(err => console.error(err));
-
-    // 3. Xử lý gửi tin nhắn
-    $("#btn-customer-send").click(function () {
-        let msg = $("#customer-input").val();
-        if (msg.trim() === "") return;
-
-        let sId = localStorage.getItem("ManaPet_Session");
-        let uId = window.chatConfig.userId;
-        let uRole = window.chatConfig.userRole;
-        //console.log("Gửi tin nhắn:", { sId, msg, uId, uRole });
-
-        connection.invoke("SendMessage", sId, msg, uId, uRole)
-            .then(() => {
-                $("#customer-input").val("").focus();
-            })
-            .catch(err => console.error("Gửi tin thất bại:", err));
-    });
-
-    // Enter để gửi
-    $("#customer-input").keypress(function (e) {
+    $(document).on("keypress", "#customer-input", function (e) {
         if (e.which == 13) {
             $("#btn-customer-send").click();
             e.preventDefault();
         }
     });
 });
-//Chat box
+//Chat box admin
+
+
+

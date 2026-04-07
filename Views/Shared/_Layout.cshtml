@@ -47,19 +47,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
 
     <script>
+        // Lấy UserId từ Claim "UserId" của ông
+        var rawUserId = "@(User.Identity.IsAuthenticated? User.FindFirst("UserId")?.Value : "0")";
 
-        var currentUserId = "@(User.Identity.IsAuthenticated? User.FindFirst("UserId")?.Value : "")";
-        if (currentUserId !== "") {
-            // Có thể thêm logic kiểm tra nếu session này thuộc về guest thì mới xóa
-            // Nhưng cách nhanh nhất là xóa luôn để Hub tạo lại bộ đôi (UserId + SessionId) mới chuẩn
+        // Xóa session cũ nếu đã login (giữ lại logic cũ của ông)
+        if (rawUserId !== "0") {
             localStorage.removeItem("ManaPet_Session");
         }
+
         window.chatConfig = {
-            // userId: "@(User.Identity.IsAuthenticated? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value : "")",
-            userId: "@(User.Identity.IsAuthenticated? User.FindFirst("UserId")?.Value : "")",
+            isLoggedIn: @(User.Identity.IsAuthenticated ? "true" : "false"),
+            userId: rawUserId,
             userRole: "@(User.Identity.IsAuthenticated? User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value : "Guest")"
         };
-        // console.log("Check Bridge Layout:", window.chatConfig);
+
+        console.log("ChatConfig Loaded:", window.chatConfig); // Dòng này để ông F12 check cho sướng
     </script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 

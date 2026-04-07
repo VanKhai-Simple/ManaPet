@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="/dist/css/AdminLTE.min.css">
     <link rel="stylesheet" href="/dist/css/skins/_all-skins.min.css">
     <link href="~/css/Chat.css" rel="stylesheet" />
+ 
 
     @RenderSection("Styles", required: false)
 </head>
@@ -149,7 +150,9 @@
     <!-- 4. File Core của AdminLTE để chạy hiệu ứng SideBar -->
     <script src="/dist/js/app.min.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
 
+    <script src="~/js/site.js"></script>
 
     @RenderSection("Scripts", required: false)
 </body>

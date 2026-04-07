@@ -1,47 +1,278 @@
-﻿<section class="content">
-    <div class="row">
-        <!-- Danh sách khách đang đợi chat -->
-        <div class="col-md-4">
-            <div class="box box-solid">
-                <div class="box-header with-border"><h3 class="box-title">Khách hàng trực tuyến</h3></div>
-                <div class="box-body no-padding">
-                    <ul class="nav nav-pills nav-stacked" id="conversation-list">
-                        @foreach (var item in Model)
-                        {
-                            // Nếu GuestSessionId null (do khách đã login), lấy UserId làm định danh tạm
-                            var finalId = !string.IsNullOrEmpty(item.GuestSessionId) ? item.GuestSessionId : item.UserId.ToString();
+﻿@model IEnumerable<Petshop_frontend.Models.Conversation>
+@{
+    Layout = "_AdminLayout";
+}
 
-                            <li>
-                                <a href="javascript:void(0)"
-                                   onclick="loadChat(@item.Id, '@finalId')"
-                                   data-session="@finalId"
-                                   class="list-group-item conversation-item">
-                                    <strong>@(item.User?.UserProfile?.FullName ?? item.User?.Username ?? item.GuestSessionId)</strong>
-                                    <span class="badge label-danger unread-count-badge" style="display:none; float:right;">0</span>
-                                </a>
-                            </li>
-                        }
-                    </ul>
-                </div>
+<style>
+    /* CSS CỨNG - ĐỂ TRÁNH BỊ ADMINLTE ĐÈ */
+    .chat-wrapper-pro {
+        display: flex !important; /* Bắt buộc chia cột */
+        flex-direction: row !important;
+        height: calc(100vh - 150px) !important;
+        background: #fff;
+        border: 1px solid #ddd;
+        margin: 10px;
+        font-family: 'Source Sans Pro', sans-serif;
+    }
+
+    /* Sidebar danh sách khách */
+    .chat-sidebar-pro {
+        width: 300px !important;
+        min-width: 300px;
+        border-right: 1px solid #eee;
+        display: flex;
+        flex-direction: column;
+        background: #f9f9f9;
+    }
+
+    .chat-sidebar-header {
+        padding: 15px;
+        background: #222d32; /* Màu tối của AdminLTE sidebar */
+        color: #fff;
+        font-weight: bold;
+    }
+
+    .chat-user-list {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .chat-user-item {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        border-bottom: 1px solid #f4f4f4;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+        .chat-user-item:hover {
+            background: #f1f1f1;
+        }
+
+        .chat-user-item.active {
+            background: #e7f3ff;
+            border-left: 5px solid #3c8dbc;
+        }
+
+    .chat-avatar {
+        width: 45px;
+        height: 45px;
+        background: #3c8dbc;
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 18px;
+        margin-right: 12px;
+        flex-shrink: 0;
+    }
+
+    .chat-user-info {
+        overflow: hidden;
+    }
+
+    .chat-user-name {
+        font-weight: bold;
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 2px;
+    }
+
+    .chat-user-status {
+        font-size: 11px;
+        color: #999;
+    }
+
+    /* Khung chat chính */
+    .chat-content-pro {
+        flex: 1 !important;
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+        min-width: 0; /* Quan trọng để flex không bị lòi ra ngoài */
+    }
+
+    .chat-main-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #eee;
+        font-weight: bold;
+        font-size: 16px;
+        color: #333;
+    }
+
+    .chat-messages-area {
+        flex: 1;
+        padding: 20px;
+        background: #f4f7f6;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Bong bóng chat */
+    .chat-bubble-row {
+        display: flex;
+        margin-bottom: 15px;
+        width: 100%;
+    }
+
+        .chat-bubble-row.me {
+            justify-content: flex-end;
+        }
+
+        .chat-bubble-row.them {
+            justify-content: flex-start;
+        }
+
+    .chat-bubble {
+        max-width: 70%;
+        padding: 10px 15px;
+        border-radius: 15px;
+        font-size: 14px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .chat-bubble-row.me .chat-bubble {
+        background: #3c8dbc;
+        color: #fff;
+        border-bottom-right-radius: 2px;
+    }
+
+    .chat-bubble-row.them .chat-bubble {
+        background: #fff;
+        color: #333;
+        border-bottom-left-radius: 2px;
+    }
+
+    /* Input area */
+    .chat-footer-pro {
+        padding: 15px;
+        border-top: 1px solid #eee;
+    }
+
+    .chat-input-box {
+        display: flex;
+        background: #eee;
+        border-radius: 25px;
+        padding: 5px 15px;
+        align-items: center;
+    }
+
+        .chat-input-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            outline: none;
+            padding: 8px;
+        }
+
+        .chat-input-box button {
+            border: none;
+            background: transparent;
+            color: #3c8dbc;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+    /* Responsive cho Mobile */
+    @@media (max-width: 768px) {
+        .chat-wrapper-pro
+
+    {
+        position: relative;
+        overflow: hidden;
+        height: calc(100vh - 100px) !important; /* Ưu tiên chiều cao trên mobile */
+    }
+
+    .chat-sidebar-pro {
+        width: 100% !important;
+        min-width: 100% !important;
+        transition: 0.3s;
+    }
+
+    .chat-content-pro {
+        position: absolute;
+        left: 100%; /* Đẩy khung chat ra ngoài bên phải */
+        top: 0;
+        width: 100% !important;
+        height: 100%;
+        transition: 0.3s;
+        z-index: 1000;
+        background: white;
+    }
+
+    /* Khi có class .mobile-active, khung chat sẽ tràn vào */
+    .chat-wrapper-pro.mobile-active .chat-content-pro {
+        left: 0;
+    }
+
+    .chat-wrapper-pro.mobile-active .chat-sidebar-pro {
+        transform: translateX(-20%); /* Đẩy sidebar ẩn nhẹ đi */
+    }
+
+    /* Hiện nút Back trên mobile */
+    .btn-back-list {
+        display: inline-block !important;
+        margin-right: 10px;
+        cursor: pointer;
+        color: #3c8dbc;
+    }
+
+    }
+
+    /* Ẩn nút Back trên Desktop */
+    .btn-back-list {
+        display: none;
+    }
+</style>
+
+<section class="content" style="padding: 0;">
+    <div class="chat-wrapper-pro">
+        <div class="chat-sidebar-pro">
+            <div class="chat-sidebar-header">
+                <i class="fa fa-comments"></i> Khách hàng (@Model.Count())
+            </div>
+            <div class="chat-user-list">
+                @if (Model != null)
+                {
+                    foreach (var item in Model)
+                    {
+                        var name = item.User?.UserProfile?.FullName ?? item.User?.Username ?? "Khách #" + item.Id;
+                        var initial = name.Substring(0, 1).ToUpper();
+
+                        <div class="chat-user-item" onclick="loadAdminChat(@item.Id, @(item.UserId ?? 0), '@name', this)" id="conv-@item.Id">
+                            <div class="chat-avatar">@initial</div>
+                            <div class="chat-user-info">
+                                <div class="chat-user-name">@name</div>
+                                <div class="chat-user-status">@(item.UserId.HasValue ? "Thành viên" : "Khách vãng lai")</div>
+                            </div>
+                            <span class="badge bg-red pull-right" id="badge-@item.Id" style="display:none; margin-left: auto;">0</span>
+                        </div>
+                    }
+                }
             </div>
         </div>
 
-        <!-- Khung chat chi tiết -->
-        <div class="col-md-8">
-            <div class="box box-primary direct-chat direct-chat-primary" id="chat-box" style="display:none;">
-                <div class="box-header with-border"><h3 class="box-title" id="chat-with">Chat</h3></div>
-                <div class="box-body">
-                    <div class="direct-chat-messages" id="messagesList" style="height: 400px;">
-                        <!-- Tin nhắn sẽ load vào đây -->
-                    </div>
+        <div class="chat-content-pro">
+            <div class="chat-main-header">
+                <i class="fa fa-arrow-left btn-back-list" id="btn-back-chat"></i>
+                <span id="chat-with-title">Hệ thống hỗ trợ ManaPet</span>
+            </div>
+
+            <div id="admin-messages" class="chat-messages-area">
+                <div style="text-align: center; color: #ccc; margin-top: 100px;">
+                    <i class="fa fa-commenting-o fa-5x"></i>
+                    <p>Chọn một cuộc hội thoại để trả lời khách hàng</p>
                 </div>
-                <div class="box-footer">
-                    <div class="input-group">
-                        <input type="text" id="messageInput" placeholder="Nhập nội dung..." class="form-control">
-                        <span class="input-group-btn">
-                            <button type="button" id="sendButton" class="btn btn-primary btn-flat">Gửi</button>
-                        </span>
-                    </div>
+            </div>
+
+            <div class="chat-footer-pro" id="admin-input-area" style="display: none !important;">
+                <div class="chat-input-box">
+                    <input type="text" id="admin-input" placeholder="Nhập câu trả lời..." autocomplete="off">
+                    <button id="btn-admin-send"><i class="fa fa-paper-plane"></i></button>
                 </div>
             </div>
         </div>
@@ -49,81 +280,153 @@
 </section>
 
 @section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
     <script>
-        // 1. Khai báo biến toàn cục (PHẢI Ở NGOÀI CÙNG)
-        var currentGuestSessionId = "";
-        var connection = new signalR.HubConnectionBuilder()
-            .withUrl("/chatHub")
-            .withAutomaticReconnect()
-            .build();
 
-        // 2. Hàm loadChat PHẢI ĐỂ NGOÀI document.ready để HTML gọi được
-        function loadChat(id, guestSessionId) {
-            currentGuestSessionId = guestSessionId;
+        // 1. Khi chọn khách hàng thì kích hoạt chế độ mobile
+        $(document).on('click', '.chat-user-item', function () {
+            $('.chat-wrapper-pro').addClass('mobile-active');
+        });
 
-            // Highlight dòng đang chọn và xóa thông báo
-            $(".list-group-item").removeClass("active text-warning font-weight-bold");
-            let $activeItem = $(`a[data-session='${guestSessionId}']`);
-            $activeItem.addClass("active");
-            $activeItem.find(".unread-count-badge").text("0").hide();
+        // 2. Sự kiện nút quay lại trên mobile
+        $(document).on('click', '#btn-back-chat', function () {
+            $('.chat-wrapper-pro').removeClass('mobile-active');
 
-            $("#chat-box").show();
-            // Clear tin cũ trước khi load mới cho đỡ lag
-            $("#messagesList").html('<div class="text-center"><i class="fa fa-spinner fa-spin"></i> Đang tải...</div>');
-
-            $("#messagesList").load("/Admin/Chat/GetMessages/" + id, function () {
-                $(this).scrollTop($(this)[0].scrollHeight);
-            });
-        }
+            // Tùy chọn: Reset lại tiêu đề hoặc ẩn input khi quay lại
+            currentAdminConvId = 0;
+            $("#admin-input-area").attr("style", "display: none !important;");
+        });
+        // 1. KHAI BÁO BIẾN CỤC BỘ (Không sợ trùng với site.js)
+        var adminConnection = null;
+        var currentAdminConvId = 0;
+        var currentAdminTargetUserId = 0;
 
         $(document).ready(function () {
-            // 3. Lắng nghe tin nhắn Real-time
-            connection.on("ReceiveMessage", function (role, message, time, sId) {
-                // Hiển thị tin nếu đang mở đúng người đó HOẶC mình là Admin vừa gửi
-                if (sId === currentGuestSessionId || (role === "Admin" && currentGuestSessionId !== "")) {
-                    let isMe = (role === "Admin");
-                    let html = `
-                        <div class="direct-chat-msg ${isMe ? 'right' : ''}">
-                            <div class="direct-chat-info clearfix">
-                                <span class="direct-chat-name ${isMe ? 'pull-right' : 'pull-left'}">${role}</span>
-                                <span class="direct-chat-timestamp ${isMe ? 'pull-left' : 'pull-right'}">${time}</span>
-                            </div>
-                            <div class="direct-chat-text">${message}</div>
-                        </div>`;
+            // Khởi tạo SignalR
+            setupAdminSignalR();
 
-                    $("#messagesList").append(html);
-                    $("#messagesList").scrollTop($("#messagesList")[0].scrollHeight);
+            // 2. SỰ KIỆN CLICK CHỌN KHÁCH HÀNG (Dùng Delegation để tránh lỗi null)
+            $(document).on('click', '.chat-user-item', function () {
+                const convId = $(this).attr('id').replace('conv-', '');
+                const name = $(this).find('.chat-user-name').text();
+                // Giả sử ông để data-userid trong HTML
+                const userId = $(this).data('userid') || 0;
+
+                loadAdminChat(convId, userId, name, this);
+            });
+
+            // 3. SỰ KIỆN CLICK NÚT GỬI
+            $(document).on('click', '#btn-admin-send', function (e) {
+                e.preventDefault();
+                const msg = $("#admin-input").val().trim();
+
+                if (currentAdminConvId === 0) {
+                    alert("Chọn khách hàng đã ông ơi!");
+                    return;
                 }
+                if (!msg) return;
 
-                // Nếu khách khác nhắn thì báo chuông/badge
-                if (role !== "Admin" && sId !== currentGuestSessionId) {
-                    let $item = $(`a[data-session='${sId}']`);
-                    $item.addClass("text-warning font-weight-bold");
-                    let $badge = $item.find(".unread-count-badge");
-                    let count = parseInt($badge.text()) || 0;
-                    $badge.text(count + 1).show();
+                if (adminConnection && adminConnection.state === signalR.HubConnectionState.Connected) {
+                    // ĐÚNG THỨ TỰ: conversationId, userId, messageText, userRole
+                    adminConnection.invoke("SendMessage",
+                        parseInt(currentAdminConvId),
+                        parseInt(currentAdminTargetUserId),
+                        msg,
+                        "Admin"
+                    ).then(() => {
+                        $("#admin-input").val("").focus();
+                    }).catch(err => console.error("Lỗi gửi:", err));
                 }
             });
 
-            // 4. Kết nối Hub
-            connection.start().catch(err => console.error("Admin SignalR Error: ", err));
-
-            // 5. Nút gửi
-            $("#sendButton").click(function () {
-                let msg = $("#messageInput").val();
-                if (msg.trim() !== "" && currentGuestSessionId !== "") {
-                    connection.invoke("SendMessage", currentGuestSessionId, msg, "", "Admin")
-                        .then(() => {
-                            $("#messageInput").val("").focus();
-                        })
-                        .catch(err => console.error(err));
-                }
-            });
-
-            $("#messageInput").keypress(function (e) {
-                if (e.which == 13) { $("#sendButton").click(); e.preventDefault(); }
+            // Bắt phím Enter
+            $(document).on('keypress', '#admin-input', function (e) {
+                if (e.which == 13) $('#btn-admin-send').click();
             });
         });
+
+        // 4. HÀM SETUP SIGNALR
+        function setupAdminSignalR() {
+            adminConnection = new signalR.HubConnectionBuilder()
+                .withUrl("/chatHub")
+                .withAutomaticReconnect()
+                .build();
+
+            // Nhận tin: role, msg, time, convId, userId
+            adminConnection.on("ReceiveMessage", function (role, msg, time, convId, userId) {
+                if (convId == currentAdminConvId) {
+                    appendAdminMsgUI(role, msg, time);
+                } else {
+                    $(`#badge-${convId}`).text("!").show();
+                }
+            });
+
+            adminConnection.start()
+                .then(() => console.log("Admin SignalR: OK!"))
+                .catch(err => console.error("Admin SignalR: Fail!", err));
+        }
+
+        // 5. HÀM LOAD LỊCH SỬ CHAT
+                async function loadAdminChat(convId, userId, fullName, el) {
+            currentAdminConvId = convId;
+            currentAdminTargetUserId = userId;
+
+            // Cập nhật UI
+            $(".chat-user-item").removeClass("active");
+            $(el).addClass("active");
+            $(`#badge-${convId}`).hide();
+            $("#chat-with-title").text("Đang hỗ trợ: " + fullName);
+            $("#admin-input-area").attr("style", "display: block !important;");
+
+            const container = document.getElementById("admin-messages");
+            container.innerHTML = '<div class="text-center">Đang tải tin nhắn...</div>';
+
+            try {
+                // QUAN TRỌNG: Thêm dấu / ở đầu để trỏ đúng về root /Admin/Chat/...
+                const res = await fetch(`/Admin/Chat/GetChatHistory?convId=${convId}`);
+
+                if (!res.ok) {
+                    throw new Error("Không tìm thấy API. Kiểm tra lại Route ở Controller!");
+                }
+
+                const data = await res.json();
+                container.innerHTML = "";
+
+                if (data && data.length > 0) {
+                    data.forEach(m => {
+                        appendAdminMsgUI(m.senderType, m.messageText, m.createdAt);
+                    });
+                } else {
+                    container.innerHTML = '<div class="text-center">Chưa có tin nhắn nào.</div>';
+                }
+
+                container.scrollTop = container.scrollHeight;
+            } catch (err) {
+                console.error("Lỗi khi load lịch sử:", err);
+                container.innerHTML = '<div class="text-center text-danger">Lỗi tải tin nhắn!</div>';
+            }
+        }
+
+        // 6. HÀM VẼ GIAO DIỆN TIN NHẮN
+        function appendAdminMsgUI(type, text, time) {
+            const isMe = (type.toLowerCase() === "admin");
+            const html = `
+                <div class="chat-bubble-row ${isMe ? 'me' : 'them'}">
+                    <div class="chat-bubble" title="${time}">${text}</div>
+                </div>`;
+            const container = document.getElementById("admin-messages");
+            if(container) {
+                container.insertAdjacentHTML('beforeend', html);
+                container.scrollTop = container.scrollHeight;
+            }
+        }
     </script>
 }
+
+<script>
+	window.adminConfig = {
+		userId: "@(User.FindFirst("UserId")?.Value ?? "0")",
+		userRole: "Admin"
+	};
+</script>
+   

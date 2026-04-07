@@ -66,30 +66,30 @@ namespace Petshop_frontend.Controllers
             return RedirectToAction("Login");
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetChatHistory(string sessionId, string userId)
-        {
-            int? uId = (string.IsNullOrEmpty(userId) || userId == "null") ? null : int.Parse(userId);
+        //[HttpGet]
+        //public async Task<IActionResult> GetChatHistory(string sessionId, string userId)
+        //{
+        //    int? uId = (string.IsNullOrEmpty(userId) || userId == "null") ? null : int.Parse(userId);
 
-            var conversation = _db.Conversations
-                .Include(c => c.Messages)
-                .FirstOrDefault(c => c.IsClosed == false && (
-                    (uId != null && c.UserId == uId) ||
-                    (uId == null && c.GuestSessionId == sessionId)
-                ));
+        //    var conversation = _db.Conversations
+        //        .Include(c => c.Messages)
+        //        .FirstOrDefault(c => c.IsClosed == false && (
+        //            (uId != null && c.UserId == uId) ||
+        //            (uId == null && c.GuestSessionId == sessionId)
+        //        ));
 
-            if (conversation == null) return Json(new { success = false });
+        //    if (conversation == null) return Json(new { success = false });
 
-            var messages = conversation.Messages
-                    .OrderBy(m => m.CreatedAt)
-                    .Select(m => new {
-                        sender = m.SenderType, // "Admin" hoặc "Customer"
-                        text = m.MessageText,
-                        time = m.CreatedAt.HasValue ? m.CreatedAt.Value.ToString("HH:mm") : ""
-                    }).ToList();
+        //    var messages = conversation.Messages
+        //            .OrderBy(m => m.CreatedAt)
+        //            .Select(m => new {
+        //                sender = m.SenderType, // "Admin" hoặc "Customer"
+        //                text = m.MessageText,
+        //                time = m.CreatedAt.HasValue ? m.CreatedAt.Value.ToString("HH:mm") : ""
+        //            }).ToList();
 
-            return Json(new { success = true, data = messages });
-        }
+        //    return Json(new { success = true, data = messages });
+        //}
 
         // GET: Login
         public IActionResult Login() => View();
