@@ -1,0 +1,199 @@
+﻿@model Petshop_frontend.Models.CheckoutViewModel
+
+<div class="container my-5">
+    <div class="row g-5">
+        @* --- CỘT TRÁI: THÔNG TIN GIAO HÀNG --- *@
+        <div class="col-lg-7">
+            <h4 class="mb-4 fw-bold"><i class="fas fa-truck text-primary me-2"></i>THÔNG TIN VẬN CHUYỂN</h4>
+
+            @* Form sẽ gửi dữ liệu về Action "Checkout" (POST) *@
+            <form id="checkoutForm" asp-action="Checkout" method="post" class="needs-validation" novalidate>
+                <div class="row g-3">
+                    <div class="col-sm-12">
+                        <label class="form-label fw-bold small">Họ và tên người nhận</label>
+                        <input asp-for="FullName" type="text" class="form-control rounded-3" placeholder="Ví dụ: Nguyễn Văn A" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small">Số điện thoại</label>
+                        <input asp-for="PhoneNumber" type="tel" class="form-control rounded-3" placeholder="Ví dụ: 0987xxxxxx" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small">Email (Nhận hóa đơn)</label>
+                        <input asp-for="Email" type="email" class="form-control rounded-3" placeholder="anh@example.com">
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-bold small">Địa chỉ nhận hàng</label>
+                        <input asp-for="Address" type="text" class="form-control rounded-3" placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành..." required>
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <label class="form-label fw-bold small">Ghi chú đơn hàng</label>
+                        <textarea asp-for="Note" class="form-control rounded-3" rows="3" placeholder="Ví dụ: Giao giờ hành chính, gọi trước khi đến..."></textarea>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <h4 class="mb-3 fw-bold">HÌNH THỨC THANH TOÁN</h4>
+                <div class="my-3">
+                    <div class="form-check border p-3 rounded-3 mb-2 shadow-sm pointer-area">
+                        @* Thêm value="COD" *@
+                        <input id="cod" name="paymentMethod" value="COD" type="radio" class="form-check-input" checked required>
+                        <label class="form-check-label d-flex align-items-center w-100" for="cod">
+                            <i class="fas fa-money-bill-wave text-success me-3 fs-4"></i>
+                            <div>
+                                <span class="fw-bold d-block">Thanh toán khi nhận hàng (COD)</span>
+                                <small class="text-muted">Kiểm tra bé rồi mới trả tiền</small>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="form-check border p-3 rounded-3 mb-2 shadow-sm pointer-area">
+                        @* Thêm value="VNPAY" *@
+                        <input id="vnpay" name="paymentMethod" value="VNPAY" type="radio" class="form-check-input" required>
+                        <label class="form-check-label d-flex align-items-center w-100" for="vnpay">
+                            <img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/6/0oxp5cw83thk1687156886370.png" class="me-3" style="width: 40px;">
+                            <div>
+                                <span class="fw-bold d-block">Ví điện tử VNPAY / Ngân hàng</span>
+                                <small class="text-muted">Thanh toán nhanh qua QR Code</small>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="form-check border p-3 rounded-3 mb-2 shadow-sm pointer-area">
+                        <input id="paypal" name="paymentMethod" value="PAYPAL" type="radio" class="form-check-input" required>
+                        <label class="form-check-label d-flex align-items-center w-100" for="paypal">
+                            <i class="fab fa-paypal text-primary me-3 fs-4"></i>
+                            <div>
+                                <span class="fw-bold d-block">Thanh toán qua PayPal</span>
+                                <small class="text-muted">Thanh toán quốc tế an toàn</small>
+                            </div>
+                        </label>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+        @* --- CỘT PHẢI: TÓM TẮT ĐƠN HÀNG --- *@
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-light sticky-top" style="top: 100px;">
+                <h5 class="d-flex justify-content-between align-items-center mb-4">
+                    <span class="fw-bold">ĐƠN HÀNG CỦA BẠN</span>
+                    <span class="badge bg-primary rounded-pill">@Model.CartItems.Count</span>
+                </h5>
+
+                <ul class="list-group list-group-flush mb-3 rounded-3 overflow-hidden shadow-sm">
+                    @foreach (var item in Model.CartItems)
+                    {
+                        <li class="list-group-item d-flex justify-content-between lh-sm py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="position-relative me-3">
+                                    <img src="@item.Product.MainImage" class="rounded border" style="width: 50px; height: 50px; object-fit: cover;">
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary text-white" style="font-size: 0.6rem;">
+                                        @item.Quantity
+                                    </span>
+                                </div>
+                                <div>
+                                    <h6 class="my-0 fw-bold small text-truncate" style="max-width: 150px;">@item.Product.ProductName</h6>
+                                    <small class="text-muted">@item.Product.Category?.CategoryName</small>
+                                </div>
+                            </div>
+                            <span class="text-muted small">
+                                @(((item.Product?.IsDiscount == true ? item.Product.DiscountPrice : item.Product?.Price) * item.Quantity)?.ToString("N0"))đ
+                            </span>
+                        </li>
+                    }
+                </ul>
+
+                <div class="input-group mb-3 mt-4">
+                    <input type="text" class="form-control border-0 shadow-none bg-white py-2 px-3" placeholder="Mã giảm giá (nếu có)">
+                    <button type="button" class="btn btn-dark px-3">ÁP DỤNG</button>
+                </div>
+
+                <div class="border-top pt-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Tạm tính:</span>
+                        <span class="fw-bold">@Model.TotalMoney.ToString("N0")đ</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Phí vận chuyển:</span>
+                        <span class="text-success fw-bold">Miễn phí</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="h5 fw-bold">Tổng thanh toán:</span>
+                        <span class="h4 text-danger fw-bold">@Model.TotalMoney.ToString("N0")đ</span>
+                    </div>
+
+                    @* Nút Submit nhận biến 'this' để JS biết đang bấm nút nào *@
+                    <button type="button" onclick="submitCheckout(this)" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow py-3 mb-3">
+                        HOÀN TẤT ĐẶT HÀNG <i class="fas fa-check-circle ms-2"></i>
+                    </button>
+
+                    <p class="text-center x-small text-muted">
+                        Bằng việc đặt hàng, bạn đồng ý với các <a href="#" class="text-decoration-none">Điều khoản dịch vụ</a> của Pet House.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control:focus, .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+    }
+
+    .pointer-area {
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+        .pointer-area:hover {
+            background-color: #f8f9fa;
+            border-color: #0d6efd !important;
+        }
+
+    .form-check-input:checked + label {
+        color: #0d6efd;
+    }
+
+    .x-small {
+        font-size: 0.75rem;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        function submitCheckout(btn) { // Thêm biến btn vào đây
+            const form = document.getElementById('checkoutForm');
+
+            // Validate form trước khi submit
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                // Cuộn lên phần lỗi đầu tiên
+                const firstError = form.querySelector(':invalid');
+                if(firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            // Hiệu ứng loading nút bấm
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> ĐANG XỬ LÝ...';
+
+            // Gửi dữ liệu đi
+            form.submit();
+        }
+
+        // Trick: Click vào vùng card chứa radio thì radio tự chọn
+        document.querySelectorAll('.pointer-area').forEach(card => {
+            card.addEventListener('click', () => {
+                card.querySelector('input[type="radio"]').checked = true;
+            });
+        });
+    </script>
+}

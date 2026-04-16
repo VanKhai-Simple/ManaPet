@@ -1,0 +1,33 @@
+﻿<h2>Đơn hàng của tôi</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Mã đơn</th>
+            <th>Ngày đặt</th>
+            <th>Tổng tiền</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>#@item.Id</td>
+                <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
+                <td>@item.TotalAmount?.ToString("N0") đ</td>
+                <td>
+                    <span class="badge @(item.Status == "Đã hủy" ? "bg-danger" : "bg-info")">@item.Status</span>
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Xem chi tiết</a>
+                    @if (item.Status == "Chờ xác nhận") {
+                        <form asp-action="CancelOrder" asp-route-id="@item.Id" method="post" style="display:inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc muốn hủy đơn?')">Hủy đơn</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

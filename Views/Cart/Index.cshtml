@@ -1,0 +1,192 @@
+﻿@model List<Petshop_frontend.Models.CartItem>
+
+@{
+    ViewData["Title"] = "Giỏ hàng của bạn";
+    decimal totalCartMoney = 0;
+}
+
+<div class="container my-5">
+    <div class="d-flex align-items-center mb-4">
+        <h3 class="fw-bold mb-0"><i class="fas fa-shopping-basket text-primary me-2"></i>GIỎ HÀNG</h3>
+        <span class="badge bg-secondary ms-3 rounded-pill">@(Model?.Count ?? 0) sản phẩm</span>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="text-center py-5 border-0 shadow-sm rounded-4 bg-white">
+            <img src="https://cdn-icons-png.flaticon.com/512/11329/11329073.png" alt="Empty Cart" style="width: 120px; opacity: 0.3;">
+            <p class="mt-4 text-muted fs-5">Giỏ hàng của ông giáo đang trống trơn...</p>
+            <a href="/" class="btn btn-primary rounded-pill px-5 py-2 fw-bold mt-2">ĐI MUA SẮM NGAY</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @* --- DANH SÁCH SẢN PHẨM --- *@
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4 py-3 border-0">Sản phẩm</th>
+                                    <th class="py-3 border-0">Giá</th>
+                                    <th class="py-3 border-0">Số lượng</th>
+                                    <th class="py-3 border-0">Tổng</th>
+                                    <th class="py-3 border-0"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    var price = item.Product?.IsDiscount == true ? item.Product.DiscountPrice : item.Product?.Price;
+                                    var subTotal = (price ?? 0) * item.Quantity;
+                                    totalCartMoney += subTotal;
+
+                                    <tr class="cart-item-row" data-product-id="@item.ProductId">
+                                        <td class="ps-4 py-4">
+                                            <div class="d-flex align-items-center">
+                                                <img src="@item.Product?.MainImage" class="rounded-3 border shadow-sm" style="width: 80px; height: 80px; object-fit: cover;">
+                                                <div class="ms-3">
+                                                    <h6 class="mb-1 text-dark fw-bold">@item.Product?.ProductName</h6>
+                                                    <span class="badge bg-light text-muted fw-normal border">Mã: #@item.ProductId</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span class="fw-bold text-dark">@((price ?? 0).ToString("N0"))đ</span></td>
+                                        <td>
+                                            <div class="input-group input-group-sm border rounded-pill overflow-hidden shadow-sm" style="width: 110px;">
+                                                <button class="btn btn-white border-0 py-2 btn-update-qty" data-change="-1">
+                                                    <i class="fas fa-minus small text-muted"></i>
+                                                </button>
+                                                <input type="text" class="form-control text-center border-0 bg-transparent fw-bold qty-display" value="@item.Quantity" readonly>
+                                                <button class="btn btn-white border-0 py-2 btn-update-qty" data-change="1">
+                                                    <i class="fas fa-plus small text-muted"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td><span class="text-danger fw-bold fs-6">@(subTotal.ToString("N0"))đ</span></td>
+                                        <td class="pe-4 text-end">
+                                            <form asp-action="Remove" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@item.ProductId" />
+                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle border-0 shadow-sm"
+                                                        onclick="return confirm('Ông giáo chắc chắn muốn xóa bé này chứ?')">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            @* --- TỔNG KẾT ĐƠN HÀNG --- *@
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0 rounded-4 p-4 sticky-top" style="top: 100px;">
+                    <h5 class="mb-4 fw-bold border-bottom pb-3 text-uppercase">Tóm tắt đơn hàng</h5>
+                    <div class="d-flex justify-content-between mb-3 fs-6">
+                        <span class="text-muted">Tạm tính:</span>
+                        <span class="fw-bold">@totalCartMoney.ToString("N0")đ</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 fs-6">
+                        <span class="text-muted">Phí vận chuyển:</span>
+                        <span class="text-success fw-bold">Miễn phí</span>
+                    </div>
+                    <div class="alert alert-info border-0 small py-2 mb-4">
+                        <i class="fas fa-info-circle me-2"></i> Miễn phí ship toàn quốc cho mọi đơn hàng thú cưng.
+                    </div>
+                    <hr class="text-muted opacity-25">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="h5 mb-0 fw-bold">Tổng thanh toán:</span>
+                        <span class="h4 mb-0 text-danger fw-bold">@totalCartMoney.ToString("N0")đ</span>
+                    </div>
+                    <a asp-controller="Cart" asp-action="Checkout" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm mb-3 py-3">
+                        TIẾP TỤC THANH TOÁN <i class="fas fa-chevron-right ms-2"></i>
+                    </a>
+                    <a href="/" class="btn btn-outline-secondary w-100 rounded-pill py-2 border-0 small">
+                        <i class="fas fa-arrow-left me-1"></i> Quay lại mua thêm
+                    </a>
+                    <div class="mt-3">
+                        <p class="text-muted">
+                            Bạn muốn xem lại các đơn đã đặt?
+                            <a asp-controller="Orders" asp-action="MyOrders" class="text-primary fw-bold">Xem lịch sử đơn hàng tại đây</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Xử lý cập nhật số lượng
+            $('.btn-update-qty').click(function() {
+                const row = $(this).closest('.cart-item-row');
+                const productId = row.data('product-id');
+                const change = parseInt($(this).data('change'));
+                const input = row.find('.qty-display');
+                let currentQty = parseInt(input.val());
+
+                // Tránh giảm xuống dưới 1
+                if (currentQty + change < 1) return;
+
+                // Hiệu ứng loading nhẹ
+                row.css('opacity', '0.5');
+
+                $.ajax({
+                    url: '/Cart/AddToCart', // Sử dụng endpoint hiện có của ông
+                    type: 'POST',
+                    data: {
+                        productId: productId, // Chú ý: Tên tham số phải khớp với Controller
+                        quantity: change
+                    },
+                    success: function(res) {
+                        if(res.success) {
+                            // Reload để tính toán lại tổng tiền và badge trên Navbar
+                            location.reload();
+                        } else {
+                            alert(res.message || "Không thể cập nhật số lượng");
+                            row.css('opacity', '1');
+                        }
+                    },
+                    error: function() {
+                        alert("Lỗi kết nối máy chủ");
+                        row.css('opacity', '1');
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .cart-item-row {
+        transition: all 0.2s ease;
+    }
+
+        .cart-item-row:hover {
+            background-color: #fdfdfd;
+        }
+
+    .btn-white {
+        background-color: #fff;
+        color: #333;
+    }
+
+        .btn-white:hover {
+            background-color: #f8f9fa;
+        }
+
+    .rounded-4 {
+        border-radius: 1rem !important;
+    }
+</style>

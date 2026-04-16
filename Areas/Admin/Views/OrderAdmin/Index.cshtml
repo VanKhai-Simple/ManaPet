@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Petshop_frontend.Models.Order>
+@{
+    ViewData["Title"] = "Quản lý Đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Danh sách Đơn đặt hàng</h3>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Mã ĐH</th>
+                    <th>Khách hàng</th>
+                    <th>Ngày đặt</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>#@item.Id</td>
+                        <td>@item.FullName<br /><small>@item.PhoneNumber</small></td>
+                        <td>@item.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@item.TotalAmount?.ToString("N0") đ</td>
+                        <td>
+                            @{
+                                var badgeClass = item.Status switch
+                                {
+                                    "Đã giao" => "bg-success",
+                                    "Đang giao" => "bg-info",
+                                    "Đã hủy" => "bg-danger",
+                                    _ => "bg-warning text-dark"
+                                };
+                            }
+                            <span class="badge @badgeClass">@item.Status</span>
+                        </td>
+                        <td>
+                            <a asp-area="Admin" asp-controller="OrderAdmin" asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary btn-sm">
+                                <i class="fa fa-eye"></i> Xem & Duyệt
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

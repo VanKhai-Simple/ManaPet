@@ -1,0 +1,63 @@
+﻿@model Petshop_frontend.Models.Order
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card card-primary">
+                <div class="card-header"><h3 class="card-title">Thông tin giao hàng</h3></div>
+                <div class="card-body">
+                    <p><strong>Khách hàng:</strong> @Model.FullName</p>
+                    <p><strong>SĐT:</strong> @Model.PhoneNumber</p>
+                    <p><strong>Địa chỉ:</strong> @Model.Address</p>
+                    <hr />
+                    <form asp-action="UpdateStatus" method="post">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <div class="form-group">
+                            <label>Trạng thái đơn hàng</label>
+                            <select name="newStatus" class="form-control">
+                                <option value="Chờ xác nhận" selected="@(Model.Status == "Chờ xác nhận")">Chờ xác nhận</option>
+                                <option value="Đang giao" selected="@(Model.Status == "Đang giao")">Đang giao</option>
+                                <option value="Đã giao" selected="@(Model.Status == "Đã giao")">Đã giao</option>
+                                <option value="Đã hủy" selected="@(Model.Status == "Đã hủy")">Đã hủy</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success mt-2 w-100">Cập nhật trạng thái</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header"><h3 class="card-title">Sản phẩm trong đơn</h3></div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Ảnh</th>
+                                <th>Tên SP</th>
+                                <th>Giá</th>
+                                <th>SL</th>
+                                <th>Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var detail in Model.OrderDetails)
+                            {
+                                <tr>
+                                    <td><img src="@detail.Product.MainImage" width="50" /></td>
+                                    <td>@detail.Product.ProductName</td>
+                                    <td>@detail.Price.ToString("N0")</td>
+                                    <td>@detail.Quantity</td>
+                                    <td>@((detail.Price * detail.Quantity).ToString("N0")) đ</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

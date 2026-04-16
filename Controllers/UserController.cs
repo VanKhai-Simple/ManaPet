@@ -36,6 +36,12 @@ namespace Petshop_frontend.Controllers
                 return View(model);
             }
 
+            if (_db.UserProfiles.Any(p => p.Email == model.Email))
+            {
+                ModelState.AddModelError("Email", "Email này đã được đăng ký cho một tài khoản khác.");
+                return View(model);
+            }
+
             // 2. Tạo User và Hash mật khẩu
             var user = new User
             {
@@ -65,31 +71,6 @@ namespace Petshop_frontend.Controllers
             await _db.SaveChangesAsync();
             return RedirectToAction("Login");
         }
-
-        //[HttpGet]
-        //public async Task<IActionResult> GetChatHistory(string sessionId, string userId)
-        //{
-        //    int? uId = (string.IsNullOrEmpty(userId) || userId == "null") ? null : int.Parse(userId);
-
-        //    var conversation = _db.Conversations
-        //        .Include(c => c.Messages)
-        //        .FirstOrDefault(c => c.IsClosed == false && (
-        //            (uId != null && c.UserId == uId) ||
-        //            (uId == null && c.GuestSessionId == sessionId)
-        //        ));
-
-        //    if (conversation == null) return Json(new { success = false });
-
-        //    var messages = conversation.Messages
-        //            .OrderBy(m => m.CreatedAt)
-        //            .Select(m => new {
-        //                sender = m.SenderType, // "Admin" hoặc "Customer"
-        //                text = m.MessageText,
-        //                time = m.CreatedAt.HasValue ? m.CreatedAt.Value.ToString("HH:mm") : ""
-        //            }).ToList();
-
-        //    return Json(new { success = true, data = messages });
-        //}
 
         // GET: Login
         public IActionResult Login() => View();

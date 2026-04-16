@@ -1,0 +1,118 @@
+﻿@model IEnumerable<Petshop_frontend.Models.Product>
+
+<section class="content-header">
+    <h1>
+        Quản lý kho hàng
+        <small>Thú cưng & Phụ kiện</small>
+    </h1>
+</section>
+
+<section class="content">
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <a asp-action="Create" class="btn btn-success btn-sm">
+                <i class="fa fa-plus"></i> Thêm sản phẩm mới
+            </a>
+        </div>
+        <div class="box-body">
+            <table id="productTable" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th style="width: 50px">Ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Danh mục</th>
+                        <th>Giá bán</th>
+                        <th>Kho</th>
+                        <th>Loại</th>
+                        <th style="width: 100px">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <img src="@(item.MainImage ?? "/images/no-image.png")" 
+                                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;" />
+                            </td>
+                            <td>
+                                <strong>@item.ProductName</strong>
+                                @if (item.IsDiscount == true)
+                                {
+                                    <span class="label label-danger">Sale @item.DiscountPercent%</span>
+                                }
+                            </td>
+                            <td>
+                                @{
+                                    var catName = item.Category?.CategoryName ?? "Chưa phân loại";
+                                    var badgeClass = "label-default";
+                                    if (catName.Contains("Chó")) badgeClass = "label-primary";
+                                    else if (catName.Contains("Mèo")) badgeClass = "label-info";
+                                }
+                                <span class="label @badgeClass">@catName</span>
+                            </td>
+                                <td>
+                                @if (item.IsDiscount == true && item.DiscountPrice.HasValue)
+                                {
+                                    @* Hiện giá gốc nhỏ xíu bị gạch đi *@
+                                    <del class="text-muted" style="font-size: 11px;">@item.Price?.ToString("N0")đ</del><br />
+                                    @* Hiện giá đã giảm (chính là FinalPrice) *@
+                                    <b class="text-danger">@item.FinalPrice.ToString("N0")đ</b>
+                                }
+                                else
+                                {
+                                    @* Không giảm giá thì hiện FinalPrice (lúc này = Price) *@
+                                    <b>@item.FinalPrice.ToString("N0")đ</b>
+                                }
+                            </td>
+                            <td>
+                                @if (item.StockQuantity <= 0) {
+                                    <span class="text-red">Hết hàng</span>
+                                } else {
+                                    <span>@item.StockQuantity</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.IsPet == true) {
+                                    <i class="fa fa-paw text-orange"></i> <span>Pet</span>
+                                } else {
+                                    <i class="fa fa-shopping-bag text-muted"></i> <span>Đồ dùng</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-xs"><i class="fa fa-edit"></i></a>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-xs"><i class="fa fa-eye"></i></a>
+                                <button onclick="confirmDelete(@item.Id)" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#productTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Vietnamese.json"
+                },
+                "order": [[0, "desc"]]
+            });
+        });
+
+        function confirmDelete(id) {
+            if(confirm("Ông có chắc muốn xóa sản phẩm này?")) {
+            $.post('/Admin/Product/Delete/' + id, function(data) {
+                if(data.success) {
+                    location.reload();
+                } else {
+                    alert("Lỗi khi xóa!");
+                }
+        });
+    }
+}
+    </script>
+}

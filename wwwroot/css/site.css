@@ -1,6 +1,14 @@
 ﻿body {
     font-family: 'Roboto', sans-serif !important;
+
 }
+
+a{
+    color: #007bff;
+    text-decoration: none;
+    font-weight:bold;
+}
+
 /* Container chính: Chiếm trọn chiều cao còn lại của trình duyệt */
 .admin-chat-wrapper {
     display: flex;

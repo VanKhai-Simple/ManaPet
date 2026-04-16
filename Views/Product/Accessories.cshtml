@@ -1,0 +1,75 @@
+﻿@model IEnumerable<Petshop_frontend.Models.Product>
+
+<style>
+    /* Card sản phẩm */
+    .product-card {
+        transition: all 0.3s ease-in-out;
+    }
+
+        .product-card:hover {
+            transform: translateY(-5px); /* Nhấc nhẹ card lên */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.12) !important;
+        }
+
+    /* Overlay chứa nút bấm */
+    .add-to-cart-overlay {
+        position: absolute;
+        bottom: -50px; /* Ban đầu giấu nút ở dưới đáy */
+        left: 0;
+        right: 0;
+        transition: all 0.3s ease;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+    /* Khi hover vào card thì đẩy nút lên */
+    .product-card:hover .add-to-cart-overlay {
+        bottom: 0;
+    }
+
+    /* Hiệu ứng ảnh khi hover (phóng to nhẹ) */
+    .product-img img {
+        transition: transform 0.5s ease;
+    }
+
+    .product-card:hover .product-img img {
+        transform: scale(1.05);
+    }
+
+    .product-name {
+        font-size: 14px;
+        height: 40px; /* Giới hạn độ cao để đều card */
+        overflow: hidden;
+    }
+</style>
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-uppercase">@ViewBag.CategoryName</h2>
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="product-card position-relative overflow-hidden shadow-sm rounded bg-white">
+                    <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none text-dark">
+                        <div class="product-img">
+                            <img src="@item.MainImage" class="img-fluid w-100" style="height: 250px; object-fit: cover;">
+                        </div>
+                        <div class="product-info p-3 text-center">
+                            <h6 class="product-name fw-bold mb-1">@item.ProductName</h6>
+                            <p class="product-price text-danger mb-0">
+                                Giá: @(item.Price > 0 ? string.Format("{0:N0}đ", item.Price) : "Liên hệ")
+                            </p>
+                        </div>
+                    </a>
+
+                    <div class="add-to-cart-overlay">
+                        <button class="btn btn-primary w-100 py-2 btn-add-cart" data-id="@item.Id">
+                            <i class="fa fa-shopping-cart"></i> THÊM VÀO GIỎ
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

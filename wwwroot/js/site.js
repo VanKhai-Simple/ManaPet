@@ -47,6 +47,22 @@ if (window.location.hash && window.location.hash == '#_=_') {
 }
 
 
+$(document).ready(function () {
+    function updateCartCount() {
+        $.get('/Cart/GetMiniCart', function (data) {
+            if (data && data.totalQty > 0) {
+                $('#cart-badge').text(data.totalQty).show();
+            } else {
+                $('#cart-badge').hide();
+            }
+        }).fail(function () {
+            $('#cart-badge').hide(); // Lỗi hoặc chưa login thì ẩn luôn
+        });
+    }
+
+    // Chạy ngay khi load trang
+    updateCartCount();
+});
 //Chat box
 // --- CHAT SYSTEM CLIENT ---
 

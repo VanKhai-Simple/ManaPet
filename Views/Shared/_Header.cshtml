@@ -7,13 +7,13 @@
                 <i class="fas fa-map-marker-alt"></i> Cửa Hàng Miền Bắc: Số 428 Minh Khai, Quận Hai Bà Trưng, Tp.Hà Nội.
             </div>
             <div class="social-icons">
-                <a href="#" class="text-white me-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Facebook của Mana Pet">
+                <a href="https://www.facebook.com/van.giun.1" class="text-white me-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Facebook của Mana Pet">
                     <i class="fab fa-facebook"></i>
                 </a>
-                <a href="#" class="text-white me-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Theo dõi TikTok">
+                <a href="https://www.tiktok.com/search?q=C%C3%B2n%20g%C3%AC%20%C4%91%E1%BA%B9p%20h%C6%A1n&t=1772081177045" class="text-white me-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Theo dõi TikTok">
                     <i class="fab fa-tiktok"></i>
                 </a>
-                <a href="#" class="text-white me-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Kênh Youtube">
+                <a href="https://www.youtube.com/watch?v=-nJ0WHEetsQ&list=RD-nJ0WHEetsQ&start_radio=1" class="text-white me-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Kênh Youtube">
                     <i class="fab fa-youtube"></i>
                 </a>
                 <a href="tel:0123456789" class="text-white" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Gọi ngay cho chúng tôi">
@@ -54,10 +54,20 @@
 
                             @* 2. Menu chính *@
                             <ul class="navbar-nav justify-content-start flex-grow-1">
-                                <li class="nav-item border-bottom"><a class="nav-link text-dark py-3" href="/">🏠 TRANG CHỦ</a></li>
-                                <li class="nav-item border-bottom"><a class="nav-link text-dark py-3" href="/cho-canh">🐶 CHÓ CẢNH</a></li>
-                                <li class="nav-item border-bottom"><a class="nav-link text-dark py-3" href="/meo-canh">🐱 MÈO CẢNH</a></li>
-                                <li class="nav-item border-bottom"><a class="nav-link text-dark py-3" href="/phu-kien">✂️ PHỤ KIỆN</a></li>
+                                <li class="nav-item border-bottom">
+                                    <a class="nav-link text-dark py-3" asp-controller="Home" asp-action="Index">🏠 TRANG CHỦ</a>
+                                </li>
+                                <li class="nav-item border-bottom">
+                                    @* Giả sử ông có hàm ChoCanh và MeoCanh lọc theo IsPet *@
+                                    <a class="nav-link text-dark py-3" asp-controller="Product" asp-action="ChoCanh">🐶 CHÓ CẢNH</a>
+                                </li>
+                                <li class="nav-item border-bottom">
+                                    <a class="nav-link text-dark py-3" asp-controller="Product" asp-action="MeoCanh">🐱 MÈO CẢNH</a>
+                                </li>
+                                <li class="nav-item border-bottom">
+                                    @* Đây là trang Phụ kiện ông vừa fix xong *@
+                                    <a class="nav-link text-dark py-3" asp-controller="Product" asp-action="Accessories">🦴 PHỤ KIỆN</a>
+                                </li>
                             </ul>
 
                             @* 3. Đăng nhập / Đăng ký trong Side-bar (Mobile) *@
@@ -130,7 +140,9 @@
                             </li>
 
                             <li class="nav-item dropdown mega-menu-hover ms-3">
-                                <a class="nav-link dropdown-toggle" href="/phu-kien">✂️ PHỤ KIỆN</a>
+                                <a class="nav-link dropdown-toggle" asp-controller="Product" asp-action="Accessories">
+                                    ✂️ PHỤ KIỆN
+                                </a>
                                 <div class="dropdown-menu mega-content-green border-0 p-4 shadow">
                                     <div class="row" style="min-width: 900px;">
                                         <div class="col-md-6 border-end border-light border-opacity-25">
@@ -212,9 +224,14 @@
                     </div>
 
                     @* Giỏ hàng *@
-                    <div class="cart-icon text-white fs-4 position-relative cursor-pointer">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">0</span>
+                    @* Giỏ hàng bình yên *@
+                    <div class="cart-wrapper d-inline-block py-2 ms-3">
+                        <a href="/Cart" class="cart-icon text-white fs-4 position-relative text-decoration-none">
+                            <i class="fas fa-shopping-cart"></i>
+                            @* Badge này sẽ tự nhảy số khi có script chạy *@
+                            <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                  style="font-size: 0.65rem; padding: 0.35em 0.65em; display: none;">0</span>
+                        </a>
                     </div>
                 </div>
             </div>

@@ -1,0 +1,290 @@
+﻿@model Petshop_frontend.Models.Product
+@{
+    ViewData["Title"] = "Chỉnh sửa sản phẩm";
+    Layout = "_AdminLayout";
+}
+
+<section class="content-header">
+    <h1>Chỉnh sửa: <small>@Model.ProductName</small></h1>
+</section>
+
+<section class="content">
+    @* Thêm tóm tắt lỗi tổng quát ở đầu form (nếu có) *@
+    @* <div asp-validation-summary="ModelOnly" class="text-danger"></div> *@
+
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="MainImage" />
+        <input type="hidden" asp-for="CreatedAt" />
+
+        <div class="row">
+            <div class="col-md-7">
+                <div class="box box-warning">
+                    <div class="box-header with-border"><h3 class="box-title">Thông tin cơ bản</h3></div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label>Tên sản phẩm (*) <span class="text-danger">*</span></label>
+                            <input asp-for="ProductName" class="form-control" />
+                            @* Thêm dòng này *@
+                            <span asp-validation-for="ProductName" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Danh mục (*)</label>
+                                    <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId">
+                                        <option value="">-- Chọn danh mục --</option>
+                                    </select>
+                                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6" style="padding-top:25px">
+                                <label>
+                                    <input type="checkbox" name="IsPet" id="isPetCheckbox" value="true" @(Model.IsPet == true ? "checked" : "") />
+                                    <input type="hidden" name="IsPet" value="false" />
+                                    Sản phẩm là Thú cưng
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Giá gốc (VNĐ) (*)</label>
+                                    <input asp-for="Price" type="number" class="form-control" />
+                                    <span asp-validation-for="Price" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Số lượng kho (*)</label>
+                                    <input asp-for="StockQuantity" type="number" class="form-control" />
+                                    <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Ảnh chính hiện tại</label>
+                            <div style="margin-bottom: 10px;">
+                                <img src="@Model.MainImage" width="150" class="img-thumbnail" />
+                            </div>
+                            <label>Thay đổi ảnh chính (Bỏ trống nếu giữ nguyên)</label>
+                            <input type="file" name="mainImageFile" class="form-control" accept="image/*" />
+                            <span asp-validation-for="MainImage" class="text-danger"></span>
+                        </div>
+
+                        @* --- Phần Album ảnh (Giữ nguyên logic Xóa đã bàn) --- *@
+                        <div class="form-group">
+                            <label>Album ảnh hiện tại</label>
+                            <div class="row" id="album-images" style="min-height: 50px; background: #f9f9f9; border: 1px dashed #ddd; padding: 10px; border-radius: 5px;">
+                                @if (Model.ProductImages != null && Model.ProductImages.Any())
+                                {
+                                    @foreach (var img in Model.ProductImages)
+                                    {
+                                        <div class="col-md-3" id="img-container-@img.Id" style="margin-bottom:10px;">
+                                            <div style="position:relative; display:inline-block; width: 100%;">
+                                                <img src="@img.ImageUrl" class="img-thumbnail" style="width:100%; height:120px; object-fit:cover;" />
+                                                <button type="button" class="btn btn-danger btn-xs" style="position:absolute; top:5px; right:5px;" onclick="deleteImage(@img.Id)">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-12 text-center" id="no-image-msg">
+                                        <p class="text-muted" style="margin-top: 10px;"><i class="fa fa-picture-o"></i> Chưa có album ảnh.</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Thêm ảnh mới vào album</label>
+                            <input type="file" name="moreImages" class="form-control" accept="image/*" multiple />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box box-danger">
+                    <div class="box-header with-border"><h3 class="box-title">Giảm giá</h3></div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>
+                                    <input type="checkbox" name="IsDiscount" id="isDiscountCheckbox" value="true" @(Model.IsDiscount == true ? "checked" : "") />
+                                    <input type="hidden" name="IsDiscount" value="false" />
+                                    Kích hoạt giảm giá
+                                </label>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label>Phần trăm giảm (%)</label>
+                                    <input asp-for="DiscountPercent" type="number" class="form-control" />
+                                    <span asp-validation-for="DiscountPercent" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Cột thông tin thú cưng *@
+            <div class="col-md-5" id="petFields" style="@(Model.IsPet == true ? "" : "display:none;")">
+                <div class="box box-primary">
+                    <div class="box-header with-border"><h3 class="box-title">Đặc điểm thú cưng</h3></div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Tháng tuổi</label>
+                                    <input asp-for="AgeMonths" class="form-control" placeholder="Tháng tuổi" />
+                                    <span asp-validation-for="AgeMonths" class="text-danger"></span>
+
+                                </div></div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Giới tính</label>
+                                    <select asp-for="Gender" class="form-control">
+                                        <option value="true">Đực</option>
+                                        <option value="false">Cái</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group"><label>Màu lông</label><input asp-for="FurColor" class="form-control" placeholder="Màu lông" /></div>
+                        <div class="form-group">
+                            <label>Thông tin bố mẹ</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input asp-for="FatherInfo" class="form-control" placeholder="Tên chó bố" />
+                                </div>
+                                <div class="col-md-6">
+                                    <input asp-for="MotherInfo" class="form-control" placeholder="Tên chó mẹ" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Tính cách</label>
+                            <textarea asp-for="Character" class="form-control" rows="2" placeholder="Tính cách"></textarea>
+                        </div>
+                        <div class="form-group"><label>Nguồn gốc</label><input asp-for="Origin" class="form-control" placeholder="Nguồn gốc" /></div>
+                        <div class="form-group"><label>Sức khỏe</label><input asp-for="HealthStatus" class="form-control" placeholder="Sức khỏe" /></div>
+                        <div class="form-group"><label>Tình trạng</label><input asp-for="Condition" class="form-control" placeholder="Tình trạng" /></div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" name="Dewormed" value="true" @(Model.Dewormed == true ? "checked" : "") />
+                                <input type="hidden" name="Dewormed" value="false" />
+                                Đã tẩy giun
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			<div class="col-md-12">
+				<div class="box box-info">
+					<div class="box-header with-border">
+						<h3 class="box-title">Mô tả chi tiết sản phẩm</h3>
+					</div>
+					<div class="box-body">
+						<div class="form-group">
+							@* Dùng textarea để CKEditor đè lên *@
+							<textarea asp-for="FullDescription" id="editor" class="form-control"></textarea>
+							<span asp-validation-for="FullDescription" class="text-danger"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+            <div class="col-md-12">
+                <div class="box-footer" style="background: transparent;">
+                    <button type="submit" class="btn btn-primary btn-lg">Cập nhật sản phẩm</button>
+                    <a asp-action="Index" class="btn btn-default btn-lg">Hủy bỏ</a>
+                </div>
+            </div>
+        </div>
+     
+    </form>
+</section>
+
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+
+	<script>
+		// Logic ẩn/hiện trường thú cưng khi click checkbox
+		$('#isPetCheckbox').change(function() {
+			if(this.checked) $('#petFields').fadeIn();
+			else $('#petFields').fadeOut();
+		});
+	</script>
+    <script>
+        $(document).ready(function () {
+            // Logic ẩn hiện khung Pet
+            $('#isPetCheckbox').change(function () {
+                if ($(this).is(':checked')) $('#petFields').slideDown();
+                else $('#petFields').slideUp();
+            });
+        });
+
+        // Hàm xem trước ảnh khi chọn file mới
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#preview').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function deleteImage(imageId) {
+            if (confirm("Ông giáo chắc chắn muốn xóa ảnh này chứ?")) {
+                $.ajax({
+                    url: '/Admin/Product/DeleteImage', // Đường dẫn tới hàm xóa trong Controller
+                    type: 'POST',
+                    data: { id: imageId },
+                    success: function (response) {
+                        if (response.success) {
+                            $("#img-container-" + imageId).fadeOut(300, function() {
+                                $(this).remove();
+
+                                // Nếu sau khi xóa mà không còn cái ảnh nào (.col-md-3) thì hiện thông báo rỗng
+                                if ($("#album-images .col-md-3").length == 0) {
+                                    $("#album-images").append('<div class="col-md-12 text-center" id="no-image-msg"><p class="text-muted" style="margin-top: 10px;"><i class="fa fa-picture-o"></i> Sản phẩm này chưa có album ảnh bổ sung.</p></div>');
+                                }
+                            });
+                        } else {
+                            alert(response.message);
+                        }
+                    }
+                });
+            }
+        }
+
+    </script>
+
+    <script src="https://cdn.ckeditor.com/4.25.1-lts/standard/ckeditor.js"></script>
+
+    <script>
+        // Kích hoạt bộ soạn thảo cho cái id="editor"
+        CKEDITOR.replace('editor', {
+            height: 300,
+            removeButtons: 'PasteFromWord' // Tùy chỉnh nút nếu muốn
+        });
+
+        // Logic ẩn/hiện trường thú cưng cũ của ông giữ nguyên ở đây
+        $('#isPetCheckbox').change(function() {
+            if(this.checked) $('#petFields').fadeIn();
+            else $('#petFields').fadeOut();
+        });
+    </script>
+}
