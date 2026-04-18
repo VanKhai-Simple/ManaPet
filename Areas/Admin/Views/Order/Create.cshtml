@@ -1,0 +1,196 @@
+@model Petshop_frontend.Models.Order
+
+@{
+    ViewData["Title"] = "Tạo đơn hàng mới";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Tạo đơn hàng mới
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="/Admin/Home"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="/Admin/Order">Quản lý đơn hàng</a></li>
+        <li class="active">Tạo mới</li>
+    </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <form method="post" action="@Url.Action("Create")">
+        @Html.AntiForgeryToken()
+        <div class="row">
+            <!-- Khu vực 1: Thông tin khách hàng & Đơn hàng -->
+            <div class="col-md-5">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Thông tin giao hàng</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label>Khách hàng *</label>
+                            <select name="CustomerId" id="customerSelect" class="form-control" onchange="toggleNewCustomer()">
+                                <option value="0">-- Khách hàng mới (Nhập thông tin bên dưới) --</option>
+                                @if(ViewBag.Customers != null)
+                                {
+                                    foreach(var c in ViewBag.Customers)
+                                    {
+                                        <option value="@c.Id">@c.FullName (@c.Phone)</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div id="newCustomerFields" style="background: #f9f9f9; padding: 10px; border: 1px dashed #ccc; margin-bottom: 15px;">
+                            <div class="form-group">
+                                <label>Tên khách hàng *</label>
+                                <input type="text" name="NewCustomerName" id="newCustomerName" class="form-control" placeholder="Nhập tên khách hàng" />
+                            </div>
+                            <div class="form-group mb-0">
+                                <label>Số điện thoại *</label>
+                                <input type="text" name="NewCustomerPhone" id="newCustomerPhone" class="form-control" placeholder="Nhập sđt khách" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Địa chỉ giao hàng *</label>
+                            <input type="text" name="ShippingAddress" class="form-control" required placeholder="Nhập địa chỉ giao hàng chi tiết..." />
+                        </div>
+                        <div class="form-group">
+                            <label>Phương thức thanh toán</label>
+                            <select name="PaymentMethod" class="form-control">
+                                <option value="COD">COD (Thanh toán khi nhận hàng)</option>
+                                <option value="Chuyển khoản">Chuyển khoản / Banking</option>
+                                <option value="Ví điện tử">Ví điện tử (Momo, ZaloPay...)</option>
+                            </select>
+                        </div>
+                        <hr/>
+                        <div class="form-group">
+                            <label>Phí giao hàng</label>
+                            <input type="number" name="ShippingFee" id="shippingFee" class="form-control" value="0" min="0" onchange="calculateTotal()" />
+                        </div>
+                        <div class="form-group">
+                            <label>Giảm giá</label>
+                            <input type="number" name="Discount" id="discount" class="form-control" value="0" min="0" onchange="calculateTotal()" />
+                        </div>
+                        <div class="form-group">
+                            <label>Ghi chú của khách</label>
+                            <textarea name="Note" class="form-control" rows="2"></textarea>
+                        </div>
+                        <h4 class="text-red mt-4" style="font-weight:bold; margin-top:20px;">
+                            Tổng cộng: <span id="grandTotal">0</span> đ
+                        </h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khu vực 2: Chọn sản phẩm -->
+            <div class="col-md-7">
+                <div class="box box-success">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Sản phẩm / Thú cưng</h3>
+                    </div>
+                    <div class="box-body">
+                        <div id="productList">
+                            <!-- Sản phẩm động sẽ được thêm ở đây -->
+                            <div class="row product-row" style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f4f4f4;">
+                                <div class="col-md-6">
+                                    <label>Chọn thú cưng/sản phẩm *</label>
+                                    <select name="ProductIds[]" class="form-control product-select" required onchange="setPrice(this); calculateTotal();">
+                                        <option value="" data-price="0">-- Chọn sản phẩm --</option>
+                                        @if(ViewBag.Products != null)
+                                        {
+                                            foreach(var p in ViewBag.Products)
+                                            {
+                                                <option value="@p.Id" data-price="@p.FinalPrice">@p.ProductName (@p.FinalPrice.ToString("N0")đ)</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Số lượng *</label>
+                                    <input type="number" name="Quantities[]" class="form-control qty-input" value="1" min="1" required onchange="calculateTotal();" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Đơn giá</label>
+                                    <input type="number" name="Prices[]" class="form-control price-input" value="0" readonly />
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-default btn-sm mt-2" id="btnAddProduct" style="margin-top: 10px;">
+                            <i class="fa fa-plus"></i> Thêm sản phẩm khác
+                        </button>
+                    </div>
+                    <div class="box-footer text-right">
+                        <a href="@Url.Action("Index")" class="btn btn-default pull-left">Hủy bỏ</a>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Xác nhận Tạo đơn</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <script>
+        function toggleNewCustomer() {
+            var val = $('#customerSelect').val();
+            if (val == "0") {
+                $('#newCustomerFields').show();
+                $('#newCustomerName').prop('required', true);
+                $('#newCustomerPhone').prop('required', true);
+            } else {
+                $('#newCustomerFields').hide();
+                $('#newCustomerName').prop('required', false);
+                $('#newCustomerPhone').prop('required', false);
+            }
+        }
+
+        $(document).ready(function () {
+            toggleNewCustomer();
+
+            // Khi thêm mới 1 row
+            $('#btnAddProduct').click(function () {
+                var firstRowInfo = $('.product-row').first().clone();
+                // Reset value
+                firstRowInfo.find('.product-select').val('');
+                firstRowInfo.find('.qty-input').val('1');
+                firstRowInfo.find('.price-input').val('0');
+
+                // Thêm nút xóa nếu đây là hàng mới
+                if(firstRowInfo.find('.btnRemoveProduct').length === 0) {
+                     firstRowInfo.append('<div class="col-md-12 text-right" style="margin-top: 10px;"><button type="button" class="btn btn-xs btn-danger btnRemoveProduct">Xóa dòng này</button></div>');
+                }
+
+                $('#productList').append(firstRowInfo);
+            });
+
+            // Khi xóa row
+            $(document).on('click', '.btnRemoveProduct', function () {
+                $(this).closest('.product-row').remove();
+                calculateTotal();
+            });
+        });
+
+        function setPrice(selectElement) {
+            var selectedOption = $(selectElement).find('option:selected');
+            var price = selectedOption.data('price') || 0;
+            var row = $(selectElement).closest('.product-row');
+            row.find('.price-input').val(price);
+        }
+
+        function calculateTotal() {
+            var subtotal = 0;
+            $('.product-row').each(function () {
+                var qty = parseFloat($(this).find('.qty-input').val()) || 0;
+                var price = parseFloat($(this).find('.price-input').val()) || 0;
+                subtotal += (qty * price);
+            });
+
+            var shipping = parseFloat($('#shippingFee').val()) || 0;
+            var discount = parseFloat($('#discount').val()) || 0;
+            var grandTotal = subtotal + shipping - discount;
+
+            $('#grandTotal').text(new Intl.NumberFormat('vi-VN').format(grandTotal));
+        }
+    </script>
+}

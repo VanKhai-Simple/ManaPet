@@ -1,0 +1,969 @@
+/* ========================================
+   MANA PET - HOME PREMIUM CSS
+   File: wwwroot/css/home-premium.css
+======================================== */
+
+/* =========================
+   1) RESET / BASE
+========================= */
+html,
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body,
+body.layout-body {
+    font-family: 'Roboto', 'Inter', sans-serif;
+    color: #2d3748;
+    background-color: #f7fafc;
+    margin: 0;
+    padding: 0;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+a {
+    text-decoration: none;
+}
+
+.main-content,
+main.main-content {
+    width: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* bỏ khoảng trắng phía dưới header */
+.main-header,
+.top-bar,
+.navbar {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.main-content>section:first-child {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* =========================
+   2) BIẾN MÀU / BIẾN DÙNG CHUNG (CẬP NHẬT THEO UI/UX MANA PET)
+========================= */
+:root {
+    --c-primary: #F47C2A;
+    --c-primary-hover: #D6671E;
+    --c-secondary: #FFA45B;
+    --c-bg: #F7EEDB;
+    --c-bg-light: #FFFAEF;
+    --c-white: #FFFFFF;
+    --c-text: #4A3B2F;
+    --c-text-muted: #8E7A69;
+    --c-border: #E8E2D9;
+
+    /* Accent Colors (Cats Category) */
+    --c-accent-peach: #F7C9A9;
+    --c-accent-pink: #F8E7DE;
+    --c-accent-yellow: #F4E2A3;
+
+    --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.05);
+    --shadow-medium: 0 10px 25px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 15px 35px rgba(244, 124, 42, 0.15); /* Bóng đổ cam nhạt đặc trưng */
+
+    --border-radius: 16px; /* Bo góc mượt mà */
+    --border-radius-lg: 24px;
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+body {
+    color: var(--c-text);
+    background-color: var(--c-bg-light); /* Màu nền be dịu toàn trang */
+}
+/* =========================
+   3) TYPOGRAPHY
+========================= */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-weight: 700;
+}
+
+p {
+    margin-top: 0;
+}
+
+/* =========================
+   4) DEBUG PANEL
+========================= */
+.dev-debug-panel {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 1000;
+    max-width: 280px;
+    max-height: 180px;
+    overflow-y: auto;
+
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(203, 213, 224, 0.8);
+
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-soft);
+
+    font-size: 0.8rem;
+    opacity: 0.3;
+    transition: opacity 0.25s ease;
+}
+
+.dev-debug-panel:hover {
+    opacity: 1;
+}
+
+/* =========================
+   5) HERO SECTION
+   - Ảnh full ngang
+   - Chữ ở giữa phía dưới ảnh
+========================= */
+.hero-section {
+    position: relative;
+    width: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent;
+}
+
+.hero-banner {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 95px);
+    min-height: 540px;
+    max-height: 920px;
+    overflow: hidden;
+    line-height: 0;
+}
+
+.hero-banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    display: block;
+}
+
+/* lớp phủ tối nhẹ giúp chữ nổi bật hơn */
+.hero-banner::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(to top,
+            rgba(0, 0, 0, 0.58) 0%,
+            rgba(0, 0, 0, 0.24) 34%,
+            rgba(0, 0, 0, 0.10) 58%,
+            rgba(0, 0, 0, 0.02) 100%);
+}
+
+.hero-overlay {
+    position: absolute;
+    left: 50%;
+    bottom: 42px;
+    transform: translateX(-50%);
+    z-index: 2;
+
+    width: 100%;
+    max-width: 980px;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.premium-title {
+    margin-bottom: 12px;
+    font-size: 3.25rem;
+    font-weight: 800;
+    line-height: 1.18;
+    color: #ffffff;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.premium-subtitle {
+    max-width: 780px;
+    margin: 0 auto 22px;
+
+    font-size: 1.15rem;
+    line-height: 1.75;
+    color: #ffffff;
+    text-shadow: 0 3px 12px rgba(0, 0, 0, 0.30);
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 14px 32px;
+    border: none;
+    border-radius: 999px;
+
+    background: linear-gradient(135deg, var(--secondary-color), var(--secondary-hover));
+    color: #ffffff;
+
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: normal;
+
+    box-shadow: 0 10px 24px rgba(246, 173, 85, 0.38);
+    transition: var(--transition);
+}
+
+.cta-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px rgba(246, 173, 85, 0.48);
+    color: #ffffff;
+}
+
+/* =========================
+   6) MANA INTRO SECTION
+   - card text + slideshow auto
+========================= */
+.mana-intro-section {
+    position: relative;
+    overflow: hidden;
+    padding: 90px 0;
+    background: linear-gradient(180deg, #eaf6ff 0%, #dff1ff 100%);
+}
+
+.mana-intro-section::before {
+    content: "";
+    position: absolute;
+    top: -80px;
+    left: -80px;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: rgba(43, 108, 176, 0.08);
+    filter: blur(30px);
+}
+
+.mana-intro-section::after {
+    content: "";
+    position: absolute;
+    right: -60px;
+    bottom: -60px;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background: rgba(246, 173, 85, 0.10);
+    filter: blur(30px);
+}
+
+.mana-intro-shell {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    padding: 0 24px;
+}
+
+.mana-intro-layout {
+    max-width: 1280px;
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 34px;
+}
+
+/* =========================
+   6.1) TEXT CARD
+========================= */
+.mana-intro-card {
+    position: relative;
+    flex: 0 0 430px;
+    max-width: 430px;
+    margin-left: 14px;
+
+    padding: 34px 30px;
+    border-radius: 28px;
+    border: 1px solid rgba(43, 108, 176, 0.08);
+
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 18px 45px rgba(43, 108, 176, 0.10);
+    overflow: hidden;
+}
+
+.mana-intro-card::before {
+    content: "";
+    position: absolute;
+    top: -42px;
+    right: -18px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: rgba(246, 173, 85, 0.14);
+    filter: blur(10px);
+}
+
+.mana-intro-card::after {
+    content: "";
+    position: absolute;
+    left: -24px;
+    bottom: -34px;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: rgba(43, 108, 176, 0.10);
+    filter: blur(10px);
+}
+
+.mana-intro-badge {
+    position: relative;
+    z-index: 2;
+    display: inline-block;
+
+    margin-bottom: 12px;
+    padding: 7px 15px;
+    border-radius: 999px;
+
+    background: linear-gradient(135deg, rgba(43, 108, 176, 0.12), rgba(246, 173, 85, 0.16));
+    color: var(--primary-color);
+
+    font-size: 0.86rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.mana-intro-title {
+    position: relative;
+    z-index: 2;
+
+    margin: 0 0 16px;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--primary-color);
+}
+
+.mana-intro-text {
+    position: relative;
+    z-index: 2;
+
+    margin: 0 0 14px;
+    font-size: 1rem;
+    line-height: 1.85;
+    color: #5f7185;
+}
+
+.mana-intro-text strong {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+/* =========================
+   6.2) SLIDER CARD
+========================= */
+.mana-slider-card {
+    position: relative;
+    flex: 0 0 640px;
+    max-width: 640px;
+    margin-right: 12px;
+
+    padding: 16px;
+    border-radius: 30px;
+    border: 1px solid rgba(43, 108, 176, 0.08);
+
+    background: rgba(255, 255, 255, 0.82);
+    box-shadow: 0 20px 48px rgba(33, 92, 164, 0.13);
+    backdrop-filter: blur(8px);
+}
+
+.mana-slider-card::before {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    z-index: 0;
+    border-radius: 34px;
+
+    background: linear-gradient(135deg, rgba(43, 108, 176, 0.10), rgba(246, 173, 85, 0.10));
+    filter: blur(16px);
+    opacity: 0.7;
+}
+
+.mana-slider-frame {
+    position: relative;
+    z-index: 2;
+
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+
+    border-radius: 24px;
+    background: #dcefff;
+    box-shadow: 0 15px 36px rgba(0, 0, 0, 0.14);
+}
+
+.mana-slider-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+
+    background: linear-gradient(to top,
+            rgba(0, 0, 0, 0.16) 0%,
+            rgba(0, 0, 0, 0.06) 40%,
+            rgba(0, 0, 0, 0.04) 100%);
+}
+
+/* slides */
+.mana-slide {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    opacity: 0;
+    transform: scale(1.03);
+
+    animation-name: manaFadeSlide;
+    animation-duration: 25s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+}
+
+.mana-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    display: block;
+}
+
+.mana-slide-1 {
+    animation-delay: 0s;
+}
+
+.mana-slide-2 {
+    animation-delay: 5s;
+}
+
+.mana-slide-3 {
+    animation-delay: 10s;
+}
+
+.mana-slide-4 {
+    animation-delay: 15s;
+}
+
+.mana-slide-5 {
+    animation-delay: 20s;
+}
+
+/* =========================
+   6.3) DOTS
+========================= */
+.mana-slider-dots {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    margin-top: 16px;
+}
+
+.mana-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+    animation-name: manaDotPulse;
+    animation-duration: 25s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+}
+
+.mana-dot-1 {
+    animation-delay: 0s;
+}
+
+.mana-dot-2 {
+    animation-delay: 5s;
+}
+
+.mana-dot-3 {
+    animation-delay: 10s;
+}
+
+.mana-dot-4 {
+    animation-delay: 15s;
+}
+
+.mana-dot-5 {
+    animation-delay: 20s;
+}
+
+/* =========================
+   6.4) CAPTION DƯỚI SLIDESHOW
+========================= */
+.mana-slider-caption {
+    position: relative;
+    z-index: 2;
+    max-width: 92%;
+    margin: 18px auto 4px;
+    text-align: center;
+
+    font-family: 'Be Vietnam Pro', 'Roboto', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.8;
+    letter-spacing: 0.1px;
+    color: #3f5874;
+}
+
+.mana-slider-caption span {
+    color: #2b6cb0;
+    font-weight: 800;
+    font-style: normal;
+}
+
+/* =========================
+   7) SERVICES SECTION
+========================= */
+.services-section {
+    padding: 84px 0;
+    background: #eef5fb;
+}
+
+.services-grid {
+    max-width: 1250px;
+    margin: 0 auto;
+    padding: 0 20px;
+
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+}
+
+.service-card {
+    position: relative;
+    overflow: hidden;
+
+    padding: 38px 28px;
+    border-radius: 22px;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+
+    background: #ffffff;
+    text-align: center;
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition);
+}
+
+.service-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 4px;
+    transform: scaleX(0);
+    transform-origin: left;
+
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    transition: transform 0.35s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+}
+
+.service-card:hover::before {
+    transform: scaleX(1);
+}
+
+.service-icon {
+    margin-bottom: 22px;
+    font-size: 2.9rem;
+    color: var(--secondary-color);
+}
+
+.service-card h3 {
+    margin-bottom: 14px;
+    font-size: 1.45rem;
+    color: var(--text-main);
+}
+
+.service-card p {
+    margin-bottom: 0;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+}
+
+/* =========================
+   8) ANIMATION
+========================= */
+@keyframes manaFadeSlide {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    16% {
+        opacity: 1;
+        transform: scale(1.01);
+    }
+
+    20% {
+        opacity: 0;
+        transform: scale(1.03);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1.03);
+    }
+}
+
+@keyframes manaDotPulse {
+    0% {
+        background: rgba(255, 255, 255, 0.95);
+        transform: scale(1);
+    }
+
+    16% {
+        background: #1f2937;
+        transform: scale(1.2);
+    }
+
+    20% {
+        background: rgba(255, 255, 255, 0.95);
+        transform: scale(1);
+    }
+
+    100% {
+        background: rgba(255, 255, 255, 0.95);
+        transform: scale(1);
+    }
+}
+
+/* =========================
+   9) RESPONSIVE
+========================= */
+@media (max-width: 1200px) {
+    .premium-title {
+        font-size: 2.8rem;
+    }
+
+    .mana-intro-layout {
+        max-width: 1120px;
+        gap: 28px;
+    }
+
+    .mana-intro-card {
+        flex: 0 0 390px;
+        max-width: 390px;
+        margin-left: 0;
+    }
+
+    .mana-slider-card {
+        flex: 0 0 560px;
+        max-width: 560px;
+        margin-right: 0;
+    }
+
+    .mana-slider-frame {
+        height: 350px;
+    }
+
+    .mana-slider-caption {
+        font-size: 1.08rem;
+    }
+
+    .services-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 992px) {
+    .hero-banner {
+        height: 78vh;
+        min-height: 500px;
+    }
+
+    .premium-title {
+        font-size: 2.4rem;
+    }
+
+    .premium-subtitle {
+        font-size: 1.05rem;
+    }
+
+    .mana-intro-layout {
+        flex-direction: column;
+        max-width: 900px;
+        gap: 24px;
+    }
+
+    .mana-intro-card,
+    .mana-slider-card {
+        width: 100%;
+        max-width: 100%;
+        flex: 1 1 auto;
+        margin: 0;
+    }
+
+    .mana-slider-frame {
+        height: 360px;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-banner {
+        height: 70vh;
+        min-height: 420px;
+    }
+
+    .hero-overlay {
+        bottom: 24px;
+        padding: 0 16px;
+    }
+
+    .premium-title {
+        font-size: 2rem;
+    }
+
+    .premium-subtitle {
+        margin-bottom: 16px;
+        font-size: 1rem;
+        line-height: 1.65;
+    }
+
+    .cta-button {
+        padding: 12px 24px;
+        font-size: 0.95rem;
+    }
+
+    .mana-intro-section {
+        padding: 70px 0;
+    }
+
+    .mana-intro-shell {
+        padding: 0 16px;
+    }
+
+    .mana-intro-card {
+        padding: 26px 22px;
+    }
+
+    .mana-intro-title {
+        font-size: 1.75rem;
+    }
+
+    .mana-intro-text {
+        font-size: 0.96rem;
+        line-height: 1.75;
+    }
+
+    .mana-slider-card {
+        padding: 12px;
+        border-radius: 24px;
+    }
+
+    .mana-slider-frame {
+        height: 280px;
+        border-radius: 18px;
+    }
+
+    .mana-slider-caption {
+        max-width: 95%;
+        font-size: 1rem;
+    }
+
+    .mana-dot {
+        width: 10px;
+        height: 10px;
+    }
+
+    .services-section {
+        padding: 64px 0;
+    }
+
+    .services-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 0 16px;
+    }
+
+    .service-card {
+        padding: 30px 22px;
+    }
+
+    .service-icon {
+        font-size: 2.5rem;
+    }
+
+    .dev-debug-panel {
+        right: 10px;
+        bottom: 10px;
+        max-width: 220px;
+        font-size: 0.72rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-banner {
+        height: 62vh;
+        min-height: 360px;
+    }
+
+    .premium-title {
+        font-size: 1.65rem;
+    }
+
+    .premium-subtitle {
+        font-size: 0.92rem;
+    }
+
+    .mana-slider-frame {
+        height: 235px;
+    }
+
+    .mana-intro-title {
+        font-size: 1.5rem;
+    }
+
+    .mana-slider-caption {
+        font-size: 0.92rem;
+        line-height: 1.7;
+    }
+}
+
+/* =========================
+   NEW MANA PET UTILITY & UI CLASSES
+========================= */
+
+/* Typography Utils */
+.fw-black { font-weight: 700; letter-spacing: -0.5px; }
+.fs-7 { font-size: 0.85rem; }
+
+/* Override Bootstrap Primary Colors */
+.text-primary { color: var(--c-primary) !important; }
+.bg-primary { background-color: var(--c-primary) !important; }
+.btn-primary { background-color: var(--c-primary) !important; border-color: var(--c-primary) !important; color: white !important; }
+.btn-primary:hover { background-color: var(--c-primary-hover) !important; border-color: var(--c-primary-hover) !important; }
+.btn-outline-primary { border-color: var(--c-primary) !important; color: var(--c-primary) !important; }
+.btn-outline-primary:hover { background-color: var(--c-primary) !important; color: white !important; }
+
+/* Shadow Utils */
+.shadow-soft { box-shadow: var(--shadow-soft) !important; }
+.shadow-medium { box-shadow: var(--shadow-medium) !important; }
+.shadow-hover { box-shadow: var(--shadow-hover) !important; }
+.drop-shadow-2xl { filter: drop-shadow(0 20px 25px rgba(0, 0, 0, 0.15)); }
+
+/* Animations & Transitions */
+.transition-all { transition: var(--transition); }
+.transition-transform { transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
+
+.hover-lift {
+    transition: var(--transition);
+}
+.hover-lift:hover {
+    transform: translateY(-8px) !important;
+    box-shadow: var(--shadow-hover) !important;
+}
+
+/* Category Cards */
+.cat-card:hover {
+    border-color: var(--c-primary) !important;
+}
+.cat-card:hover .cat-img-wrap img {
+    transform: scale(1.1);
+}
+.cat-card:hover .cat-img-wrap i {
+    transform: scale(1.1) rotate(5deg);
+    color: var(--c-primary) !important;
+}
+
+/* Pet & Product Cards */
+.pet-card:hover .pet-img,
+.product-card:hover .product-img,
+.blog-section .card:hover .blog-img {
+    transform: scale(1.08);
+}
+
+.product-card .cart-overlay {
+    backdrop-filter: blur(2px);
+}
+.product-card:hover .cart-overlay {
+    opacity: 1 !important;
+}
+.product-card .cart-overlay button:hover {
+    background-color: var(--c-primary) !important;
+}
+.product-card .cart-overlay button:hover i {
+    color: white !important;
+}
+
+/* Hover Texts */
+.hover-text-primary:hover {
+    color: var(--c-primary) !important;
+}
+
+/* Buttons in Hero */
+.hero-btn-outline:hover {
+    background-color: var(--c-primary) !important;
+    color: white !important;
+}
+
+/* Animations */
+@keyframes slideUpFade {
+    0% { opacity: 0; transform: translate(0, 20px); }
+    100% { opacity: 1; transform: translate(0, 0); }
+}
+.slide-up-anim {
+    animation: slideUpFade 0.8s ease-out forwards;
+    animation-delay: 0.5s;
+    opacity: 0;
+}
+
+/* =========================
+   CAT CATEGORY (MÈO CẢNH)
+========================= */
+.filter-chip {
+    padding: 8px 18px;
+    border-radius: 999px;
+    background-color: var(--c-white);
+    border: 1px solid var(--c-accent-peach);
+    color: var(--c-text);
+    font-weight: 600;
+    transition: var(--transition);
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: inline-block;
+}
+.filter-chip:hover, .filter-chip.active {
+    background-color: var(--c-primary);
+    color: var(--c-white);
+    border-color: var(--c-primary);
+    box-shadow: var(--shadow-soft);
+}
+.bg-peach { background-color: var(--c-accent-peach) !important; color: #7F451F !important; }
+.bg-pink { background-color: var(--c-accent-pink) !important; }
+.bg-yellow-light { background-color: var(--c-accent-yellow) !important; color: #8C6A1F !important;}

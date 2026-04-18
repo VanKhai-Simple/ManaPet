@@ -1,0 +1,64 @@
+@model Petshop_frontend.Models.Expense
+
+@{
+    ViewData["Title"] = "Tạo phiếu chi mới";
+}
+
+<section class="content-header">
+    <h1>
+        Tạo Phiếu Chi Mới
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="/Admin/Home"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="/Admin/Report">Báo cáo tài chính</a></li>
+        <li class="active">Thêm phiếu chi</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Thông tin phiếu chi</h3>
+                </div>
+                <form method="post" action="@Url.Action("CreateExpense")">
+                    @Html.AntiForgeryToken()
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label>Ngày chi</label>
+                            <input type="date" name="ExpenseDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Loại chi phí</label>
+                            <select name="ExpenseType" class="form-control" required>
+                                <option value="Nhập thú cưng">Nhập thú cưng</option>
+                                <option value="Nhập phụ kiện">Nhập phụ kiện</option>
+                                <option value="Vận chuyển">Vận chuyển</option>
+                                <option value="Chăm sóc/Thú y">Chăm sóc / Thú y</option>
+                                <option value="Marketing">Marketing / Quảng cáo</option>
+                                <option value="Khác">Khác...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Số tiền (VNĐ)</label>
+                            <input type="number" name="Amount" class="form-control" min="0" required placeholder="Ví dụ: 500000" />
+                        </div>
+                        <div class="form-group">
+                            <label>Lý do chi (Nội dung)</label>
+                            <input type="text" name="Description" class="form-control" required placeholder="Nhập lý do chi tiền chi tiết..." />
+                        </div>
+                        <div class="form-group">
+                            <label>Ghi chú thêm</label>
+                            <textarea name="Note" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <a href="@Url.Action("Expenses")" class="btn btn-default">Hủy</a>
+                        <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-save"></i> Lưu phiếu chi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

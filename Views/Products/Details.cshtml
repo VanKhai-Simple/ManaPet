@@ -1,0 +1,335 @@
+@model Petshop_frontend.Models.Product
+@{
+    ViewData["Title"] = Model.Origin + " - " + Model.ProductName;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var relatedCats = ViewBag.RelatedCats as List<Petshop_frontend.Models.Product>;
+}
+
+<div class="product-detail-wrapper bg-bg pb-5">
+    <!-- BREADCRUMB -->
+    <div class="bg-white border-bottom shadow-sm">
+        <div class="container py-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 fw-bold fs-7">
+                    <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted transition-all">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted transition-all">Sản phẩm</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Cats" class="text-decoration-none text-muted transition-all">Mèo cảnh</a></li>
+                    <li class="breadcrumb-item active text-primary" aria-current="page">@Model.Origin</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- MAIN HREO DETAIL -->
+    <section class="container mt-4 mb-5">
+        <div class="bg-white rounded-5 shadow-soft p-4 p-lg-5">
+            <div class="row g-5">
+                <!-- LEFT: Image Gallery -->
+                <div class="col-lg-5 col-xl-6">
+                    <div class="position-relative mb-3">
+                        @if (Model.CreatedAt.HasValue && (DateTime.Now - Model.CreatedAt.Value).TotalDays < 14)
+                        {
+                            <div class="position-absolute px-3 py-1 bg-peach rounded-pill fw-bold fs-7 shadow-sm z-2" style="top: 20px; left: 20px;">Mới về</div>
+                        }
+                        else if (Model.StockQuantity < 20)
+                        {
+                            <div class="position-absolute px-3 py-1 bg-warning text-white rounded-pill fw-bold fs-7 shadow-sm z-2" style="top: 20px; left: 20px;">Nổi bật</div>
+                        }
+                        <!-- Ảnh chính lớn -->
+                        <img src="@Model.MainImage" class="w-100 rounded-4 shadow-medium object-fit-cover" style="aspect-ratio: 1/1;" alt="@Model.ProductName" id="mainImageDisplay">
+                    </div>
+                    
+                    <!-- Thumbnails (Dữ liệu thật từ Database) -->
+                    <div class="row g-2 gallery-thumbnails mt-1">
+                        @if (Model.ProductImages != null && Model.ProductImages.Any())
+                        {
+                            bool isFirst = true;
+                            foreach (var img in Model.ProductImages)
+                            {
+                                <div class="col-3">
+                                    <img src="@img.ImageUrl" class="w-100 rounded-3 object-fit-cover cursor-pointer hover-lift @(isFirst ? "border border-2 border-primary opacity-100" : "border border-1 border-muted opacity-75")" style="aspect-ratio: 1/1;" alt="Thumnail">
+                                </div>
+                                isFirst = false;
+                            }
+                        }
+                    </div>
+                </div>
+
+                <!-- RIGHT: Detail Info -->
+                <div class="col-lg-7 col-xl-6 d-flex flex-column justify-content-center">
+                    <h1 class="display-6 fw-black mb-1 text-dark">@Model.ProductName</h1>
+                    <div class="d-flex align-items-center gap-3 mb-4 fs-7 text-muted fw-bold">
+                        <span>Giống: <span class="text-primary">@Model.Origin</span></span>
+                        <span>|</span>
+                        <span>Mã SKU: MC@(Model.Id.ToString("000"))</span>
+                        <span>|</span>
+                        <span class="text-warning"><i class="fas fa-star"></i> 5.0 Đánh giá</span>
+                    </div>
+
+                    <div class="p-4 bg-bg rounded-4 mb-4 border border-1 border-light">
+                        <h2 class="display-5 fw-black text-primary mb-2">@Model.Price.ToString("N0")₫</h2>
+                        <span class="badge bg-white text-success border border-success rounded-pill px-3 py-2 fw-bold fs-7 shadow-sm"><i class="fas fa-check-circle me-1"></i> Có sẵn: @Model.StockQuantity bé</span>
+                    </div>
+
+                    <!-- Quick Info Box -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-md-4">
+                            <div class="d-flex align-items-center bg-white p-3 rounded-4 shadow-sm border border-light">
+                                <div class="bg-peach text-white d-flex align-items-center justify-content-center rounded-circle me-3" style="width: 40px; height: 40px;"><i class="fas fa-clock"></i></div>
+                                <div>
+                                    <span class="d-block text-muted fs-8 fw-bold">Tuổi</span>
+                                    <span class="fw-bold fs-7">@Model.AgeMonths tháng</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="d-flex align-items-center bg-white p-3 rounded-4 shadow-sm border border-light">
+                                <div class="bg-primary text-white d-flex align-items-center justify-content-center rounded-circle me-3" style="width: 40px; height: 40px;"><i class="fas fa-venus-mars"></i></div>
+                                <div>
+                                    <span class="d-block text-muted fs-8 fw-bold">Giới tính</span>
+                                    <span class="fw-bold fs-7">@(Model.Gender == true ? "Đực" : "Cái")</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="d-flex align-items-center bg-white p-3 rounded-4 shadow-sm border border-light">
+                                <div class="bg-warning text-white d-flex align-items-center justify-content-center rounded-circle me-3" style="width: 40px; height: 40px;"><i class="fas fa-palette"></i></div>
+                                <div>
+                                    <span class="d-block text-muted fs-8 fw-bold">Màu lông</span>
+                                    <span class="fw-bold fs-7">@Model.FurColor</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-light border border-peach rounded-4 mb-4 d-flex align-items-center">
+                        <i class="fas fa-heartbeat text-danger fs-3 me-3"></i>
+                        <div>
+                            <strong class="text-dark d-block">Tình trạng sức khỏe:</strong>
+                            <span class="text-muted fs-7">@Model.HealthStatus</span>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-3 d-md-flex mt-auto">
+                        <button class="btn btn-primary btn-lg rounded-pill fw-bold shadow-hover px-4 d-flex align-items-center justify-content-center border-2 border-primary">
+                            Liên Hệ Để Giữ Bé Ngay <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                        <button class="btn btn-outline-primary btn-lg rounded-pill fw-bold bg-white hero-btn-outline px-4 d-flex align-items-center justify-content-center">
+                            <i class="fab fa-zalo me-2 fs-5"></i> Nhắn tin Zalo
+                        </button>
+                    </div>
+
+                    <!-- Trust factors -->
+                    <div class="d-flex justify-content-between text-muted fs-8 fw-bold mt-4 pt-3 border-top">
+                        <span><i class="fas fa-check-circle text-success me-1"></i> Thuần chủng 100%</span>
+                        <span><i class="fas fa-check-circle text-success me-1"></i> Đã tiêm phòng</span>
+                        <span><i class="fas fa-check-circle text-success me-1"></i> Hỗ trợ y tế 15 ngày</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTENT TABS -->
+    <section class="container mb-5">
+        <div class="bg-white rounded-5 shadow-sm p-4 p-md-5">
+            <ul class="nav nav-pills nav-fill mb-4 border-bottom pb-3 gap-2" id="detailTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active rounded-pill fw-bold shadow-none" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc" type="button" role="tab" aria-controls="desc" aria-selected="true">Mô Tả & Tính Cách</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill fw-bold text-muted shadow-none bg-transparent" id="char-tab" data-bs-toggle="tab" data-bs-target="#char" type="button" role="tab" aria-controls="char" aria-selected="false">Đặc Điểm Giống</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill fw-bold text-muted shadow-none bg-transparent" id="health-tab" data-bs-toggle="tab" data-bs-target="#health" type="button" role="tab" aria-controls="health" aria-selected="false">Chính Sách Sức Khỏe</button>
+                </li>
+            </ul>
+
+            <div class="tab-content text-muted lh-lg" id="detailTabsContent">
+                <!-- Tab: Mô tả -->
+                <div class="tab-pane fade show active" id="desc" role="tabpanel" aria-labelledby="desc-tab">
+                    <h5 class="fw-bold text-dark mb-3">Về @Model.ProductName</h5>
+                    <p>Đây là bé @Model.Origin đáng yêu đang tìm kiếm một gia đình mới. @Model.FullDescription</p>
+                    <p>Bé có tính cách hiền lành, thích được vuốt ve và rất dễ thích nghi với môi trường sống mới. Rất phù hợp nếu bạn đang tìm kiếm một người bạn nhỏ có tính cách điềm đạm, không quá nghịch ngợm phá phách nhưng vẫn đủ tình cảm để quấn quýt bên cạnh.</p>
+                    <div class="d-flex align-items-center mt-4 p-3 bg-light rounded-4 border-start border-4 border-primary">
+                        <i class="fas fa-home fs-3 text-primary me-3"></i>
+                        <span>Thích hợp nuôi trong không gian <strong>Căn hộ, Chung cư, hoặc Nhà phố</strong>. Phù hợp với mọi đối tượng, kể cả người mới nuôi.</span>
+                    </div>
+                </div>
+
+                <!-- Tab: Đặc điểm -->
+                <div class="tab-pane fade" id="char" role="tabpanel" aria-labelledby="char-tab">
+                    <table class="table table-bordered border-light table-striped rounded-3 overflow-hidden">
+                        <tbody>
+                            <tr>
+                                <th class="w-25 bg-light text-dark ps-3 py-3">Giống</th>
+                                <td class="ps-3 py-3">@Model.Origin</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-dark ps-3 py-3">Tuổi</th>
+                                <td class="ps-3 py-3">@Model.AgeMonths tháng tuổi</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-dark ps-3 py-3">Giới tính</th>
+                                <td class="ps-3 py-3">@(Model.Gender == true ? "Đực" : "Cái")</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-dark ps-3 py-3">Màu lông</th>
+                                <td class="ps-3 py-3">@Model.FurColor</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-dark ps-3 py-3">Mức độ năng động</th>
+                                <td class="ps-3 py-3"><span class="text-warning"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></span> (Trung bình)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Tab: Sức khỏe -->
+                <div class="tab-pane fade" id="health" role="tabpanel" aria-labelledby="health-tab">
+                    <h5 class="fw-bold text-dark mb-4">Cam kết từ ManaPet</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-success fs-5 me-3"></i> <strong>Sức Khỏe:</strong> @Model.HealthStatus</li>
+                        <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-success fs-5 me-3"></i> Tẩy Giun lần cuối cách đây 2 tuần.</li>
+                        <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-success fs-5 me-3"></i> Ăn uống cực khỏe, có thể ăn đa dạng các loại hạt cám, pate.</li>
+                        <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-success fs-5 me-3"></i> Có sổ y bạ đi kèm, hướng dẫn minh bạch lịch tái khám.</li>
+                        <li class="d-flex align-items-center"><i class="fas fa-shield-alt text-primary fs-5 me-3"></i> <strong>Bảo Hành Y Tế:</strong> Cam kết 1 đổi 1 trong 15 ngày với các bệnh giảm bạch cầu, dại.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RELATED CATS (UPSELL) -->
+    @if (relatedCats != null && relatedCats.Any())
+    {
+        <section class="container mb-5 pt-3">
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <h3 class="fw-black text-dark m-0">Bạn Không Nên Bỏ Lỡ</h3>
+                <a asp-action="Cats" class="btn btn-outline-primary rounded-pill fw-bold border-2 d-none d-md-inline-block">Xem Tất Cả Mèo <i class="fas fa-angle-right ms-1"></i></a>
+            </div>
+            
+            <div class="row g-4">
+                @foreach (var rcat in relatedCats)
+                {
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <div class="card border-0 bg-white rounded-4 shadow-sm h-100 hover-lift position-relative overflow-hidden">
+                            @if (rcat.StockQuantity < 20)
+                            {
+                                <div class="position-absolute px-3 py-1 bg-peach rounded-pill fw-bold fs-7 shadow-sm z-2" style="top: 15px; left: 15px;">Hot</div>
+                            }
+                            <div class="position-relative overflow-hidden" style="border-radius: 16px 16px 0 0;">
+                                <img src="@rcat.MainImage" class="w-100 object-fit-cover transition-transform blog-img" style="aspect-ratio: 1/1;" alt="@rcat.Origin">
+                            </div>
+                            <div class="card-body p-4 text-center">
+                                <h5 class="card-title fw-black mb-2 text-dark">@rcat.Origin</h5>
+                                <div class="d-flex justify-content-center flex-wrap gap-2 mb-3">
+                                    <span class="badge bg-light text-muted fw-bold rounded-pill border"><i class="fas fa-box-open fs-7"></i> Có sẵn: @rcat.StockQuantity bé</span>
+                                </div>
+                                <h4 class="text-primary fw-black mb-4">@rcat.Price.ToString("N0")₫</h4>
+                                <div class="d-grid mt-auto">
+                                    <a asp-controller="Products" asp-action="Details" asp-route-id="@rcat.Id" class="btn btn-outline-primary rounded-pill fw-bold py-2"><i class="fas fa-search me-2"></i> Xem chi tiết</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+
+    <!-- ACCESSORIES -->
+    <section class="container mb-5 pb-5">
+        <h3 class="fw-black text-dark mb-4">Hành Trang Đón Bé Về (Phụ kiện cần thiết)</h3>
+        <div class="row g-4">
+            <div class="col-6 col-lg-3">
+                <div class="product-card card border bg-white rounded-4 shadow-sm h-100 hover-lift text-center">
+                    <div class="p-3">
+                        <img src="~/images/accessories/food.png" class="w-100 object-fit-cover rounded-3" style="aspect-ratio: 1/1;" alt="Thức ăn">
+                    </div>
+                    <div class="card-body pt-0 pb-4 px-3">
+                        <div class="text-warning mb-2 fs-7"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <h6 class="card-title fw-bold fs-7 mb-2 text-dark">Thức ăn Hạt Cứng</h6>
+                        <span class="text-primary fw-black">350.000₫</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="product-card card border bg-white rounded-4 shadow-sm h-100 hover-lift text-center">
+                    <div class="p-3">
+                        <img src="~/images/accessories/bowl.png" class="w-100 object-fit-cover rounded-3" style="aspect-ratio: 1/1;" alt="Bát">
+                    </div>
+                    <div class="card-body pt-0 pb-4 px-3">
+                        <div class="text-warning mb-2 fs-7"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <h6 class="card-title fw-bold fs-7 mb-2 text-dark">Bát Ăn Tròn</h6>
+                        <span class="text-primary fw-black">80.000₫</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="product-card card border bg-white rounded-4 shadow-sm h-100 hover-lift text-center">
+                    <div class="p-3">
+                        <img src="~/images/accessories/toy.png" class="w-100 object-fit-cover rounded-3" style="aspect-ratio: 1/1;" alt="Đồ chơi">
+                    </div>
+                    <div class="card-body pt-0 pb-4 px-3">
+                        <div class="text-warning mb-2 fs-7"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <h6 class="card-title fw-bold fs-7 mb-2 text-dark">Bóng Len Chuông</h6>
+                        <span class="text-primary fw-black">35.000₫</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="product-card card border bg-white rounded-4 shadow-sm h-100 hover-lift text-center">
+                    <div class="p-3">
+                        <img src="~/images/accessories/litter.png" class="w-100 object-fit-cover rounded-3" style="aspect-ratio: 1/1;" alt="Khay cát">
+                    </div>
+                    <div class="card-body pt-0 pb-4 px-3">
+                        <div class="text-warning mb-2 fs-7"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <h6 class="card-title fw-bold fs-7 mb-2 text-dark">Khay Vệ Sinh Chống Bắn</h6>
+                        <span class="text-primary fw-black">150.000₫</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONSULTATION BANNER -->
+    <section class="container pb-5">
+        <div class="bg-peach rounded-5 py-5 px-4 text-center text-white position-relative overflow-hidden shadow-soft">
+            <!-- Decorative circle -->
+            <div class="position-absolute rounded-circle bg-white opacity-25" style="width: 200px; height: 200px; top: -50px; left: -50px;"></div>
+            <div class="position-absolute rounded-circle bg-white opacity-25" style="width: 300px; height: 300px; bottom: -100px; right: -50px;"></div>
+            
+            <div class="position-relative z-1">
+                <h3 class="display-6 fw-black text-dark mb-3">Cần hỗ trợ chọn bé mèo phù hợp?</h3>
+                <p class="lead text-dark opacity-100 mb-4 fw-bold">Đội ngũ chuyên gia từ Mana Pet luôn sẵn sàng tư vấn 24/7 để đồng hành cùng bạn.</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <button class="btn btn-dark btn-lg rounded-pill px-5 fw-bold shadow-hover d-flex align-items-center">
+                        <i class="fas fa-phone-alt me-2"></i> Gọi 1900 6868
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        // Simple script to handle thumbnail mocking behavior
+        document.querySelectorAll('.gallery-thumbnails img').forEach(img => {
+            img.addEventListener('click', function() {
+                // Update styling
+                document.querySelectorAll('.gallery-thumbnails img').forEach(i => {
+                    i.classList.remove('border-primary', 'border-2', 'opacity-100');
+                    i.classList.add('border-muted', 'border-1', 'opacity-75');
+                });
+                this.classList.remove('border-muted', 'border-1', 'opacity-75');
+                this.classList.add('border-primary', 'border-2', 'opacity-100');
+                
+                // Swap image (simulate real behavior since we have temp images)
+                document.getElementById('mainImageDisplay').src = this.src;
+            });
+        });
+    </script>
+}

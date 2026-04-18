@@ -1,0 +1,169 @@
+@model Petshop_frontend.Models.Order
+
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng";
+}
+
+<section class="content-header">
+    <h1>
+        Chi tiết đơn hàng: @Model.OrderCode
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="/Admin/Home"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="/Admin/Order">Quản lý đơn hàng</a></li>
+        <li class="active">Chi tiết</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="row mb-3" style="margin-bottom: 15px;">
+        <div class="col-sm-12 text-right">
+            <a href="@Url.Action("Index")" class="btn btn-default"><i class="fa fa-arrow-left"></i> Quay lại danh sách</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Thông tin khách hàng & Đơn hàng -->
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Thông tin giao hàng</h3>
+                </div>
+                <div class="box-body">
+                    <p><strong>Khách hàng:</strong> @(Model.Customer?.FullName ?? "Khách lẻ")</p>
+                    <p><strong>Số điện thoại:</strong> @(Model.Customer?.Phone ?? "")</p>
+                    <p><strong>Địa chỉ giao:</strong> @Model.ShippingAddress</p>
+                    <p><strong>Ngày đặt:</strong> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+                    <p>
+                        <strong>Phương thức TT:</strong> @Model.PaymentMethod <br/>
+                    </p>
+                    <p><strong>Ghi chú của khách:</strong> @Model.Note</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cập nhật trạng thái -->
+        <div class="col-md-6">
+            <div class="box box-warning">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Cập nhật trạng thái</h3>
+                </div>
+                <div class="box-body">
+                    <form method="post" action="@Url.Action("UpdateStatus")">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <div class="form-group">
+                            <label>Trạng thái đơn hàng</label>
+                            <select name="orderStatus" class="form-control" @(Model.OrderStatus == "Hoàn thành" || Model.OrderStatus == "Đã hủy" ? "disabled" : "")>
+                                <option value="Chờ xác nhận" selected="@(Model.OrderStatus == "Chờ xác nhận")">Chờ xác nhận</option>
+                                <option value="Đã xác nhận" selected="@(Model.OrderStatus == "Đã xác nhận")">Đã xác nhận</option>
+                                <option value="Đang chuẩn bị" selected="@(Model.OrderStatus == "Đang chuẩn bị")">Đang chuẩn bị</option>
+                                <option value="Đang giao" selected="@(Model.OrderStatus == "Đang giao")">Đang giao</option>
+                                <option value="Đã giao" selected="@(Model.OrderStatus == "Đã giao")">Đã giao</option>
+                                <option value="Hoàn thành" selected="@(Model.OrderStatus == "Hoàn thành")">Hoàn thành</option>
+                                <option value="Đã hủy" selected="@(Model.OrderStatus == "Đã hủy")">Đã hủy</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Trạng thái thanh toán</label>
+                            <select name="paymentStatus" class="form-control" @(Model.OrderStatus == "Đã hủy" ? "disabled" : "")>
+                                <option value="Chưa thanh toán" selected="@(Model.PaymentStatus == "Chưa thanh toán")">Chưa thanh toán</option>
+                                <option value="Đã thanh toán" selected="@(Model.PaymentStatus == "Đã thanh toán")">Đã thanh toán</option>
+                                <option value="Thanh toán một phần" selected="@(Model.PaymentStatus == "Thanh toán một phần")">Thanh toán một phần</option>
+                                <option value="Hoàn tiền" selected="@(Model.PaymentStatus == "Hoàn tiền")">Hoàn tiền</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Ghi chú của Admin</label>
+                            <textarea name="adminNote" class="form-control">@Model.AdminNote</textarea>
+                        </div>
+                        @if (Model.OrderStatus != "Hoàn thành" && Model.OrderStatus != "Đã hủy")
+                        {
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Cập nhật</button>
+                            <button type="button" class="btn btn-danger pull-right" data-toggle="modal" data-target="#cancelModal">
+                                <i class="fa fa-times"></i> Hủy đơn
+                            </button>
+                        }
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Danh sách sản phẩm -->
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">Sản phẩm / Thú cưng trong đơn</h3>
+        </div>
+        <div class="box-body table-responsive no-padding">
+            <table class="table table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th>Mã / ID</th>
+                        <th>Tên sản phẩm/thú cưng</th>
+                        <th>Số lượng</th>
+                        <th>Đơn giá</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderDetails)
+                    {
+                        <tr>
+                            <td>@item.ProductId</td>
+                            <td>@(item.Product?.ProductName ?? "Sản phẩm đã bị xóa")</td>
+                            <td>@item.Quantity</td>
+                            <td>@item.Price.ToString("N0") đ</td>
+                            <td>@item.Total.ToString("N0") đ</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot class="bg-gray-light">
+                    <tr>
+                        <td colspan="4" class="text-right"><strong>Tạm tính:</strong></td>
+                        <td><strong>@Model.Subtotal.ToString("N0") đ</strong></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-right"><strong>Phí giao hàng:</strong></td>
+                        <td>+ @Model.ShippingFee.ToString("N0") đ</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-right"><strong>Giảm giá:</strong></td>
+                        <td class="text-success">- @Model.Discount.ToString("N0") đ</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-right"><h4 class="text-red" style="margin:0;">Tổng cộng:</h4></td>
+                        <td><h4 class="text-red" style="font-weight:bold; margin:0;">@Model.TotalAmount.ToString("N0") đ</h4></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Modal Hủy đơn -->
+<div class="modal fade" id="cancelModal" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form method="post" action="@Url.Action("CancelOrder")">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title text-red" id="cancelModalLabel">Xác nhận hủy đơn hàng</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Lý do hủy (bắt buộc)</label>
+                        <textarea name="cancelReason" class="form-control" required placeholder="Nhập lý do khách hủy hoặc lỗi hệ thống..."></textarea>
+                        <p class="help-block text-muted mt-2">Lưu ý: Hủy đơn sẽ tự động hoàn lại số lượng thú cưng vào kho lưu trữ.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-danger">Xác nhận Hủy</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

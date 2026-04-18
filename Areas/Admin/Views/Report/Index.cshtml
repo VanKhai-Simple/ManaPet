@@ -1,0 +1,230 @@
+@{
+    ViewData["Title"] = "Báo cáo tài chính";
+}
+
+<section class="content-header">
+    <h1>
+        Báo cáo tài chính
+        <small>Thống kê doanh thu & chi phí</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="/Admin/Home"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Báo cáo tài chính</li>
+    </ol>
+</section>
+
+<section class="content">
+    <!-- Bộ lọc -->
+    <div class="box box-default">
+        <div class="box-body">
+            <form method="get" action="@Url.Action("Index")">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label>Từ ngày</label>
+                        <input type="date" name="startDate" class="form-control" value="@ViewBag.StartDate">
+                    </div>
+                    <div class="col-md-3">
+                        <label>Đến ngày</label>
+                        <input type="date" name="endDate" class="form-control" value="@ViewBag.EndDate">
+                    </div>
+                    <div class="col-md-3">
+                        <label>&nbsp;</label>
+                        <button type="submit" class="btn btn-primary btn-block"><i class="fa fa-filter"></i> Lọc báo cáo</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4 Cái Hộp Thông Tin -->
+    <div class="row">
+        <div class="col-lg-3 col-xs-6">
+            <div class="small-box bg-aqua">
+                <div class="inner">
+                    <h3>@ViewBag.TotalRevenue.ToString("N0") <sup style="font-size: 20px">đ</sup></h3>
+                    <p>Tổng doanh thu</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-cash"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-xs-6">
+            <div class="small-box bg-red">
+                <div class="inner">
+                    <h3>@ViewBag.TotalExpense.ToString("N0") <sup style="font-size: 20px">đ</sup></h3>
+                    <p>Tổng chi phí</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-arrow-graph-down-right"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-xs-6">
+            <div class="small-box bg-green">
+                <div class="inner">
+                    <h3>@ViewBag.Profit.ToString("N0") <sup style="font-size: 20px">đ</sup></h3>
+                    <p>Lợi nhuận gộp</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-stats-bars"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-xs-6">
+            <div class="small-box bg-yellow">
+                <div class="inner">
+                    <h3>@ViewBag.CompletedOrders</h3>
+                    <p>Đơn hàng hoàn thành</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-bag"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Biểu đồ -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="box box-success">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Doanh thu 6 tháng gần nhất</h3>
+                </div>
+                <div class="box-body">
+                    <div class="chart">
+                        <canvas id="barChart" style="height:300px"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="box box-danger">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Tỷ trọng doanh thu</h3>
+                </div>
+                <div class="box-body">
+                    <canvas id="pieChart" style="height:300px"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lịch sử giao dịch -->
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">Lịch sử giao dịch gần đây</h3>
+            <div class="box-tools pull-right">
+                <a href="@Url.Action("Expenses")" class="btn btn-sm btn-default"><i class="fa fa-list"></i> Xem danh sách phiếu chi</a>
+            </div>
+        </div>
+        <div class="box-body table-responsive no-padding">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>Ngày</th>
+                        <th>Mã GD</th>
+                        <th>Loại</th>
+                        <th>Nội dung</th>
+                        <th>Phương thức</th>
+                        <th class="text-right">Số tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (ViewBag.Transactions != null)
+                    {
+                        foreach (var item in ViewBag.Transactions)
+                        {
+                            <tr>
+                                <td>@item.Date.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td><strong>@item.Code</strong></td>
+                                <td>
+                                    @if (item.Type == "Thu")
+                                    {
+                                        <span class="label label-success">Thu</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="label label-danger">Chi</span>
+                                    }
+                                </td>
+                                <td>@item.Description</td>
+                                <td>@item.PaymentMethod</td>
+                                <td class="text-right">
+                                    @if (item.Type == "Thu")
+                                    {
+                                        <span class="text-green font-weight-bold">+ @item.Amount.ToString("N0") đ</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-red font-weight-bold">- @item.Amount.ToString("N0") đ</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(function () {
+            // === Bar Chart ===
+            var barChartCanvas = $('#barChart').get(0).getContext('2d');
+            
+            var labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.MonthlyLabels));
+            var data = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.MonthlyRevenue));
+
+            new Chart(barChartCanvas, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Doanh thu (VNĐ)',
+                            backgroundColor: '#00a65a',
+                            data: data
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // === Pie Chart ===
+            var pieChartCanvas = $('#barChart').get(0).getContext('2d'); // Use same or different depending if we need
+            var pieCanvas = document.getElementById('pieChart').getContext('2d');
+            
+            var petSales = @ViewBag.PetSales;
+            var accSales = @ViewBag.AccessorySales;
+
+            new Chart(pieCanvas, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Thú cưng', 'Phụ kiện'],
+                    datasets: [
+                        {
+                            data: [petSales, accSales],
+                            backgroundColor: ['#f56954', '#00c0ef'],
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                }
+            });
+        })
+    </script>
+}
