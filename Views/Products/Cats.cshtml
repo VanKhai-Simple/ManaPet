@@ -1,0 +1,275 @@
+@model IEnumerable<Petshop_frontend.Models.Product>
+@{
+    ViewData["Title"] = "Mèo Cảnh Nổi Bật";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="product-page-wrapper">
+    <!-- BREADCRUMB -->
+    <div class="container py-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 fw-bold fs-7">
+                <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted transition-all">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted transition-all">Sản phẩm</a></li>
+                <li class="breadcrumb-item active text-primary" aria-current="page">Mèo cảnh</li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- CAT HERO SECTION -->
+    <section class="cat-hero bg-white py-5 pt-md-2 pb-md-5 mb-5 shadow-sm">
+        <div class="container position-relative">
+            <!-- Decorative Paws (Subtle) -->
+            <i class="fas fa-paw position-absolute opacity-10" style="font-size: 8rem; right: 5%; top: 10%; color: var(--c-accent-peach); z-index: 0"></i>
+            <i class="fas fa-paw position-absolute opacity-10" style="font-size: 4rem; left: 45%; bottom: 10%; color: var(--c-accent-yellow); z-index: 0; transform: rotate(-20deg);"></i>
+            
+            <div class="row align-items-center position-relative z-1">
+                <div class="col-lg-6 mb-4 mb-lg-0 text-center text-lg-start pe-lg-5">
+                    <h1 class="display-5 fw-black mb-4 lh-base">
+                        Mèo cảnh đáng yêu cho <span class="text-primary text-decoration-underline" style="text-underline-offset: 8px;">tổ ấm của bạn</span>
+                    </h1>
+                    <p class="lead mb-4 fs-6" style="color: var(--c-text-muted);">
+                        Khám phá những bé mèo khỏe mạnh, ngoại hình xinh xắn cùng phụ kiện cần thiết cho hành trình chăm sóc đầu tiên.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+                        <button class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-hover d-flex align-items-center">
+                            Xem mèo ngay <i class="fas fa-arrow-right ms-2 fs-7"></i>
+                        </button>
+                        <button class="btn btn-outline-primary rounded-pill px-4 py-2 fw-bold d-flex align-items-center bg-white hero-btn-outline">
+                            <i class="fas fa-headset me-2"></i> Tư vấn chọn mèo
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-6 position-relative text-center">
+                    <div class="position-absolute w-100 h-100 bg-yellow-light rounded-pill z-0" style="transform: skew(-5deg) scale(1.1); max-height: 400px; margin-top: auto; bottom:0;"></div>
+                    <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=700&q=80" alt="Mèo Tây đáng yêu" class="img-fluid rounded-4 shadow-medium position-relative z-1 object-fit-cover" style="max-height: 420px; border: 4px solid white;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- FILTER BAR -->
+    <div class="container mb-4">
+        @{
+            var currentBreed = ViewBag.CurrentBreed as string ?? "Tất cả";
+            var currentSort = ViewBag.CurrentSort as string ?? "newest";
+            
+            string GetSortLabel(string sort) {
+                if (sort == "price_asc") return "Giá thấp đến cao";
+                if (sort == "price_desc") return "Giá cao xuống thấp";
+                return "Mới nhất";
+            }
+        }
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 bg-white p-3 rounded-4 shadow-soft">
+            <div class="d-flex flex-wrap gap-2">
+                <a asp-action="Cats" asp-route-breed="Tất cả" asp-route-sortOrder="@currentSort" class="filter-chip @(currentBreed == "Tất cả" ? "active" : "")">Tất cả</a>
+                <a asp-action="Cats" asp-route-breed="British Shorthair" asp-route-sortOrder="@currentSort" class="filter-chip @(currentBreed == "British Shorthair" ? "active" : "")">Mèo Anh</a>
+                <a asp-action="Cats" asp-route-breed="Persian" asp-route-sortOrder="@currentSort" class="filter-chip @(currentBreed == "Persian" ? "active" : "")">Ba Tư</a>
+                <a asp-action="Cats" asp-route-breed="Scottish Fold" asp-route-sortOrder="@currentSort" class="filter-chip @(currentBreed == "Scottish Fold" ? "active" : "")">Scottish</a>
+                <a asp-action="Cats" asp-route-breed="Siamese" asp-route-sortOrder="@currentSort" class="filter-chip @(currentBreed == "Siamese" ? "active" : "")">Mèo Xiêm</a>
+                <a asp-action="Cats" asp-route-breed="Ragdoll" asp-route-sortOrder="@currentSort" class="filter-chip @(currentBreed == "Ragdoll" ? "active" : "")">Ragdoll</a>
+            </div>
+            
+            <div class="dropdown">
+                <button class="btn btn-light rounded-pill px-4 fw-bold dropdown-toggle text-muted bg-bg align-items-center d-flex border-0 shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-sort-amount-down me-2"></i> @GetSortLabel(currentSort)
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-medium rounded-4 p-2">
+                    <li><a class="dropdown-item rounded-3 fw-bold @(currentSort == "newest" ? "bg-primary text-white" : "text-muted hover-text-primary transition-all")" asp-action="Cats" asp-route-breed="@currentBreed" asp-route-sortOrder="newest">Mới nhất</a></li>
+                    <li><a class="dropdown-item rounded-3 fw-bold @(currentSort == "price_asc" ? "bg-primary text-white" : "text-muted hover-text-primary transition-all")" asp-action="Cats" asp-route-breed="@currentBreed" asp-route-sortOrder="price_asc">Giá thấp đến cao</a></li>
+                    <li><a class="dropdown-item rounded-3 fw-bold @(currentSort == "price_desc" ? "bg-primary text-white" : "text-muted hover-text-primary transition-all")" asp-action="Cats" asp-route-breed="@currentBreed" asp-route-sortOrder="price_desc">Giá cao xuống thấp</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCT GRID (CAT CARDS) -->
+    <section class="container mb-5 pb-4">
+        <div class="row g-4">
+            @foreach (var cat in Model)
+            {
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card border-0 bg-white rounded-4 shadow-sm h-100 hover-lift position-relative overflow-hidden">
+                        @if (cat.CreatedAt.HasValue && (DateTime.Now - cat.CreatedAt.Value).TotalDays < 14)
+                        {
+                            <div class="position-absolute px-3 py-1 bg-peach rounded-pill fw-bold fs-7 shadow-sm z-2" style="top: 15px; left: 15px;">Mới về</div>
+                        }
+                        else if (cat.StockQuantity < 20)
+                        {
+                            <div class="position-absolute px-3 py-1 bg-warning text-white rounded-pill fw-bold fs-7 shadow-sm z-2" style="top: 15px; left: 15px;">Nổi bật</div>
+                        }
+
+                        <div class="position-relative overflow-hidden" style="border-radius: 16px 16px 0 0;">
+                            <img src="@cat.MainImage" class="w-100 object-fit-cover transition-transform blog-img" style="aspect-ratio: 1/1;" alt="@cat.ProductName">
+                        </div>
+                        <div class="card-body p-4 text-center">
+                            <h5 class="card-title fw-black mb-2 text-dark">@cat.Origin</h5>
+                            <div class="d-flex justify-content-center flex-wrap gap-2 mb-3">
+                                <span class="badge bg-light text-muted fw-bold rounded-pill border"><i class="fas fa-box-open fs-7"></i> Có sẵn: @cat.StockQuantity bé</span>
+                            </div>
+                            <h4 class="text-primary fw-black mb-4">@cat.Price.ToString("N0")₫</h4>
+                            <div class="d-grid mt-auto">
+                                <a asp-controller="Products" asp-action="Details" asp-route-id="@cat.Id" class="btn btn-outline-primary rounded-pill fw-bold py-2"><i class="fas fa-search me-2"></i> Xem chi tiết</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-5">
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-lg border-0 shadow-sm rounded-pill overflow-hidden bg-white px-2 py-1">
+                    <li class="page-item disabled"><a class="page-link border-0 text-muted fw-bold bg-transparent" href="#"><i class="fas fa-chevron-left fs-6"></i></a></li>
+                    <li class="page-item active"><a class="page-link border-0 fw-bold bg-primary text-white rounded-pill mx-1" href="#" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">1</a></li>
+                    <li class="page-item"><a class="page-link border-0 text-dark fw-bold hover-text-primary rounded-pill mx-1" href="#" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">2</a></li>
+                    <li class="page-item"><a class="page-link border-0 text-muted fw-bold bg-transparent" href="#"><i class="fas fa-chevron-right fs-6"></i></a></li>
+                </ul>
+            </nav>
+        </div>
+    </section>
+
+    <!-- POPULAR BREEDS -->
+    <section class="container mb-5 py-5 border-top border-bottom">
+        <h3 class="fw-black text-center mb-5">Giống Mèo Nổi Bật</h3>
+        <div class="row g-4">
+            <div class="col-6 col-md-3">
+                <div class="card border border-2 border-white bg-bg rounded-4 p-3 text-center h-100 hover-lift shadow-sm cursor-pointer">
+                    <img src="https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=150&q=80" class="rounded-circle mb-3 mx-auto object-fit-cover shadow-soft" style="width: 90px; height: 90px;" alt="...">
+                    <h6 class="fw-bold mb-1">Mèo Anh (ALN)</h6>
+                    <small class="text-muted">Có sẵn: 12 bé</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card border border-2 border-white bg-bg rounded-4 p-3 text-center h-100 hover-lift shadow-sm cursor-pointer">
+                     <img src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=150&q=80" class="rounded-circle mb-3 mx-auto object-fit-cover shadow-soft" style="width: 90px; height: 90px;" alt="...">
+                    <h6 class="fw-bold mb-1">Mèo Ba Tư</h6>
+                    <small class="text-muted">Có sẵn: 5 bé</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card border border-2 border-white bg-bg rounded-4 p-3 text-center h-100 hover-lift shadow-sm cursor-pointer">
+                    <img src="https://images.unsplash.com/photo-1573865526739-10659fec78a5?auto=format&fit=crop&w=150&q=80" class="rounded-circle mb-3 mx-auto object-fit-cover shadow-soft" style="width: 90px; height: 90px;" alt="...">
+                    <h6 class="fw-bold mb-1">Scottish Fold</h6>
+                    <small class="text-muted">Có sẵn: 8 bé</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card border border-2 border-white bg-bg rounded-4 p-3 text-center h-100 hover-lift shadow-sm cursor-pointer">
+                    <img src="https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?auto=format&fit=crop&w=150&q=80" class="rounded-circle mb-3 mx-auto object-fit-cover shadow-soft" style="width: 90px; height: 90px;" alt="...">
+                    <h6 class="fw-bold mb-1">Munchkin</h6>
+                    <small class="text-muted">Có sẵn: 3 bé</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- COMBO BANNER -->
+    <section class="container mb-5 pb-3">
+        <div class="bg-pink rounded-5 p-4 p-md-5 d-flex flex-column flex-md-row align-items-center justify-content-between shadow-soft border">
+            <div class="text-center text-md-start mb-4 mb-md-0 col-md-7">
+                <span class="badge bg-white text-danger rounded-pill px-3 py-2 fw-bold shadow-sm mb-3"><i class="fas fa-gift me-2"></i>GIẢM ĐẾN 30%</span>
+                <h2 class="display-6 fw-black mb-3">Đón Mèo Về Nhà - <span style="color: #BA5437;">Nhận Ngay Combo Cát & Khay Vệ Sinh</span></h2>
+                <p class="lead text-dark fs-6 opacity-75 mb-4">Mua mèo tặng khay cát, bát ăn, voucher phụ kiện để chuyến hành trình làm sen nhẹ nhàng hơn bao giờ hết.</p>
+                <button class="btn btn-primary rounded-pill px-5 py-3 fw-bold shadow-hover d-inline-flex align-items-center">
+                    Xem Chi Tiết Combo <i class="fas fa-arrow-right ms-2 fs-6"></i>
+                </button>
+            </div>
+            <div class="col-md-5 text-center">
+                <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=500&q=80" alt="Combo" class="img-fluid rounded-4 shadow-medium" style="border: 4px solid white; max-height: 280px; transform: rotate(2deg);">
+            </div>
+        </div>
+    </section>
+
+    <!-- REASONS TO BUY (trust signals) -->
+    <section class="container mb-5 text-center py-4">
+        <h3 class="fw-black mb-5">Vì sao khách hàng tin chọn mèo tại Mana Pet?</h3>
+        <div class="row g-4 justify-content-center">
+            <div class="col-6 col-md-3">
+                 <div class="bg-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-soft mb-3" style="width:70px; height: 70px;">
+                     <i class="fas fa-certificate fs-3 text-primary"></i>
+                 </div>
+                 <h6 class="fw-bold">Thuần chủng 100%</h6>
+                 <small class="text-muted d-block px-2">Đảm bảo nguồn gốc gia phả rõ ràng, minh bạch.</small>
+            </div>
+            <div class="col-6 col-md-3">
+                 <div class="bg-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-soft mb-3" style="width:70px; height: 70px;">
+                     <i class="fas fa-syringe fs-3 text-primary"></i>
+                 </div>
+                 <h6 class="fw-bold">Vaccine Đầy đủ</h6>
+                 <small class="text-muted d-block px-2">Sổ giun, tiêm chủng đầy đủ 2 mũi tiêu chuẩn.</small>
+            </div>
+            <div class="col-6 col-md-3">
+                 <div class="bg-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-soft mb-3" style="width:70px; height: 70px;">
+                     <i class="fas fa-shield-alt fs-3 text-primary"></i>
+                 </div>
+                 <h6 class="fw-bold">Bảo hành 15 Ngày</h6>
+                 <small class="text-muted d-block px-2">Bảo hành sức khỏe trọn gói các bệnh truyền nhiễm.</small>
+            </div>
+        </div>
+    </section>
+
+    <!-- ACCESSORIES -->
+    <section class="container mb-5 pb-5 border-top pt-5">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h3 class="fw-black">Phụ kiện không thể thiếu cho mèo</h3>
+                <p class="text-muted mb-0">Từ khay cát, cát vệ sinh đến đồ chơi và bát ăn – mọi thứ bạn cần đều có sẵn.</p>
+            </div>
+            <a href="#" class="btn btn-outline-primary rounded-pill fw-bold border-2 d-none d-md-inline-block">Xem Tất Cả <i class="fas fa-angle-right ms-1"></i></a>
+        </div>
+        <div class="row g-4">
+             <!-- Giữ nguyên cấu trúc card phụ kiện cũ nhưng thay số i lượng cột -->
+             <div class="col-6 col-lg-3">
+                <div class="product-card card border bg-white rounded-4 shadow-sm h-100 hover-lift text-center">
+                    <div class="p-3">
+                        <img src="~/images/accessories/food.png" class="w-100 object-fit-cover rounded-3" style="aspect-ratio: 1/1;" alt="Product">
+                    </div>
+                    <div class="card-body pt-0 pb-4 px-3">
+                        <div class="text-warning mb-2 fs-7"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <h6 class="card-title fw-bold fs-7 mb-2">Thức ăn Mèo Hạt Cứng</h6>
+                        <span class="text-primary fw-black">350.000₫</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="product-card card border bg-white rounded-4 shadow-sm h-100 hover-lift text-center">
+                    <div class="p-3">
+                        <img src="~/images/accessories/bowl.png" class="w-100 object-fit-cover rounded-3" style="aspect-ratio: 1/1;" alt="Product">
+                    </div>
+                    <div class="card-body pt-0 pb-4 px-3">
+                        <div class="text-warning mb-2 fs-7"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <h6 class="card-title fw-bold fs-7 mb-2">Bát Ăn Tròn Chống Trượt</h6>
+                        <span class="text-primary fw-black">80.000₫</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="product-card card border bg-white rounded-4 shadow-sm h-100 hover-lift text-center">
+                    <div class="p-3">
+                        <img src="~/images/accessories/toy.png" class="w-100 object-fit-cover rounded-3" style="aspect-ratio: 1/1;" alt="Product">
+                    </div>
+                    <div class="card-body pt-0 pb-4 px-3">
+                        <div class="text-warning mb-2 fs-7"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <h6 class="card-title fw-bold fs-7 mb-2">Đồ Chơi Bóng Len Có Chuông</h6>
+                        <span class="text-primary fw-black">35.000₫</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="product-card card border bg-white rounded-4 shadow-sm h-100 hover-lift text-center">
+                    <div class="p-3">
+                        <img src="~/images/accessories/litter.png" class="w-100 object-fit-cover rounded-3" style="aspect-ratio: 1/1;" alt="Product">
+                    </div>
+                    <div class="card-body pt-0 pb-4 px-3">
+                        <div class="text-warning mb-2 fs-7"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <h6 class="card-title fw-bold fs-7 mb-2">Khay Vệ Sinh Mèo Size Lớn</h6>
+                        <span class="text-primary fw-black">150.000₫</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>

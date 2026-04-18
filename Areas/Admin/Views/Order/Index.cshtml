@@ -1,0 +1,170 @@
+@model IEnumerable<Petshop_frontend.Models.Order>
+
+@{
+    ViewData["Title"] = "Quản lý đơn hàng";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Quản lý đơn hàng
+        <small>Danh sách tất cả đơn hàng</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="/Admin/Home"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Quản lý đơn hàng</li>
+    </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <!-- 4 Cái Hộp Thông Tin (Info boxes) -->
+    <div class="row">
+        <div class="col-lg-3 col-xs-6">
+            <div class="small-box bg-aqua">
+                <div class="inner">
+                    <h3>@ViewBag.TotalOrders</h3>
+                    <p>Tổng đơn hàng</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-bag"></i>
+                </div>
+                <a href="#" class="small-box-footer">Xem chi tiết <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-xs-6">
+            <div class="small-box bg-yellow">
+                <div class="inner">
+                    <h3>@ViewBag.PendingOrders</h3>
+                    <p>Chờ xác nhận</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-clock"></i>
+                </div>
+                <a href="?orderStatus=Chờ xác nhận" class="small-box-footer">Xem chi tiết <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-xs-6">
+            <div class="small-box bg-primary" style="background-color: #3c8dbc !important; color: #fff;">
+                <div class="inner">
+                    <h3>@ViewBag.ShippingOrders</h3>
+                    <p>Đang giao</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-android-car"></i>
+                </div>
+                <a href="?orderStatus=Đang giao" class="small-box-footer">Xem chi tiết <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-xs-6">
+            <div class="small-box bg-green">
+                <div class="inner">
+                    <h3>@ViewBag.CompletedOrders</h3>
+                    <p>Hoàn thành</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-checkmark-circled"></i>
+                </div>
+                <a href="?orderStatus=Hoàn thành" class="small-box-footer">Xem chi tiết <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bộ lọc -->
+    <div class="box box-default">
+        <div class="box-body">
+            <form method="get" action="@Url.Action("Index")">
+                <div class="row">
+                    <div class="col-md-3">
+                        <input type="text" name="searchString" class="form-control" placeholder="Tìm mã đơn, tên, sđt khách..." value="@Context.Request.Query["searchString"]">
+                    </div>
+                    <div class="col-md-3">
+                        <select name="orderStatus" class="form-control">
+                            <option value="">-- Tất cả trạng thái ĐH --</option>
+                            <option value="Chờ xác nhận" selected="@(Context.Request.Query["orderStatus"] == "Chờ xác nhận")">Chờ xác nhận</option>
+                            <option value="Đã xác nhận" selected="@(Context.Request.Query["orderStatus"] == "Đã xác nhận")">Đã xác nhận</option>
+                            <option value="Đang chuẩn bị" selected="@(Context.Request.Query["orderStatus"] == "Đang chuẩn bị")">Đang chuẩn bị</option>
+                            <option value="Đang giao" selected="@(Context.Request.Query["orderStatus"] == "Đang giao")">Đang giao</option>
+                            <option value="Đã giao" selected="@(Context.Request.Query["orderStatus"] == "Đã giao")">Đã giao</option>
+                            <option value="Hoàn thành" selected="@(Context.Request.Query["orderStatus"] == "Hoàn thành")">Hoàn thành</option>
+                            <option value="Đã hủy" selected="@(Context.Request.Query["orderStatus"] == "Đã hủy")">Đã hủy</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="paymentStatus" class="form-control">
+                            <option value="">-- Tất cả TT thanh toán --</option>
+                            <option value="Chưa thanh toán" selected="@(Context.Request.Query["paymentStatus"] == "Chưa thanh toán")">Chưa thanh toán</option>
+                            <option value="Đã thanh toán" selected="@(Context.Request.Query["paymentStatus"] == "Đã thanh toán")">Đã thanh toán</option>
+                            <option value="Thanh toán một phần" selected="@(Context.Request.Query["paymentStatus"] == "Thanh toán một phần")">Thanh toán một phần</option>
+                            <option value="Hoàn tiền" selected="@(Context.Request.Query["paymentStatus"] == "Hoàn tiền")">Hoàn tiền</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Tìm kiếm</button>
+                        <a href="@Url.Action("Create")" class="btn btn-success pull-right"><i class="fa fa-plus"></i> Tạo mới</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bảng danh sách -->
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">Danh sách đơn hàng</h3>
+        </div>
+        <div class="box-body table-responsive no-padding">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Mã đơn</th>
+                        <th>Khách hàng</th>
+                        <th>Ngày đặt</th>
+                        <th>Tổng tiền</th>
+                        <th>Thanh toán</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><strong>@item.OrderCode</strong></td>
+                            <td>
+                                @if(item.Customer != null) {
+                                    @item.Customer.FullName <br/>
+                                    <small class="text-muted">@item.Customer.Phone</small>
+                                }
+                            </td>
+                            <td>@item.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="text-red" style="font-weight:bold;">@item.TotalAmount.ToString("N0") VNĐ</td>
+                            <td>
+                                @if(item.PaymentStatus == "Chưa thanh toán") { <span class="label label-danger">Chưa thanh toán</span> }
+                                else if (item.PaymentStatus == "Đã thanh toán") { <span class="label label-success">Đã thanh toán</span> }
+                                else if (item.PaymentStatus == "Thanh toán một phần") { <span class="label label-warning">Một phần</span> }
+                                else if (item.PaymentStatus == "Hoàn tiền") { <span class="label label-default">Hoàn tiền</span> }
+                                else { <span class="label label-info">@item.PaymentStatus</span> }
+                                <br/><small>@item.PaymentMethod</small>
+                            </td>
+                            <td>
+                                @if(item.OrderStatus == "Chờ xác nhận") { <span class="label label-warning">Chờ xác nhận</span> }
+                                else if (item.OrderStatus == "Đã xác nhận") { <span class="label label-primary">Đã xác nhận</span> }
+                                else if (item.OrderStatus == "Đang chuẩn bị") { <span class="label label-info">Đang chuẩn bị</span> }
+                                else if (item.OrderStatus == "Đang giao") { <span class="label label-info" style="background-color:#fd7e14;">Đang giao</span> }
+                                else if (item.OrderStatus == "Đã giao") { <span class="label label-success">Đã giao</span> }
+                                else if (item.OrderStatus == "Hoàn thành") { <span class="label label-success">Hoàn thành</span> }
+                                else if (item.OrderStatus == "Đã hủy") { <span class="label label-danger">Đã hủy</span> }
+                            </td>
+                            <td>
+                                <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-sm btn-info" title="Xem chi tiết">
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
