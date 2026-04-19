@@ -46,6 +46,14 @@ namespace Petshop_frontend.Areas.Admin.Controllers
             if (order != null)
             {
                 order.Status = newStatus;
+                if(newStatus == "Đã giao")
+                {
+                    order.DeliveredDate = DateTime.Now;
+                }
+                else
+                {
+                    order.DeliveredDate = null;
+                }
 
                 // Nếu ông muốn Admin hủy đơn cũng hoàn kho thì thêm đoạn này:
                 if (newStatus == "Đã hủy")

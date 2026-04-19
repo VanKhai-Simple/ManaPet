@@ -1,0 +1,194 @@
+﻿@model Petshop_frontend.Models.User
+
+<div class="container-fluid">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h3 class="h3 mb-0 text-gray-800">Hồ sơ khách hàng</h3>
+            <p class="mb-0 text-muted">Chi tiết thông tin và lịch sử giao dịch</p>
+        </div>
+        <a asp-action="Index" class="btn btn-secondary btn-sm shadow-sm">
+            <i class="fa fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+
+            <div class="card shadow mb-4 border-left-primary">
+                <div class="card-header py-2 bg-light">
+                    <h6 class="m-0 font-weight-bold text-primary small"><i class="fa fa-cog"></i> THÔNG TIN HỆ THỐNG</h6>
+                </div>
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-center mb-3">
+                        @if (!string.IsNullOrEmpty(Model.UserProfile?.Avatar))
+                        {
+                            <img src="@Model.UserProfile.Avatar"
+                                 class="rounded-circle shadow-sm"
+                                 width="100" height="100"
+                                 style="object-fit:cover; border: 4px solid #fff;">
+                        }
+                        else
+                        {
+                            <div class="rounded-circle shadow-sm d-flex align-items-center justify-content-center bg-light text-secondary"
+                                 style="width: 100px; height: 100px; border: 4px solid #fff; font-size: 40px;">
+                                <i class="fa fa-user"></i>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="mb-2">
+                        @if (Model.Status == true)
+                        {
+                            <span class="badge badge-success"><i class="fa fa-check"></i> Đang hoạt động</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-danger"><i class="fa fa-lock"></i> Đang bị khóa</span>
+                        }
+                    </div>
+
+                    <div class="text-left mt-3">
+                        <table class="table table-sm table-borderless small">
+                            <tr>
+                                <td class="text-muted">ID người dùng:</td>
+                                <td class="font-weight-bold">#@Model.Id</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Tên đăng nhập:</td>
+                                <td class="font-weight-bold text-primary">@(Model.Username ?? "N/A (Social)")</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Nguồn:</td>
+                                <td>
+                                    <span class="badge @(Model.Provider == "Google" ? "badge-danger" : "badge-secondary")">
+                                        @Model.Provider
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Ngày gia nhập:</td>
+                                <td class="font-weight-bold">@Model.CreatedAt?.ToString("dd/MM/yyyy")</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow mb-4 border-left-info">
+                <div class="card-header py-2 bg-light">
+                    <h6 class="m-0 font-weight-bold text-info small"><i class="fa fa-user"></i> THÔNG TIN CÁ NHÂN</h6>
+                </div>
+                <div class="card-body px-3">
+                    <div class="mb-3">
+                        <label class="text-xs font-weight-bold text-uppercase text-muted mb-1 d-block">Họ và tên</label>
+                        <div class="h6 font-weight-bold text-gray-800">@(Model.UserProfile?.FullName ?? "Chưa cập nhật")</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-xs font-weight-bold text-uppercase text-muted mb-1 d-block">Email liên hệ</label>
+                        <div class="h6 text-gray-800 font-weight-bold"><i class="fa fa-envelope-o text-info mr-1"></i> @(Model.UserProfile?.Email ?? "N/A")</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-xs font-weight-bold text-uppercase text-muted mb-1 d-block">Số điện thoại</label>
+                        <div class="h6 text-gray-800 font-weight-bold"><i class="fa fa-phone text-info mr-1"></i> @(Model.UserProfile?.Phone ?? "N/A")</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-xs font-weight-bold text-uppercase text-muted mb-1 d-block">Địa chỉ mặc định</label>
+                        <div class="small text-gray-800">@(Model.UserProfile?.Address ?? "Chưa cập nhật địa chỉ")</div>
+                    </div>
+                    <div>
+                        <label class="text-xs font-weight-bold text-uppercase text-muted mb-1 d-block">Ngày sinh</label>
+                        <div class="small text-gray-800">@(Model.UserProfile?.BirthDate?.ToString("dd/MM/yyyy") ?? "N/A")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center border-bottom">
+                    <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-shopping-cart mr-1"></i> LỊCH SỬ ĐƠN HÀNG</h6>
+                    <span class="badge badge-pill badge-light border text-primary">@Model.Orders?.Count() đơn</span>
+                </div>
+                <div class="card-body">
+                    @if (Model.Orders != null && Model.Orders.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="bg-light small text-uppercase font-weight-bold">
+                                    <tr>
+                                        <th>Mã đơn</th>
+                                        <th>Ngày đặt</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Trạng thái</th>
+                                        <th class="text-center">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model.Orders.OrderByDescending(o => o.Id))
+                                    {
+                                        <tr>
+                                            <td class="font-weight-bold text-primary">#@order.Id</td>
+                                            <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>
+                                                <span class="text-danger font-weight-bold">@(((decimal)order.TotalAmount).ToString("N0"))đ</span>
+                                            </td>
+                                            <td>
+                                                @{
+                                                    var badgeClass = order.Status switch
+                                                    {
+                                                        "Chờ xác nhận" => "badge-warning",
+                                                        "Đang giao" => "badge-info",
+                                                        "Đã giao" => "badge-success",
+                                                        "Hủy" => "badge-danger",
+                                                        _ => "badge-secondary"
+                                                    };
+                                                }
+                                                <span class="badge @badgeClass">@order.Status</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <a href="/Admin/Order/Details/@order.Id" class="btn btn-sm btn-circle btn-outline-primary" title="Chi tiết đơn hàng">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fa fa-shopping-basket fa-3x text-gray-300 mb-3"></i>
+                            <p class="text-muted">Chưa có giao dịch nào được thực hiện.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-primary {
+        border-left: 0.25rem solid #4e73df !important;
+    }
+
+    .border-left-info {
+        border-left: 0.25rem solid #36b9cc !important;
+    }
+
+    .text-xs {
+        font-size: .7rem;
+    }
+
+    .btn-circle {
+        width: 30px;
+        height: 30px;
+        padding: 6px 0px;
+        border-radius: 15px;
+        text-align: center;
+        font-size: 12px;
+        line-height: 1.42857;
+    }
+</style>

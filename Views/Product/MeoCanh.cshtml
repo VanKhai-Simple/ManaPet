@@ -1,0 +1,190 @@
+﻿@model IEnumerable<Petshop_frontend.Models.Product>
+
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-transparent p-0 mb-2">
+                    <li class="breadcrumb-item"><a href="/" class="text-muted">TRANG CHỦ</a></li>
+                    <li class="breadcrumb-item active text-dark font-weight-bold">MÈO CẢNH</li>
+                </ol>
+            </nav>
+            <div class="filter-header">
+                <i class="fa fa-sliders"></i> <span class="font-weight-bold">XEM CÁC BÉ THEO GIÁ</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="pet-card shadow-sm rounded">
+                    <a asp-action="Details" asp-route-id="@item.Id" class="card-link">
+                        <div class="img-wrapper rounded-top">
+                            <img src="@item.MainImage" alt="@item.ProductName" class="img-fluid">
+
+                            @if (item.IsDiscount == true)
+                            {
+                                <div class="discount-badge">-@item.DiscountPercent%</div>
+                            }
+
+                            <div class="overlay-btn">
+                                <button class="btn-add-cart"><i class="fa fa-shopping-basket"></i> RƯỚC BÉ NGAY</button>
+                            </div>
+                        </div>
+                        <div class="card-body text-center p-3">
+                            <h3 class="product-name text-truncate">@item.ProductName.ToUpper()</h3>
+                            <div class="price-wrapper">
+                                @if (item.IsDiscount == true)
+                                {
+                                    <span class="price-current">@(((decimal)(item.DiscountPrice ?? 0)).ToString("N0"))đ</span>
+                                    <span class="price-old text-muted">
+                                        <del>@(((decimal)item.Price).ToString("N0"))đ</del>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="price-current">@(((decimal)item.Price).ToString("N0"))đ</span>
+                                }
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (ViewBag.TotalPages > 1)
+    {
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <div class="pagination-custom">
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        <a href="?page=@i" class="btn-page @(ViewBag.CurrentPage == i ? "active" : "")">@i</a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    /* Đồng bộ Style với trang Chó cảnh */
+    .pet-card {
+        background: #fff;
+        border: 1px solid #f0f0f0;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+        .pet-card:hover {
+            border-color: #f39c12; /* Màu cam nhẹ đặc trưng cho thú cưng */
+            transform: translateY(-5px);
+        }
+
+    .card-link {
+        text-decoration: none !important;
+        color: inherit;
+    }
+
+    .img-wrapper {
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 1/1;
+    }
+
+        .img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+    .pet-card:hover .img-wrapper img {
+        transform: scale(1.1);
+    }
+
+    .discount-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: #d0021b;
+        color: #fff;
+        padding: 3px 8px;
+        font-weight: bold;
+        border-radius: 3px;
+        font-size: 12px;
+        z-index: 2;
+    }
+
+    .overlay-btn {
+        position: absolute;
+        bottom: -60px;
+        left: 0;
+        width: 100%;
+        transition: 0.3s;
+        padding: 10px;
+        background: rgba(255,255,255,0.9);
+    }
+
+    .pet-card:hover .overlay-btn {
+        bottom: 0;
+    }
+
+    .btn-add-cart {
+        width: 100%;
+        background: #333;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+        .btn-add-cart:hover {
+            background: #f39c12;
+        }
+
+    .product-name {
+        font-size: 14px;
+        font-weight: bold;
+        margin: 10px 0 5px;
+        color: #333;
+    }
+
+    .price-current {
+        color: #d0021b;
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    .price-old {
+        font-size: 13px;
+        margin-left: 5px;
+    }
+
+    .filter-header {
+        border-bottom: 2px solid #333;
+        padding-bottom: 5px;
+        margin-bottom: 20px;
+        display: inline-block;
+    }
+
+    .btn-page {
+        padding: 8px 16px;
+        border: 1px solid #ddd;
+        margin: 0 4px;
+        color: #333;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .btn-page.active {
+            background: #333;
+            color: #fff;
+            border-color: #333;
+        }
+</style>

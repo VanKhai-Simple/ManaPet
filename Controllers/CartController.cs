@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Petshop_frontend.Helpers;
 using Petshop_frontend.Models;
+using System.Linq;
 using System.Security.Claims;
 
 namespace Petshop_frontend.Controllers
@@ -75,12 +76,27 @@ namespace Petshop_frontend.Controllers
 
         // --- THANH TOÁN (CHECKOUT) ---
         [HttpGet]
-        public async Task<IActionResult> Checkout()
+        public async Task<IActionResult> Checkout(string ids)
         {
             int userId = GetCurrentUserId();
             var profile = await _context.UserProfiles.FirstOrDefaultAsync(p => p.UserId == userId);
-            var cartItems = await _context.CartItems.Include(ci => ci.Product).Where(ci => ci.Cart.UserId == userId).ToListAsync();
 
+            // 1. Lưu lại danh sách ID vào ViewBag để dùng cho Form POST sau này
+            ViewBag.SelectedIds = ids;
+
+            // Lấy giỏ hàng
+            var query = _context.CartItems.Include(ci => ci.Product).Where(ci => ci.Cart.UserId == userId);
+
+            // Lọc theo danh sách ID khách đã chọn bên Index
+            if (!string.IsNullOrEmpty(ids))
+            {
+                var idList = ids.Split(',').Select(int.Parse).ToList();
+                query = query.Where(ci => ci.ProductId.HasValue && idList.Contains(ci.ProductId.Value));
+            }
+
+            var cartItems = await query.ToListAsync();
+
+            // Nếu không có món nào được chọn hoặc giỏ trống, quay về Index
             if (!cartItems.Any()) return RedirectToAction("Index");
 
             var model = new CheckoutViewModel
@@ -96,10 +112,23 @@ namespace Petshop_frontend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Checkout(CheckoutViewModel model, string paymentMethod)
+        public async Task<IActionResult> Checkout(CheckoutViewModel model, string paymentMethod, string selectedIds)
         {
             int userId = GetCurrentUserId();
-            var cartItems = _context.CartItems.Include(ci => ci.Product).Where(ci => ci.Cart.UserId == userId).ToList();
+
+            // 1. Lấy query giỏ hàng kèm Product
+            var query = _context.CartItems.Include(ci => ci.Product).Where(ci => ci.Cart.UserId == userId);
+
+            // 2. QUAN TRỌNG: Lọc đúng những món khách đã tích chọn từ bước trước
+            if (!string.IsNullOrEmpty(selectedIds))
+            {
+                var idList = selectedIds.Split(',').Select(int.Parse).ToList();
+                query = query.Where(ci => ci.ProductId.HasValue && idList.Contains(ci.ProductId.Value));
+            }
+
+            var cartItems = await query.ToListAsync();
+
+            // Nếu không có món nào (hoặc lỡ tay reload mà mất ids) thì không cho thanh toán
             if (!cartItems.Any()) return RedirectToAction("Index");
 
             // Cập nhật Profile
@@ -112,7 +141,7 @@ namespace Petshop_frontend.Controllers
                 _context.UserProfiles.Update(profile);
             }
 
-            // Tạo đơn hàng
+            // Tạo đơn hàng - Lúc này TotalAmount chỉ tính trên cartItems đã lọc
             var order = new Order
             {
                 UserId = userId,
@@ -127,11 +156,17 @@ namespace Petshop_frontend.Controllers
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-            // Lưu chi tiết
+            // Lưu chi tiết hóa đơn (Chỉ lưu những món đã lọc)
             foreach (var item in cartItems)
             {
                 var price = item.Product?.IsDiscount == true ? item.Product.DiscountPrice : item.Product?.Price;
-                _context.OrderDetails.Add(new OrderDetail { OrderId = order.Id, ProductId = item.ProductId, Price = (decimal)(price ?? 0), Quantity = item.Quantity });
+                _context.OrderDetails.Add(new OrderDetail
+                {
+                    OrderId = order.Id,
+                    ProductId = item.ProductId,
+                    Price = (decimal)(price ?? 0),
+                    Quantity = item.Quantity
+                });
             }
             await _context.SaveChangesAsync();
 
@@ -139,9 +174,11 @@ namespace Petshop_frontend.Controllers
             if (paymentMethod == "VNPAY") return Redirect(GenerateVnPayUrl(order));
             if (paymentMethod == "PAYPAL") return Redirect(GeneratePayPalUrl(order));
 
-            // COD thì xóa giỏ luôn
+            // COD thì chỉ xóa những món vừa đặt mua (cartItems đã lọc)
+            // Những món khác khách chưa tích chọn vẫn còn nguyên trong giỏ
             _context.CartItems.RemoveRange(cartItems);
             await _context.SaveChangesAsync();
+
             return RedirectToAction("Success");
         }
 
@@ -182,11 +219,26 @@ namespace Petshop_frontend.Controllers
 
             if (isValid && vnp_ResponseCode == "00")
             {
-                var order = await _context.Orders.FindAsync(int.Parse(orderIdStr));
+                int orderId = int.Parse(orderIdStr);
+                var order = await _context.Orders.FindAsync(orderId);
+
                 if (order != null)
                 {
+                    // 1. Cập nhật trạng thái đơn hàng
                     order.Status = "Đã thanh toán";
-                    _context.CartItems.RemoveRange(_context.CartItems.Where(ci => ci.Cart.UserId == order.UserId));
+
+                    // 2. Lấy danh sách ProductId có trong đơn hàng này từ OrderDetails
+                    var productIdsInOrder = _context.OrderDetails
+                        .Where(od => od.OrderId == orderId)
+                        .Select(od => od.ProductId)
+                        .ToList();
+
+                    // 3. Chỉ xóa những món trong CartItems mà User đã thanh toán (có trong đơn hàng)
+                    var itemsToRemove = _context.CartItems
+                        .Where(ci => ci.Cart.UserId == order.UserId && productIdsInOrder.Contains(ci.ProductId));
+
+                    _context.CartItems.RemoveRange(itemsToRemove);
+
                     await _context.SaveChangesAsync();
                     return RedirectToAction("Success");
                 }
@@ -216,8 +268,9 @@ namespace Petshop_frontend.Controllers
                 order.Status = "Đã thanh toán (PayPal)";
 
                 // Xóa giỏ hàng của User
-                var cartItems = _context.CartItems.Where(ci => ci.Cart.UserId == order.UserId);
-                _context.CartItems.RemoveRange(cartItems);
+                var productIds = _context.OrderDetails.Where(od => od.OrderId == orderId).Select(od => od.ProductId).ToList();
+                var cartToRemove = _context.CartItems.Where(ci => ci.Cart.UserId == order.UserId && productIds.Contains(ci.ProductId));
+                _context.CartItems.RemoveRange(cartToRemove);
 
                 await _context.SaveChangesAsync();
             }
@@ -237,5 +290,48 @@ namespace Petshop_frontend.Controllers
         }
 
 
+        public class CartUpdateItem
+        {
+            public int ProductId { get; set; }
+            public int Quantity { get; set; }
+        }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public IActionResult UpdateCartBeforeCheckout([FromBody] List<CartUpdateItem> items)
+        {
+            try
+            {
+                int userId = GetCurrentUserId();
+                if (userId == 0) return Json(new { success = false });
+
+                var cart = _context.Carts.FirstOrDefault(c => c.UserId == userId);
+                if (cart == null) return Json(new { success = false });
+
+                // 1. Lấy toàn bộ items hiện có trong giỏ của User
+                var dbItems = _context.CartItems.Where(ci => ci.CartId == cart.Id).ToList();
+
+                // 2. Cập nhật số lượng mới từ Client gửi lên (Chỉ cập nhật những món được gửi)
+                foreach (var item in items)
+                {
+                    var dbItem = dbItems.FirstOrDefault(x => x.ProductId == item.ProductId);
+                    if (dbItem != null)
+                    {
+                        dbItem.Quantity = item.Quantity;
+                        _context.CartItems.Update(dbItem);
+                    }
+                }
+
+                _context.SaveChanges();
+
+                // 3. Trả về URL Checkout kèm danh sách ID để trang Checkout lọc ra đúng món cần mua
+                var selectedIds = string.Join(",", items.Select(i => i.ProductId));
+                return Json(new { success = true, redirectUrl = Url.Action("Checkout", new { ids = selectedIds }) });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
     }
 }

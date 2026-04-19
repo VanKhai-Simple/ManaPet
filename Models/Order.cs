@@ -35,6 +35,8 @@ namespace Petshop_frontend.Models
         [StringLength(50)]
         public string? Status { get; set; } = "Chờ xác nhận";
 
+        public DateTime? DeliveredDate { get; set; }
+
         // Liên kết ngược lại bảng User
         [ForeignKey("UserId")]
         public virtual User? User { get; set; }

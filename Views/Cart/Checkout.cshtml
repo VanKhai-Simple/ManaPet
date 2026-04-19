@@ -8,6 +8,9 @@
 
             @* Form sẽ gửi dữ liệu về Action "Checkout" (POST) *@
             <form id="checkoutForm" asp-action="Checkout" method="post" class="needs-validation" novalidate>
+
+                <input type="hidden" name="selectedIds" value="@ViewBag.SelectedIds" />
+
                 <div class="row g-3">
                     <div class="col-sm-12">
                         <label class="form-label fw-bold small">Họ và tên người nhận</label>

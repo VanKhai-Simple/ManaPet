@@ -1,0 +1,173 @@
+﻿@model IEnumerable<Petshop_frontend.Models.Order>
+
+@{
+    ViewData["Title"] = "Báo cáo tài chính";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="h3 mb-0 text-gray-800">Báo cáo tài chính</h3>
+        <div>
+            @* Link xuất Excel có kèm theo tham số ngày để lọc dữ liệu khi xuất *@
+            <a asp-action="ExportToExcel"
+               asp-route-fromDate="@Context.Request.Query["fromDate"]"
+               asp-route-toDate="@Context.Request.Query["toDate"]"
+               class="btn btn-success btn-sm shadow-sm">
+                <i class="fa fa-file-excel-o"></i> Xuất Excel
+            </a>
+        </div>
+    </div>
+
+    <div class="box box-primary shadow-sm mb-4">
+        <div class="box-body">
+            <form method="get" action="@Url.Action("Index", "Finance")" class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="small font-weight-bold">Từ ngày:</label>
+                        <input type="date" name="fromDate" class="form-control input-sm" value="@Context.Request.Query["fromDate"]" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="small font-weight-bold">Đến ngày:</label>
+                        <input type="date" name="toDate" class="form-control input-sm" value="@Context.Request.Query["toDate"]" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div style="margin-top: 23px;">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fa fa-filter"></i> Lọc dữ liệu
+                        </button>
+                        <a href="@Url.Action("Index", "Finance")" class="btn btn-default btn-sm">Làm mới</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card border-left-success shadow h-100 py-2" style="border-left: 4px solid #28a745; background: #fff; padding: 15px;">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Tiền thực thu (Đã giao)</div>
+                    <div class="h5 mb-0 font-weight-bold">@(((decimal)ViewBag.RealRevenue).ToString("N0"))đ</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2" style="border-left: 4px solid #ffc107; background: #fff; padding: 15px;">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Tiền đang treo (Chờ xử lý)</div>
+                    <div class="h5 mb-0 font-weight-bold">@(((decimal)ViewBag.PendingRevenue).ToString("N0"))đ</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2" style="border-left: 4px solid #007bff; background: #fff; padding: 15px;">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Tổng đơn trong kỳ</div>
+                    <div class="h5 mb-0 font-weight-bold">@Model.Count() đơn</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+    <div class="box box-info shadow-sm">
+        <div class="box-header with-border d-flex justify-content-between align-items-center" style="display: flex; justify-content: space-between;">
+            <h3 class="box-title" style="margin: 0;">Chi tiết dòng tiền</h3>
+            <div class="btn-group" data-toggle="buttons">
+                <button class="btn btn-default btn-sm active" onclick="toggleView('chart')">
+                    <i class="fa fa-line-chart"></i> Biểu đồ
+                </button>
+                <button class="btn btn-default btn-sm" onclick="toggleView('table')">
+                    <i class="fa fa-table"></i> Bảng biểu
+                </button>
+            </div>
+        </div>
+        <div class="box-body">
+            <div id="view-chart">
+                <canvas id="financeChart" style="max-height: 400px; width: 100%;"></canvas>
+            </div>
+
+            <div id="view-table" style="display: none;">
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Ngày đặt</th>
+                                <th>Ngày giao</th>
+                                <th>Khách hàng</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                var isPaid = item.Status == "Đã giao";
+                                <tr style="@(isPaid ? "" : "background-color: #fffdf0;")">
+                                    <td>#@item.Id</td>
+                                    <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
+                                    <td>@(item.DeliveredDate.HasValue? item.DeliveredDate.Value.ToString("dd/MM/yyyy") : "---")</td>
+                                    <td>@item.FullName</td>
+                                    <td class="font-weight-bold @(isPaid ? "text-success" : "text-warning")" style="font-weight: bold; color: @(isPaid ? "#28a745" : "#ffc107")">
+                                        @(((decimal)(item.TotalAmount ?? 0)).ToString("N0"))đ
+                                    </td>
+                                    <td>
+                                        <span class="label @(isPaid ? "label-success" : "label-warning")">@item.Status</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Chuyển đổi giữa Biểu đồ và Bảng
+        function toggleView(type) {
+            if (type === 'chart') {
+                document.getElementById('view-chart').style.display = 'block';
+                document.getElementById('view-table').style.display = 'none';
+            } else {
+                document.getElementById('view-chart').style.display = 'none';
+                document.getElementById('view-table').style.display = 'block';
+            }
+        }
+
+        // Khởi tạo Biểu đồ
+        var ctx = document.getElementById('financeChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(Json.Serialize(ViewBag.MonthlyLabels)),
+                datasets: [{
+                    label: 'Doanh thu thực theo tháng (VNĐ)',
+                    data: @Html.Raw(Json.Serialize(ViewBag.MonthlyRevenue)),
+                    backgroundColor: '#1cc88a',
+                    borderColor: '#17a673',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) { return value.toLocaleString('vi-VN') + 'đ'; }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+}

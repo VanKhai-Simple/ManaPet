@@ -6,6 +6,8 @@
     <title>ManaPet | Admin Dashboard</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
+    <link rel="icon" type="image/png" href="~/Images/logo-mana-pet.png">
+
     @* <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
     <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -106,26 +108,49 @@
 
                 <ul class="sidebar-menu">
                     <li class="header">DANH MỤC QUẢN LÝ</li>
-                    <li class="active"><a asp-area="Admin" asp-controller="Home" asp-action="Index"><i class="fa fa-dashboard"></i> <span>Bảng điều khiển</span></a></li>
+
+                    @* 1. Dashboard - Chỉ active khi Controller là Home *@
+                    <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">
+                        <a asp-area="Admin" asp-controller="Home" asp-action="Index">
+                            <i class="fa fa-dashboard"></i> <span>Bảng điều khiển</span>
+                        </a>
+                    </li>
+
+                    @* 2. Quản lý Thú cưng *@
                     <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Product" ? "active" : "")">
                         <a asp-area="Admin" asp-controller="Product" asp-action="Index">
                             <i class="fa fa-paw"></i> <span>Quản lý Thú cưng</span>
                         </a>
                     </li>
-                    <li>
+
+                    @* 3. Quản lý Đơn hàng - Lưu ý Controller của ông là OrderAdmin *@
+                    <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "OrderAdmin" ? "active" : "")">
                         <a asp-area="Admin" asp-controller="OrderAdmin" asp-action="Index">
                             <i class="fa fa-shopping-cart"></i> <span>Quản lý Đơn hàng</span>
                         </a>
                     </li>
-                    <li><a href="#"><i class="fa fa-users"></i> <span>Quản lý Khách hàng</span></a></li>
+
+                    @* 4. Quản lý Khách hàng *@
+                    <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customer" ? "active" : "")">
+                        <a asp-area="Admin" asp-controller="Customer" asp-action="Index">
+                            <i class="fa fa-users"></i> <span>Quản lý Khách hàng</span>
+                        </a>
+                    </li>
+
+                    @* 5. Báo cáo tài chính *@
+                    <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Finance" ? "active" : "")">
+                        <a asp-area="Admin" asp-controller="Finance" asp-action="Index">
+                            <i class="fa fa-line-chart"></i> <span>Báo cáo tài chính</span>
+                        </a>
+                    </li>
+
                     <li class="header">HỆ THỐNG</li>
-                    <li><a href="#"><i class="fa fa-gears"></i> <span>Cấu hình</span></a></li>
-                    <!-- Mục Chat với khách hàng -->
-                    <li>
+
+                    @* 6. Hỗ trợ khách hàng *@
+                    <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Chat" ? "active" : "")">
                         <a asp-area="Admin" asp-controller="Chat" asp-action="Index">
                             <i class="fa-solid fa-message"></i> <span>Hỗ trợ khách hàng</span>
                             <span class="pull-right-container">
-                                @* Sau này dùng Viewbag hoặc Component để truyền số lượng tin nhắn chưa đọc vào đây *@
                                 <small class="label pull-right bg-red" id="chat-count">0</small>
                             </span>
                         </a>

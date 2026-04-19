@@ -1,214 +1,93 @@
-﻿@*Header*@
-<header id="main-header" class="main-header">
-    @* --- TOP BAR --- *@
-    <div class="top-bar py-2 text-white d-none d-lg-block" style="background-color: #1564cb; font-size: 0.8rem;">
-        <div class="container d-flex justify-content-between align-items-center">
-            <div>
-                <i class="fas fa-map-marker-alt"></i> Cửa Hàng Miền Bắc: Số 428 Minh Khai, Quận Hai Bà Trưng, Tp.Hà Nội.
-            </div>
-            <div class="social-icons">
-                <a href="https://www.facebook.com/van.giun.1" class="text-white me-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Facebook của Mana Pet">
-                    <i class="fab fa-facebook"></i>
-                </a>
-                <a href="https://www.tiktok.com/search?q=C%C3%B2n%20g%C3%AC%20%C4%91%E1%BA%B9p%20h%C6%A1n&t=1772081177045" class="text-white me-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Theo dõi TikTok">
-                    <i class="fab fa-tiktok"></i>
-                </a>
-                <a href="https://www.youtube.com/watch?v=-nJ0WHEetsQ&list=RD-nJ0WHEetsQ&start_radio=1" class="text-white me-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Kênh Youtube">
-                    <i class="fab fa-youtube"></i>
-                </a>
-                <a href="tel:0123456789" class="text-white" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Gọi ngay cho chúng tôi">
-                    <i class="fas fa-phone"></i>
-                </a>
-            </div>
-            <div>
-                <i class="fas fa-map-marker-alt"></i> Cửa Hàng Miền Nam: 961 Đường Phạm Văn Đồng, Thủ Đức, Tp.Hcm.
-            </div>
-        </div>
-    </div>
+﻿<header id="site-header" class="main-header sticky-top">
+    <div class="container-fluid px-2 px-lg-5">
+        <nav class="navbar navbar-expand-xl navbar-light py-2">
+            <!-- Logo -->
+            <a class="navbar-brand me-5" href="/">
+                <img src="/Images/logo-mana-pet.png" alt="Mana Pet Logo" style="max-height: 80px; width: auto; object-fit: contain;">
+            </a>
 
-    @* --- NAVBAR --- *@
-    <nav class="navbar navbar-expand-lg shadow-sm" style="background-color: #1570cb; font-size: 0.9rem;">
-        <div class="container-fluid position-relative py-2 px-lg-5">
-            <div class="row w-100 align-items-center g-0">
+            <!-- Mobile Toggle -->
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#manaNavbar" aria-controls="manaNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                @* CỘT 1: Nút Toggle (Trái) *@
-                <div class="col-4 d-flex justify-content-start align-items-center">
-                    <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
-                        <i class="fa-solid fa-bars text-white fs-2"></i>
-                    </button>
-
-                    @* OFFCANVAS (SIDE-BAR) *@
-                    <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="offcanvasNavbar" style="width: 300px;">
-                        <div class="offcanvas-header border-bottom">
-                            <h5 class="offcanvas-title fw-bold text-primary" id="offcanvasNavbarLabel">MANA PET MENU</h5>
-                            <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas"></button>
-                        </div>
-                        <div class="offcanvas-body d-flex flex-column">
-                            @* 1. Ô tìm kiếm trong Side-bar *@
-                            <div class="search-mobile mb-4">
-                                <div class="input-group">
-                                    <input type="text" class="form-control shadow-none" placeholder="Tìm thú cưng...">
-                                    <button class="btn btn-primary"><i class="fas fa-search"></i></button>
-                                </div>
-                            </div>
-
-                            @* 2. Menu chính *@
-                            <ul class="navbar-nav justify-content-start flex-grow-1">
-                                <li class="nav-item border-bottom">
-                                    <a class="nav-link text-dark py-3" asp-controller="Home" asp-action="Index">🏠 TRANG CHỦ</a>
-                                </li>
-                                <li class="nav-item border-bottom">
-                                    @* Giả sử ông có hàm ChoCanh và MeoCanh lọc theo IsPet *@
-                                    <a class="nav-link text-dark py-3" asp-controller="Product" asp-action="ChoCanh">🐶 CHÓ CẢNH</a>
-                                </li>
-                                <li class="nav-item border-bottom">
-                                    <a class="nav-link text-dark py-3" asp-controller="Product" asp-action="MeoCanh">🐱 MÈO CẢNH</a>
-                                </li>
-                                <li class="nav-item border-bottom">
-                                    @* Đây là trang Phụ kiện ông vừa fix xong *@
-                                    <a class="nav-link text-dark py-3" asp-controller="Product" asp-action="Accessories">🦴 PHỤ KIỆN</a>
-                                </li>
-                            </ul>
-
-                            @* 3. Đăng nhập / Đăng ký trong Side-bar (Mobile) *@
-                            <div class="auth-mobile mt-auto pt-4 border-top">
-                                <div class="d-grid gap-2">
-                                    @if (User.Identity?.IsAuthenticated == true)
-                                    {
-                                        <div class="text-center mb-2">Chào, <strong>@User.Identity.Name</strong></div>
-                                        <a asp-controller="User" asp-action="Profile" class="btn btn-outline-primary rounded-pill fw-bold">HỒ SƠ</a>
-                                        <form asp-controller="User" asp-action="Logout" method="post" class="d-grid">
-                                            <button type="submit" class="btn btn-danger rounded-pill fw-bold">ĐĂNG XUẤT</button>
-                                        </form>
-                                    }
-                                    else
-                                    {
-                                        <a asp-controller="User" asp-action="Login" class="btn btn-primary rounded-pill fw-bold">ĐĂNG NHẬP</a>
-                                        <a asp-controller="User" asp-action="Register" class="btn btn-outline-primary rounded-pill fw-bold">ĐĂNG KÝ</a>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    @* Menu ngang cho Desktop *@
-                    <div class="collapse navbar-collapse d-none d-lg-block ms-3">
-                        <ul class="navbar-nav justify-content-start flex-grow-1 pe-3">
-                            <li class="nav-item dropdown mega-menu-hover">
-                                <a class="nav-link active dropdown-toggle " href="/">🏠 TRANG CHỦ</a>
-                                <div class="dropdown-menu mega-content-green border-0 p-3 shadow">
-                                    <div class="row g-2" style="width: 600px;">
-                                        <div class="col-md-4"><a class="dropdown-item rounded" href="/ve-chung-toi">VỀ CHÚNG TÔI</a></div>
-                                        <div class="col-md-4"><a class="dropdown-item rounded" href="/dich-vu">DỊCH VỤ SPA & HOTEL</a></div>
-                                        <div class="col-md-4"><a class="dropdown-item rounded" href="/bao-hanh">CHÍNH SÁCH BẢO HÀNH</a></div>
-                                        <div class="col-md-4"><a class="dropdown-item rounded" href="/tra-gop">CHÍNH SÁCH TRẢ GÓP 0%</a></div>
-                                        <div class="col-md-4"><a class="dropdown-item rounded" href="/tin-tuc">TIN TỨC</a></div>
-                                        <div class="col-md-4"><a class="dropdown-item rounded" href="/lien-he">LIÊN HỆ</a></div>
-                                    </div>
-                                </div>
-                            </li>
-
-                            <li class="nav-item dropdown mega-menu-hover ms-3">
-                                <a class="nav-link dropdown-toggle" href="/cho-canh">🐶 CHÓ CẢNH</a>
-                                <div class="dropdown-menu mega-content-green border-0 p-4 shadow">
-                                    <div class="row" style="min-width: 800px;">
-                                        <div class="col-md-4">
-                                            <a class="dropdown-item" href="#">CHÓ PHỐC SÓC</a><a class="dropdown-item" href="#">CHÓ CORGI</a>
-                                            <a class="dropdown-item" href="#">CHÓ ALASKA</a><a class="dropdown-item" href="#">CHÓ SHIBA</a>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <a class="dropdown-item" href="#">CHÓ POODLE</a><a class="dropdown-item" href="#">CHÓ GOLDEN</a>
-                                            <a class="dropdown-item" href="#">CHÓ HUSKY</a><a class="dropdown-item" href="#">CHÓ SAMOYED</a>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <a class="dropdown-item" href="#">CHÓ CHIHUAHUA</a><a class="dropdown-item" href="#">CHÓ PHÚ QUỐC</a>
-                                            <a class="dropdown-item" href="#">CHÓ BULLY</a><a class="dropdown-item" href="#">CHÓ AKITA</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-
-                            <li class="nav-item dropdown mega-menu-hover ms-3">
-                                <a class="nav-link dropdown-toggle" href="/meo-canh">🐱 MÈO CẢNH</a>
-                                <div class="dropdown-menu mega-content-green border-0 p-4 shadow">
-                                    <div class="row" style="min-width: 700px;">
-                                        <div class="col-md-4"><a class="dropdown-item" href="#">MÈO ANH LÔNG NGẮN</a><a class="dropdown-item" href="#">MÈO ANH LÔNG DÀI</a></div>
-                                        <div class="col-md-4"><a class="dropdown-item" href="#">MÈO MUNCHKIN</a><a class="dropdown-item" href="#">MÈO MAINE COON</a></div>
-                                        <div class="col-md-4"><a class="dropdown-item" href="#">MÈO SCOTTISH FOLD</a><a class="dropdown-item" href="#">MÈO GOLDEN</a></div>
-                                    </div>
-                                </div>
-                            </li>
-
-                            <li class="nav-item dropdown mega-menu-hover ms-3">
-                                <a class="nav-link dropdown-toggle" asp-controller="Product" asp-action="Accessories">
-                                    ✂️ PHỤ KIỆN
-                                </a>
-                                <div class="dropdown-menu mega-content-green border-0 p-4 shadow">
-                                    <div class="row" style="min-width: 900px;">
-                                        <div class="col-md-6 border-end border-light border-opacity-25">
-                                            <h6 class="text-warning fw-bold text-center mb-2">PHỤ KIỆN CHO CHÓ</h6>
-                                            <div class="row">
-                                                <div class="col-6"><a class="dropdown-item small" href="#">> Thức Ăn Hạt</a><a class="dropdown-item small" href="#">> Pate - Nước Sốt</a></div>
-                                                <div class="col-6"><a class="dropdown-item small" href="#">> Sữa Tắm</a><a class="dropdown-item small" href="#">> Chuồng & Nhà</a></div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 ps-4">
-                                            <h6 class="text-dark fw-bold text-center mb-2">PHỤ KIỆN CHO MÈO</h6>
-                                            <div class="row">
-                                                <div class="col-6"><a class="dropdown-item small" href="#">> Cát vệ sinh</a><a class="dropdown-item small" href="#">> Đồ chơi mèo</a></div>
-                                                <div class="col-6"><a class="dropdown-item small" href="#">> Sữa cho mèo</a><a class="dropdown-item small" href="#">> Quần áo</a></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
+            <!-- Navigation Links -->
+            <div class="collapse navbar-collapse" id="manaNavbar">
+                <ul class="navbar-nav me-auto mb-2 mb-xl-0 header-menu-list align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/">
+                            <i class="fas fa-home me-1"></i> Trang chủ
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown dropdown-hover">
+                        <a class="nav-link dropdown-toggle fw-bold btn-glow-text" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-paw me-1"></i> Sản phẩm
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-custom shadow-sm border-0 border-radius-lg px-2 py-3" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item py-2 rounded" asp-controller="Product" asp-action="ChoCanh"><i class="fas fa-dog me-2 text-warning"></i> Chó cảnh</a></li>
+                            <li><a class="dropdown-item py-2 rounded" asp-controller="Product" asp-action="MeoCanh"><i class="fas fa-cat me-2 text-warning"></i> Mèo cảnh</a></li>
+                            <li><hr class="dropdown-divider opacity-25"></li>
+                            <li><a class="dropdown-item py-2 rounded" href="/Products/Category/Food"><i class="fas fa-bone me-2 text-muted"></i> Thức ăn</a></li>
+                            <li><a class="dropdown-item py-2 rounded" href="/Products/Category/Accessories"><i class="fas fa-hat-cowboy me-2 text-muted"></i> Phụ kiện</a></li>
+                            <li><a class="dropdown-item py-2 rounded" href="/Products/Category/Bed"><i class="fas fa-bed me-2 text-muted"></i> Chuồng / Nhà / Đệm</a></li>
+                            <li><a class="dropdown-item py-2 rounded" href="/Products/Category/Toys"><i class="fas fa-volleyball-ball me-2 text-muted"></i> Đồ chơi</a></li>
+                            <li><a class="dropdown-item py-2 rounded" href="/Products/Category/Care"><i class="fas fa-bath me-2 text-muted"></i> Vệ sinh / chăm sóc</a></li>
                         </ul>
-                    </div>
-                </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Services">
+                            <i class="fas fa-concierge-bell me-1"></i> Dịch vụ
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tin-tuc">
+                            <i class="fas fa-newspaper me-1"></i> Tin tức
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/lien-he">
+                            <i class="fas fa-envelope me-1"></i> Liên hệ
+                        </a>
+                    </li>
+                </ul>
 
-                @* CỘT 2: Logo (Giữa) *@
-                <div class="col-4 d-flex justify-content-center">
-                    <a class="navbar-brand-custom d-lg-block" href="/">
-                        <img src="~/Images/logo-mana-pet.png" alt="Logo" id="main-logo">
-                    </a>
-                </div>
+                <!-- Right Side Action Icons -->
+                <div class="d-flex align-items-center header-right-actions flex-wrap gap-3 mt-3 mt-xl-0">
+                    <!-- Search Box -->
+                    <form class="d-flex position-relative header-search-form" action="/Products/Search" method="GET">
+                        <input class="form-control rounded-pill ps-4 pe-5 border-0 bg-white shadow-sm" type="search" placeholder="Tìm kiếm bé yêu..." aria-label="Search" name="q" style="min-width: 250px;">
+                        <button class="btn btn-search-icon position-absolute end-0 top-50 translate-middle-y border-0 bg-transparent text-muted" type="submit">
+                            <i class="fas fa-search text-primary"></i>
+                        </button>
+                    </form>
 
-                @* CỘT 3: Search, Auth, Cart (Phải) *@
-                <div class="col-4 d-flex justify-content-end align-items-center">
-                    @* Ô Tìm kiếm Desktop có Icon *@
-                    <div class="search-box d-none d-xl-block me-3">
-                        <div class="position-relative search-container">
-                            <input type="text"
-                                   class="form-control rounded-pill border-0 bg-white bg-opacity-25 text-white shadow-none ps-3 pe-5 py-2"
-                                   placeholder="Tìm kiếm..."
-                                   style="width: 200px;">
-
-                            <button class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-white p-0 me-3 shadow-none border-0"
-                                    type="button"
-                                    style="cursor: pointer;">
-                                <i class="fas fa-search fs-5"></i>
-                            </button>
+                    <!-- Cart -->
+                    <a href="/Cart" class="text-decoration-none position-relative cart-icon-wrapper text-dark mx-2">
+                        <div class="cart-btn rounded-circle d-flex align-items-center justify-content-center bg-white shadow-sm" style="width: 45px; height: 45px; transition: 0.3s;">
+                            <i class="fas fa-shopping-cart" style="color: var(--c-text);"></i>
                         </div>
-                    </div>
+                        <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white">
+                            0
+                        </span>
+                    </a>
 
-                    @* Cụm Auth (Ẩn trên mobile vì đã có trong side-bar) *@
-                    <div class="auth-links bg-white px-3 py-2 rounded-pill me-3 shadow-sm d-none d-md-block">
+                    <!-- Account / Login -->
+                    <div class="account-action">
                         @if (User.Identity?.IsAuthenticated == true)
                         {
-                            <div class="dropdown d-inline">
-                                <a class="text-decoration-none fw-bold small text-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="fas fa-user-circle"></i> @User.Identity.Name?.ToUpper()
+                            <div class="dropdown dropdown-hover account-dropdown">
+                                <a href="#" class="text-decoration-none text-dark d-flex align-items-center" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="rounded-circle bg-white shadow-sm d-flex justify-content-center align-items-center me-2" style="width: 45px; height: 45px;">
+                                        <i class="fas fa-user" style="color: var(--c-primary);"></i>
+                                    </div>
+                                    <span class="fw-bold fs-6 d-none d-xxl-inline">@User.Identity.Name</span>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-                                    <li><a class="dropdown-item" asp-controller="User" asp-action="Profile"><i class="fas fa-id-card me-2"></i> Hồ sơ cá nhân</a></li>
-                                    @if (User.IsInRole("Admin"))
-                                    {
-                                        <li><a class="dropdown-item text-danger" asp-area="Admin" asp-controller="Home" asp-action="Index"><i class="fas fa-user-shield me-2"></i> Trang quản trị</a></li>
-                                    }
-                                    <li><hr class="dropdown-divider"></li>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 border-radius-lg px-2 py-2 mt-2" aria-labelledby="accountDropdown">
+                                    <li><a class="dropdown-item py-2 rounded fw-bold" href="/User/Profile"><i class="fas fa-id-card me-2 text-primary"></i> Hồ sơ</a></li>
+                                    <li><hr class="dropdown-divider opacity-25"></li>
                                     <li>
-                                        <form asp-controller="User" asp-action="Logout" method="post" class="px-3">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger w-100">Đăng xuất</button>
+                                        <form asp-controller="User" asp-action="Logout" method="post" class="d-inline w-100 m-0 p-0">
+                                            <button type="submit" class="dropdown-item py-2 rounded text-danger fw-bold"><i class="fas fa-sign-out-alt me-2"></i> Đăng xuất</button>
                                         </form>
                                     </li>
                                 </ul>
@@ -216,26 +95,13 @@
                         }
                         else
                         {
-                            <i class="fas fa-user-circle text-primary"></i>
-                            <a asp-controller="User" asp-action="Login" class="text-decoration-none fw-bold small text-primary">ĐĂNG NHẬP</a>
-                            <span class="text-muted mx-1">|</span>
-                            <a asp-controller="User" asp-action="Register" class="text-decoration-none fw-bold small text-primary">ĐĂNG KÝ</a>
+                            <a href="/User/Login" class="text-decoration-none d-flex align-items-center btn-login px-4 py-2 rounded-pill shadow-sm">
+                                <i class="fas fa-user-circle me-2"></i> Đăng nhập
+                            </a>
                         }
-                    </div>
-
-                    @* Giỏ hàng *@
-                    @* Giỏ hàng bình yên *@
-                    <div class="cart-wrapper d-inline-block py-2 ms-3">
-                        <a href="/Cart" class="cart-icon text-white fs-4 position-relative text-decoration-none">
-                            <i class="fas fa-shopping-cart"></i>
-                            @* Badge này sẽ tự nhảy số khi có script chạy *@
-                            <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                                  style="font-size: 0.65rem; padding: 0.35em 0.65em; display: none;">0</span>
-                        </a>
                     </div>
                 </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </div>
 </header>
-

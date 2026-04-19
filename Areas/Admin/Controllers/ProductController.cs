@@ -12,11 +12,13 @@ namespace Petshop_frontend.Areas.Admin.Controllers
     {
         private readonly ManaPet _context;
         private readonly IWebHostEnvironment _hostEnvironment;
+        private readonly IPhotoService _photoService;
 
-        public ProductController(ManaPet context, IWebHostEnvironment hostEnvironment)
+        public ProductController(ManaPet context, IWebHostEnvironment hostEnvironment, IPhotoService photoService)
         {
             _context = context;
             _hostEnvironment = hostEnvironment;
+            _photoService = photoService;
         }
 
         // 1. TRANG DANH SÁCH
@@ -51,7 +53,7 @@ namespace Petshop_frontend.Areas.Admin.Controllers
             // 2. Kiểm tra trùng tên (Bọc kỹ để không sập)
             var isExist = await _context.Products.AnyAsync(p => p.ProductName.ToLower().Trim() == product.ProductName.ToLower().Trim());
             if (isExist)
-            {
+            {   
                 ModelState.AddModelError("ProductName", "Tên sản phẩm này đã tồn tại rồi!");
             }
 
@@ -62,7 +64,11 @@ namespace Petshop_frontend.Areas.Admin.Controllers
                     // A. XỬ LÝ ẢNH CHÍNH
                     if (mainImageFile != null)
                     {
-                        product.MainImage = await SaveFile(mainImageFile);
+                        var result = await _photoService.AddPhotoAsync(mainImageFile);
+                        if (result.Error == null)
+                        {
+                            product.MainImage = result.SecureUrl.AbsoluteUri; // Link Cloudinary
+                        }
                     }
 
                     // B. TÍNH TOÁN GIÁ GIẢM (Sửa chỗ này để tránh lỗi Null decimal?)
@@ -77,7 +83,7 @@ namespace Petshop_frontend.Areas.Admin.Controllers
                         product.DiscountPrice = null;
                     }
 
-                    product.CreatedAt = DateTime.Now;
+                    //product.CreatedAt = DateTime.Now;
 
                     _context.Add(product);
                     await _context.SaveChangesAsync();
@@ -89,13 +95,16 @@ namespace Petshop_frontend.Areas.Admin.Controllers
                         {
                             if (file.Length > 0)
                             {
-                                var imagePath = await SaveFile(file);
-                                _context.ProductImages.Add(new ProductImage
+                                var result = await _photoService.AddPhotoAsync(file);
+                                if (result.Error == null)
                                 {
-                                    ProductId = product.Id,
-                                    ImageUrl = imagePath,
-                                    IsDefault = false
-                                });
+                                    _context.ProductImages.Add(new ProductImage
+                                    {
+                                        ProductId = product.Id,
+                                        ImageUrl = result.SecureUrl.AbsoluteUri, // Link Cloudinary
+                                        IsDefault = false
+                                    });
+                                }
                             }
                         }
                         await _context.SaveChangesAsync();
@@ -166,7 +175,11 @@ namespace Petshop_frontend.Areas.Admin.Controllers
                     // A. Xử lý ảnh chính: Nếu có file mới thì lưu, không thì giữ nguyên ảnh cũ trong Hidden Input
                     if (mainImageFile != null && mainImageFile.Length > 0)
                     {
-                        product.MainImage = await SaveFile(mainImageFile);
+                        var result = await _photoService.AddPhotoAsync(mainImageFile);
+                        if (result.Error == null)
+                        {
+                            product.MainImage = result.SecureUrl.AbsoluteUri;
+                        }
                     }
 
                     // B. Tính toán lại giá giảm
@@ -188,12 +201,15 @@ namespace Petshop_frontend.Areas.Admin.Controllers
                     {
                         foreach (var file in moreImages)
                         {
-                            var imagePath = await SaveFile(file);
-                            _context.ProductImages.Add(new ProductImage
+                            var result = await _photoService.AddPhotoAsync(file);
+                            if (result.Error == null)
                             {
-                                ProductId = product.Id,
-                                ImageUrl = imagePath
-                            });
+                                _context.ProductImages.Add(new ProductImage
+                                {
+                                    ProductId = product.Id,
+                                    ImageUrl = result.SecureUrl.AbsoluteUri
+                                });
+                            }
                         }
                         await _context.SaveChangesAsync();
                     }

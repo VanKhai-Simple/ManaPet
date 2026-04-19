@@ -1,0 +1,88 @@
+﻿@model IEnumerable<Petshop_frontend.Models.User>
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="h3 mb-0 text-gray-800">Quản lý khách hàng</h3>
+        <span class="badge badge-primary">Tổng số: @Model.Count()</span>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover border">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Khách hàng</th>
+                            <th>Liên hệ</th>
+                            <th>Nền tảng</th>
+                            <th>Ngày đăng ký</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            var p = user.UserProfile; // Truy cập 1-1
+                                                       <tr>
+                                                           <td>
+                                                               <div class="d-flex align-items-center">
+                                                                   <img src="@(string.IsNullOrEmpty(p?.Avatar) ? "/images/default-user.png" : p.Avatar)"
+                                                                        alt="avatar" class="rounded-circle mr-2" width="40" height="40" style="object-fit: cover;">
+                                                                   <div>
+                                                                       <div class="font-weight-bold">@(p?.FullName ?? user.Username ?? "N/A")</div>
+                                                                       <small class="text-muted">ID: #@user.Id</small>
+                                                                   </div>
+                                                               </div>
+                                                           </td>
+                                                           <td>
+                                                               <div><i class="fa fa-envelope-o fa-fw"></i> @(p?.Email ?? "Chưa có")</div>
+                                                               <div><i class="fa fa-phone fa-fw"></i> @(p?.Phone ?? "N/A")</div>
+                                                           </td>
+                                                           <td>
+                                    @if (user.Provider == "Google")
+                                    {
+                                        <span class="badge badge-danger"><i class="fa fa-google"></i> Google</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-secondary"><i class="fa fa-user-circle"></i> Local</span>
+                                    }
+                                </td>
+                                <td>@user.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="status-@user.Id"
+                                               @(user.Status == true ? "checked" : "")
+                                               onchange="toggleStatus(@user.Id)">
+                                        <label class="custom-control-label" for="status-@user.Id">
+                                            @(user.Status == true ? "Hoạt động" : "Khóa")
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-sm btn-info shadow-sm">
+                                        <i class="fa fa-eye"></i> Xem đơn
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleStatus(id) {
+            $.post('@Url.Action("ToggleStatus", "Customer")', { id: id }, function (res) {
+                if (!res.success) {
+                    alert("Lỗi khi cập nhật trạng thái!");
+                    location.reload();
+                }
+            });
+        }
+    </script>
+}

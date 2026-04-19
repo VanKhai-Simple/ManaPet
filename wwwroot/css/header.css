@@ -53,60 +53,6 @@ body {
     border-bottom-color: #000 !important;
 }
 
-
-
-
-/* MEGA MENU NỀN XANH LÁ */
-.mega-content-green {
-    background-color: #2ecc71 !important;
-    border-radius: 12px;
-}
-
-    .mega-content-green .dropdown-item {
-        color: white !important;
-        font-size: 13px;
-        font-weight: 600;
-        text-transform: uppercase;
-        padding: 8px 15px;
-        transition: 0.2s;
-    }
-
-        .mega-content-green .dropdown-item:hover {
-            background-color: aqua !important;
-            border-radius: 6px;
-            padding-left: 20px;
-        }
-
-/* HOVER ĐỂ HIỆN MENU */
-@media (min-width: 992px) {
-    .nav-item:hover > .dropdown-menu {
-        display: block;
-        margin-top: 0;
-        animation: fadeInMenu 0.3s ease;
-    }
-}
-
-.nav-link {
-    color: whitesmoke;
-}
-
-.nav-item:hover > .nav-link {
-    color: white;
-}
-
-/* ĐĂNG NHẬP | ĐĂNG KÝ */
-.auth-links {
-    transition: 0.3s;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-}
-
-    .auth-links:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-
 /* TOOLTIP MÀU ĐEN */
 .tooltip-inner {
     background-color: #000 !important;
@@ -125,74 +71,6 @@ body {
     }
 }
 
-
-/* CSS để logo "bung xõa" */
-.navbar-brand-custom {
-    position: absolute; /* Đưa ra khỏi luồng thông thường */
-    top: 0; /* Căn từ mép trên navbar */
-    left: 50%;
-    transform: translateX(-50%); /* Căn giữa tuyệt đối */
-    z-index: 1100; /* Nằm trên mọi thứ khác */
-    background: transparent; /* (Tùy chọn) Thêm nền trắng nếu logo của bạn hình tròn/khiên */
-    padding: 5px; /* Khoảng cách đệm cho logo */
-}
-
-    .navbar-brand-custom img {
-        height: 70px; /* CHỈNH ĐỘ CAO Ở ĐÂY - Cao hơn 70px của navbar để nó tràn ra ngoài */
-        width: auto; /* Tự động tính chiều rộng để không bị bóp méo */
-        display: block;
-        object-fit: contain; /* Giữ đúng tỉ lệ ảnh */
-        transition: 0.3s;
-    }
-
-
-/* Trạng thái mặc định của Header */
-.main-header {
-    position: relative;
-    z-index: 1100;
-    width: 100%;
-    transition: all 0.4s ease-in-out;
-}
-
-    /* Lớp này sẽ được JS thêm vào khi cuộn xuống */
-    .main-header.is-sticky {
-        position: fixed;
-        top: 0;
-        left: 0;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        animation: slideDown 0.5s ease-out; /* Hiệu ứng trượt xuống */
-    }
-
-        /* Khi dính, ta ẩn Top-bar đi để Navbar gọn hơn */
-        .main-header.is-sticky .top-bar {
-            display: none !important;
-        }
-
-/* Hiệu ứng trượt từ trên xuống */
-@keyframes slideDown {
-    from {
-        transform: translateY(-100%);
-    }
-
-    to {
-        transform: translateY(0);
-    }
-}
-
-/* Thu nhỏ logo một chút khi cuộn cho tinh tế */
-.is-sticky #logo-img {
-    height: 50px !important;
-}
-
-/* Đảm bảo Sidebar có z-index cao hơn hẳn để che được mọi thứ */
-.offcanvas {
-    z-index: 2000 !important;
-}
-
-/* Đảm bảo lớp nền đen (backdrop) cũng che được logo */
-.offcanvas-backdrop {
-    z-index: 1900 !important;
-}
 
 /* Hiệu ứng khi rê chuột vào icon */
 .search-container button:hover i {

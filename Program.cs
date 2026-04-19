@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
+using Petshop_frontend.Helpers;
 using Petshop_frontend.Hubs;
 using Petshop_frontend.Models;
 
@@ -57,6 +58,12 @@ builder.Services.AddDbContext<ManaPet>(opt => opt.UseSqlServer(cf.GetConnectionS
 
 
 builder.Services.AddSignalR();
+
+// 1. Kết nối appsettings.json với class CloudinarySettings
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
+
+// 2. Đăng ký PhotoService để có thể Dependency Injection vào Controller
+builder.Services.AddScoped<IPhotoService, PhotoService>();
 
 
 var app = builder.Build();

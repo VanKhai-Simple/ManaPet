@@ -44,4 +44,6 @@ public partial class User
 
     [InverseProperty("User")]
     public virtual UserProfile? UserProfile { get; set; }
+
+    public virtual ICollection<Order> Orders { get; set; }
 }

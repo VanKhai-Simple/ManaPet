@@ -66,6 +66,15 @@
     }
 
     }
+
+    .cart-icon-wrapper:hover .cart-btn {
+        background-color: var(--c-primary) !important;
+        transform: translateY(-3px);
+    }
+
+    .cart-icon-wrapper:hover i {
+        color: white !important;
+    }
 </style>
 
 <div class="container py-4 bg-white" id="product-page-container"
@@ -278,17 +287,21 @@
                 e.preventDefault();
                 const btn = $(this);
 
-                // KIỂM TRA ĐIỂM ĐẾN: Nếu Header dùng thẻ <a> có class cart-icon
-                const cart = $('.cart-icon').first();
+                // 1. Sửa lại selector cho đúng với HTML của ông giáo
+                const cart = $('.cart-icon-wrapper').first();
+                const badge = cart.find('.badge'); // Tìm cái badge nằm trong cart-icon-wrapper
 
                 let imgToFly;
                 if(btn.closest('#sticky-buy-bar').length > 0) {
                     imgToFly = btn.closest('#sticky-buy-bar').find('img');
                 } else {
-                    imgToFly = $('#mainImg');
+                    // Nếu ở trang chi tiết, lấy ảnh chính. Nếu ở trang danh sách, lấy ảnh của card đó
+                    imgToFly = btn.closest('.card, .product-detail').find('img').first();
+                    if(!imgToFly.length) imgToFly = $('#mainImg');
                 }
 
                 if (imgToFly.length && cart.length) {
+                    // Tạo bản sao ảnh để bay
                     const flyImg = $('<img class="fly-item">');
                     flyImg.attr('src', imgToFly.attr('src'));
 
@@ -297,49 +310,56 @@
 
                     $('body').append(flyImg);
 
+                    // Vị trí bắt đầu
                     flyImg.css({
-                        top: startPos.top - $(window).scrollTop(),
+                        top: startPos.top,
                         left: startPos.left,
-                        width: imgToFly.width() / 2
+                        width: imgToFly.width() + 'px',
+                        height: imgToFly.height() + 'px'
                     });
 
+                    // Kích hoạt hiệu ứng bay sau 50ms
                     setTimeout(() => {
                         flyImg.css({
-                            top: endPos.top - $(window).scrollTop() + 10,
+                            top: endPos.top + 10,
                             left: endPos.left + 10,
                             width: '20px',
                             height: '20px',
-                            opacity: 0.5
+                            opacity: 0.2,
+                            transform: 'rotate(360deg)' // Thêm xoay cho sinh động
                         });
                     }, 50);
 
                     setTimeout(() => {
                         flyImg.remove();
+
                         // Hiệu ứng rung giỏ hàng
                         cart.addClass('cart-shake');
 
-                        // Cập nhật số lượng hiển thị tạm thời
+                        // Lấy số lượng từ input (nếu có)
                         let addedQty = parseInt(btn.closest('div').find('.qty-input').val()) || 1;
-                        let currentBadge = parseInt($('#cart-badge').text()) || 0;
-                        $('#cart-badge').text(currentBadge + addedQty).show();
+                        let currentBadge = parseInt(badge.text()) || 0;
+
+                        // Cập nhật số hiển thị tạm thời
+                        badge.text(currentBadge + addedQty).fadeIn();
 
                         setTimeout(() => cart.removeClass('cart-shake'), 500);
 
-                        // Gọi AJAX đồng bộ server
-                        addToCartAjax(addedQty);
+                        // Gọi AJAX để lưu vào database
+                        addToCartAjax(addedQty, badge);
                     }, 800);
                 } else {
-                    // Nếu không có hiệu ứng bay thì vẫn phải gọi AJAX trực tiếp
                     let addedQty = parseInt($('.qty-input').first().val()) || 1;
-                    addToCartAjax(addedQty);
+                    addToCartAjax(addedQty, badge);
                 }
             });
 
-            function addToCartAjax(qty) {
+            function addToCartAjax(qty, badgeElement) {
                 const pid = '@Model.Id';
                 $.post('@Url.Action("AddToCart", "Cart")', { productId: pid, quantity: qty }, function(res) {
                     if(res.success) {
-                        $('#cart-badge').text(res.newCount).show();
+                        // Cập nhật con số chuẩn từ Server trả về
+                        badgeElement.text(res.newCount).fadeIn();
                     } else {
                         if(res.message === "Chưa login") {
                             alert("Vui lòng đăng nhập để mua hàng!");

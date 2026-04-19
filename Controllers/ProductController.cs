@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Petshop_frontend.Controllers
 {
+    //[Route("san-pham")]
     public class ProductController : Controller
     {
         private readonly ManaPet _context;
@@ -34,6 +35,8 @@ namespace Petshop_frontend.Controllers
 
             return View(dsCho);
         }
+
+        [Route("phu-kien")]
 
         public async Task<IActionResult> Accessories()
         {
@@ -69,6 +72,32 @@ namespace Petshop_frontend.Controllers
 
             return View(items);
         }
+
+        [Route("meo-canh")]
+        public async Task<IActionResult> MeoCanh(int? page)
+        {
+            int pageSize = 12;
+            int pageNumber = page ?? 1;
+            int categoryId = 2; // ID Mèo cảnh thường là 2 trong bảng Categories
+
+            var query = _context.Products
+                .Where(p => p.CategoryId == categoryId && p.IsPet == true)
+                // SỬA LỖI: Dùng Id hoặc ProductName vì DB của ông không có CreatedAt
+                .OrderByDescending(p => p.Id);
+
+            var totalItems = await query.CountAsync();
+            var items = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.CurrentPage = pageNumber;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+            // Lưu ý: Tên file View phải là MeoCanh.cshtml hoặc truyền tường minh
+            return View("MeoCanh", items);
+        }
+
 
         public async Task<IActionResult> Details(int id)
         {

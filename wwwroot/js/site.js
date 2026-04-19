@@ -47,28 +47,13 @@ if (window.location.hash && window.location.hash == '#_=_') {
 }
 
 
-$(document).ready(function () {
-    function updateCartCount() {
-        $.get('/Cart/GetMiniCart', function (data) {
-            if (data && data.totalQty > 0) {
-                $('#cart-badge').text(data.totalQty).show();
-            } else {
-                $('#cart-badge').hide();
-            }
-        }).fail(function () {
-            $('#cart-badge').hide(); // Lỗi hoặc chưa login thì ẩn luôn
-        });
-    }
-
-    // Chạy ngay khi load trang
-    updateCartCount();
-});
 //Chat box
 // --- CHAT SYSTEM CLIENT ---
 
 // 1. BIẾN TOÀN CỤC (Phải nằm ngoài cùng để không bị reset)
 var clientConvId = 0;
 var chatConnection = null;
+
 
 // 2. HÀM ĐÓNG/MỞ (Đưa ra ngoài để onclick gọi được)
 function toggleChatBox() {

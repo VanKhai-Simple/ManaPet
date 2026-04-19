@@ -2,17 +2,436 @@
     ViewData["Title"] = "Trang Chủ";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome to ManaPet</h1>
-    <p>Sơ lược về Pet House</p>
-    <p>
-        Pet House là trại nhân giống thú cảnh lớn tại Việt Nam và đồng thời là hệ thống cửa hàng cung cấp phụ kiện, dịch vụ chăm sóc làm đẹp thú cưng & khách sạn thú cưng.
-    </p>
-    <p>
-        
-        
-        Với sự đa dạng về các giống chó mèo cảnh, chúng tôi đảm bảo chất lượng con giống, nguồn gen chuẩn cùng quy trình nhân giống chuyên nghiệp. Tại Pet House, các con giống đều là dòng thuần chủng, được chăm sóc kỹ lưỡng và có sức khỏe tốt, sẵn sàng về nhà mới.
+@section Styles {
+    <link rel="stylesheet" href="~/css/home-premium.css" />
+}
 
-        Tìm hiểu chi tiết
-    </p>
+<div class="homepage-wrapper">
+    <!-- HERO SECTION -->
+    <section class="hero-section position-relative py-5 overflow-hidden" style="background-color: var(--c-bg);">
+        <div class="container pe-lg-5 position-relative" style="z-index: 2;">
+            <div class="row align-items-center mb-5 pb-xl-5">
+                <!-- Cột nội dung trái -->
+                <div class="col-lg-6 mb-5 mb-lg-0 text-center text-lg-start pe-lg-5">
+                    <span class="badge bg-white text-primary rounded-pill px-4 py-2 mb-4 d-inline-flex align-items-center shadow-sm" style="font-weight: 700; font-size: 14px;">
+                        <i class="fas fa-paw me-2 text-warning"></i> Chăm sóc tận tâm
+                    </span>
+                    <h1 class="display-4 fw-black mb-4 lh-base" style="color: var(--c-text);">
+                        Người bạn nhỏ đáng yêu cho ngôi nhà của bạn
+                    </h1>
+                    <p class="lead mb-5 fs-5" style="color: var(--c-text-muted);">
+                        Khám phá chó, mèo khỏe mạnh cùng hàng trăm phụ kiện chất lượng cho thú cưng. Chúng tôi mang đến cho bạn niềm vui bất tận trên từng dấu chân nhỏ.
+                    </p>
+                    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start mb-5">
+                        <a href="/Products" class="btn btn-primary d-inline-flex align-items-center justify-content-center py-3 px-5 rounded-pill shadow-hover" style="background-color: var(--c-primary); border-color: var(--c-primary); font-weight: 700; font-size: 1.1rem; transition: 0.3s;">
+                            Xem thú cưng ngay <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                        <a href="/Products/Category/Accessories" class="btn btn-outline-primary d-inline-flex align-items-center justify-content-center py-3 px-5 rounded-pill hero-btn-outline" style="border: 2px solid var(--c-primary); color: var(--c-primary); font-weight: 700; font-size: 1.1rem; background: white; transition: 0.3s;">
+                            Mua phụ kiện <i class="fas fa-shopping-bag ms-2"></i>
+                        </a>
+                    </div>
+
+                    <div class="row g-3 text-start features-badges mt-4 mb-5 pb-4">
+                        <div class="col-6 col-md-3 d-flex flex-column align-items-center align-items-lg-start">
+                            <div class="feature-icon-wrapper rounded-circle d-flex align-items-center justify-content-center mb-2 shadow-sm" style="width: 50px; height: 50px; background: white;">
+                                <i class="fas fa-syringe fs-4" style="color: var(--c-secondary);"></i>
+                            </div>
+                            <span class="small fw-bold text-center text-lg-start">Tiêm phòng<br>đầy đủ</span>
+                        </div>
+                        <div class="col-6 col-md-3 d-flex flex-column align-items-center align-items-lg-start">
+                            <div class="feature-icon-wrapper rounded-circle d-flex align-items-center justify-content-center mb-2 shadow-sm" style="width: 50px; height: 50px; background: white;">
+                                <i class="fas fa-user-md fs-4" style="color: var(--c-secondary);"></i>
+                            </div>
+                            <span class="small fw-bold text-center text-lg-start">Tư vấn<br>chăm sóc 1:1</span>
+                        </div>
+                        <div class="col-6 col-md-3 d-flex flex-column align-items-center align-items-lg-start">
+                            <div class="feature-icon-wrapper rounded-circle d-flex align-items-center justify-content-center mb-2 shadow-sm" style="width: 50px; height: 50px; background: white;">
+                                <i class="fas fa-truck fs-4" style="color: var(--c-secondary);"></i>
+                            </div>
+                            <span class="small fw-bold text-center text-lg-start">Giao hàng<br>toàn quốc</span>
+                        </div>
+                        <div class="col-6 col-md-3 d-flex flex-column align-items-center align-items-lg-start">
+                            <div class="feature-icon-wrapper rounded-circle d-flex align-items-center justify-content-center mb-2 shadow-sm" style="width: 50px; height: 50px; background: white;">
+                                <i class="fas fa-exchange-alt fs-4" style="color: var(--c-secondary);"></i>
+                            </div>
+                            <span class="small fw-bold text-center text-lg-start">Đổi trả<br>dễ dàng</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cột ảnh phải -->
+                <div class="col-lg-6 position-relative hero-image-col mt-5 mt-lg-0 pb-5">
+                    <!-- Paw prints decoration -->
+                    <i class="fas fa-paw position-absolute text-white opacity-50" style="font-size: 5rem; top: -20px; right: 20px; transform: rotate(15deg);"></i>
+                    <i class="fas fa-paw position-absolute text-white opacity-50" style="font-size: 3rem; bottom: 50px; left: -10px; transform: rotate(-25deg);"></i>
+
+                    <div class="hero-image-wrapper mx-auto ms-lg-auto position-relative z-2">
+                        <!-- Blob background shape -->
+                        <div class="blob-shape bg-warning bg-opacity-25 position-absolute top-50 start-50 translate-middle" style="width: 120%; height: 120%; border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; z-index: -1;"></div>
+                        <img src="~/Images/hero-banner.png" alt="Happy pets" class="img-fluid hero-main-img border-radius-lg drop-shadow-2xl object-fit-cover shadow-lg" style="border-radius: var(--border-radius-lg); width: 100%; aspect-ratio: 4/3;">
+
+                        <!-- Floating accessory card -->
+                        <div class="floating-card position-absolute bg-white p-3 rounded-4 shadow-medium bottom-0 start-0 translate-middle-y ms-n4 mb-n5 d-none d-md-flex align-items-center slide-up-anim" style="z-index: 2;">
+                            <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=150&q=80" class="rounded-circle object-fit-cover me-3" style="width: 60px; height: 60px;" alt="Đồ chơi">
+                            <div>
+                                <h6 class="mb-1 fw-bold">Combo Bát + Bóng</h6>
+                                <span class="text-primary fw-bold">150.000₫</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Wave svg bottom -->
+        <svg class="position-absolute bottom-0 start-0 w-100" viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="z-index: 0;">
+            <path d="M0 60C240 10 480 10 720 30C960 50 1200 40 1440 10V100H0V60Z" fill="var(--c-bg-light)" />
+        </svg>
+    </section>
+
+    <!-- CATEGORY SECTION -->
+    <section class="category-section py-5 z-2 position-relative" style="margin-top: -60px;">
+        <div class="container">
+            <div class="row g-4 justify-content-center">
+                <!-- Item 1 -->
+                <div class="col-6 col-lg-3">
+                    <a href="/Products/Dogs" class="text-decoration-none">
+                        <div class="cat-card bg-white p-4 rounded-4 shadow-soft text-center h-100 border transition-all hover-lift">
+                            <div class="cat-img-wrap overflow-hidden rounded-circle mx-auto mb-3" style="width: 120px; height: 120px; border: 4px solid var(--c-bg);">
+                                <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=300&q=80" alt="Chó cảnh" class="w-100 h-100 object-fit-cover transition-transform">
+                            </div>
+                            <h4 class="fw-bold mb-2 text-dark">Chó Cảnh</h4>
+                            <p class="text-muted small mb-3">Các bé cún ngoan ngoãn, đã tiêm phòng.</p>
+                            <span class="btn btn-sm btn-outline-primary rounded-pill px-4" style="color: var(--c-primary); border-color: var(--c-primary);">Xem thêm</span>
+                        </div>
+                    </a>
+                </div>
+                <!-- Item 2 -->
+                <div class="col-6 col-lg-3">
+                    <a href="/Products/Cats" class="text-decoration-none">
+                        <div class="cat-card bg-white p-4 rounded-4 shadow-soft text-center h-100 border transition-all hover-lift">
+                            <div class="cat-img-wrap overflow-hidden rounded-circle mx-auto mb-3" style="width: 120px; height: 120px; border: 4px solid var(--c-bg);">
+                                <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=300&q=80" alt="Mèo cảnh" class="w-100 h-100 object-fit-cover transition-transform">
+                            </div>
+                            <h4 class="fw-bold mb-2 text-dark">Mèo Cảnh</h4>
+                            <p class="text-muted small mb-3">Những thiên thần nhỏ đáng yêu, lanh lợi.</p>
+                            <span class="btn btn-sm btn-outline-primary rounded-pill px-4" style="color: var(--c-primary); border-color: var(--c-primary);">Xem thêm</span>
+                        </div>
+                    </a>
+                </div>
+                <!-- Item 3 -->
+                <div class="col-6 col-lg-3">
+                    <a href="/Products/Category/Accessories" class="text-decoration-none">
+                        <div class="cat-card bg-white p-4 rounded-4 shadow-soft text-center h-100 border transition-all hover-lift">
+                            <div class="cat-img-wrap overflow-hidden rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center bg-light" style="width: 120px; height: 120px; border: 4px solid var(--c-bg);">
+                                <i class="fas fa-bone fs-1" style="color: var(--c-secondary);"></i>
+                            </div>
+                            <h4 class="fw-bold mb-2 text-dark">Phụ Kiện</h4>
+                            <p class="text-muted small mb-3">Nhà, nệm, đồ chơi và thức ăn dinh dưỡng.</p>
+                            <span class="btn btn-sm btn-outline-primary rounded-pill px-4" style="color: var(--c-primary); border-color: var(--c-primary);">Xem thêm</span>
+                        </div>
+                    </a>
+                </div>
+                <!-- Item 4 -->
+                <div class="col-6 col-lg-3">
+                    <a href="/Services" class="text-decoration-none">
+                        <div class="cat-card bg-white p-4 rounded-4 shadow-soft text-center h-100 border transition-all hover-lift">
+                            <div class="cat-img-wrap overflow-hidden rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center bg-light" style="width: 120px; height: 120px; border: 4px solid var(--c-bg);">
+                                <i class="fas fa-bath fs-1" style="color: var(--c-secondary);"></i>
+                            </div>
+                            <h4 class="fw-bold mb-2 text-dark">Dịch Vụ Spa</h4>
+                            <p class="text-muted small mb-3">Tắm rửa, cắt tỉa lông chuyên nghiệp.</p>
+                            <span class="btn btn-sm btn-outline-primary rounded-pill px-4" style="color: var(--c-primary); border-color: var(--c-primary);">Xem thêm</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURED PETS -->
+    <section class="featured-pets-section py-5 position-relative">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <div>
+                    <span class="text-primary fw-bold d-block mb-1"><i class="fas fa-star me-2"></i>Các bé mới về</span>
+                    <h2 class="display-6 fw-black mb-0">Thú Cưng Nổi Bật</h2>
+                </div>
+                <a href="/Products" class="text-primary fw-bold text-decoration-none">Xem tất cả <i class="fas fa-chevron-right ms-1"></i></a>
+            </div>
+
+            <div class="row g-4">
+                <!-- Pet Card 1 -->
+                <div class="col-12 col-md-6 col-xl-4">
+                    <div class="pet-card card border-0 bg-white rounded-4 shadow-sm overflow-hidden h-100 hover-lift dropdown-hover">
+                        <div class="position-relative overflow-hidden" style="aspect-ratio: 4/3;">
+                            <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=600&q=80" alt="Corgi" class="w-100 h-100 object-fit-cover transition-transform pet-img">
+                            <div class="position-absolute top-0 start-0 m-3 px-3 py-1 bg-white rounded-pill shadow-sm fw-bold fs-7 d-flex align-items-center text-dark">
+                                <i class="fas fa-venus text-danger me-2"></i> Cái
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h4 class="card-title fw-bold mb-0">Bé Na</h4>
+                                <h4 class="text-primary fw-bold mb-0">12.500k</h4>
+                            </div>
+                            <p class="text-muted mb-3"><i class="fas fa-tag me-2"></i>Corgi - Lông vàng trắng</p>
+
+                            <div class="row g-2 mb-4 text-center">
+                                <div class="col-4">
+                                    <div class="bg-light rounded p-2">
+                                        <div class="small text-muted mb-1">Tuổi</div>
+                                        <div class="fw-bold fs-7">2 tháng</div>
+                                    </div>
+                                </div>
+                                <div class="col-8">
+                                    <div class="bg-light rounded p-2">
+                                        <div class="small text-muted mb-1">Sức khỏe</div>
+                                        <div class="fw-bold fs-7 text-success"><i class="fas fa-check-circle me-1"></i>Đã tiêm 2 mũi</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="#" class="btn btn-outline-primary w-100 rounded-pill py-2 fw-bold" style="border-color: var(--c-primary); color: var(--c-primary);">Xem chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pet Card 2 -->
+                <div class="col-12 col-md-6 col-xl-4">
+                    <div class="pet-card card border-0 bg-white rounded-4 shadow-sm overflow-hidden h-100 hover-lift dropdown-hover">
+                        <div class="position-relative overflow-hidden" style="aspect-ratio: 4/3;">
+                            <img src="https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?auto=format&fit=crop&w=600&q=80" alt="British Shorthair" class="w-100 h-100 object-fit-cover transition-transform pet-img">
+                            <div class="position-absolute top-0 start-0 m-3 px-3 py-1 bg-white rounded-pill shadow-sm fw-bold fs-7 d-flex align-items-center text-dark">
+                                <i class="fas fa-mars text-info me-2"></i> Đực
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h4 class="card-title fw-bold mb-0">Sushi</h4>
+                                <h4 class="text-primary fw-bold mb-0">5.500k</h4>
+                            </div>
+                            <p class="text-muted mb-3"><i class="fas fa-tag me-2"></i>Mèo Anh Lông Ngắn</p>
+
+                            <div class="row g-2 mb-4 text-center">
+                                <div class="col-4">
+                                    <div class="bg-light rounded p-2">
+                                        <div class="small text-muted mb-1">Tuổi</div>
+                                        <div class="fw-bold fs-7">3 tháng</div>
+                                    </div>
+                                </div>
+                                <div class="col-8">
+                                    <div class="bg-light rounded p-2">
+                                        <div class="small text-muted mb-1">Sức khỏe</div>
+                                        <div class="fw-bold fs-7 text-success"><i class="fas fa-check-circle me-1"></i>Hoàn thiện Sổ tiêm</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="#" class="btn btn-outline-primary w-100 rounded-pill py-2 fw-bold" style="border-color: var(--c-primary); color: var(--c-primary);">Xem chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pet Card 3 -->
+                <div class="col-12 col-md-6 col-xl-4 d-none d-xl-block">
+                    <div class="pet-card card border-0 bg-white rounded-4 shadow-sm overflow-hidden h-100 hover-lift dropdown-hover">
+                        <div class="position-relative overflow-hidden" style="aspect-ratio: 4/3;">
+                            <img src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=600&q=80" alt="Poodle" class="w-100 h-100 object-fit-cover transition-transform pet-img">
+                            <div class="position-absolute top-0 start-0 m-3 px-3 py-1 bg-white rounded-pill shadow-sm fw-bold fs-7 d-flex align-items-center text-dark">
+                                <i class="fas fa-venus text-danger me-2"></i> Cái
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h4 class="card-title fw-bold mb-0">Mochi</h4>
+                                <h4 class="text-primary fw-bold mb-0">6.000k</h4>
+                            </div>
+                            <p class="text-muted mb-3"><i class="fas fa-tag me-2"></i>Poodle Tiny - Nâu đỏ</p>
+
+                            <div class="row g-2 mb-4 text-center">
+                                <div class="col-4">
+                                    <div class="bg-light rounded p-2">
+                                        <div class="small text-muted mb-1">Tuổi</div>
+                                        <div class="fw-bold fs-7">2.5 tháng</div>
+                                    </div>
+                                </div>
+                                <div class="col-8">
+                                    <div class="bg-light rounded p-2">
+                                        <div class="small text-muted mb-1">Sức khỏe</div>
+                                        <div class="fw-bold fs-7 text-success"><i class="fas fa-check-circle me-1"></i>Tẩy giun định kỳ</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="#" class="btn btn-outline-primary w-100 rounded-pill py-2 fw-bold" style="border-color: var(--c-primary); color: var(--c-primary);">Xem chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BANNER PROMO SECTION -->
+    <section class="promo-banner py-5">
+        <div class="container my-4">
+            <div class="row bg-warning bg-opacity-25 rounded-5 overflow-hidden align-items-center position-relative shadow-sm" style="background-color: var(--c-bg) !important;">
+                <div class="col-lg-7 p-5 z-1">
+                    <span class="badge bg-danger rounded-pill px-3 py-2 mb-3 fw-bold fs-6 shadow-sm"><i class="fas fa-fire me-2"></i>ƯU ĐÃI THÁNG NÀY</span>
+                    <h2 class="display-5 fw-black mb-3">Tặng 100% Voucher Phụ Kiện <span class="text-primary">Khi Mua Thú Cưng</span></h2>
+                    <p class="fs-5 text-muted mb-4">Combo quà tặng "Tân binh" trị giá 500k (Bát ăn, đai dắt, đồ chơi) dành riêng cho hóa đơn rước bé yêu về nhà tuần này!</p>
+                    <a href="/Products" class="btn btn-primary rounded-pill px-5 py-3 fw-bold fs-5 shadow-hover" style="background-color: var(--c-primary); border:none;">Nhận Ngay <i class="fas fa-arrow-right ms-2"></i></a>
+                </div>
+                <div class="col-lg-5 p-0 d-none d-lg-block z-1">
+                    <img src="https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80" alt="Promo image" class="w-100 h-100 object-fit-cover drop-shadow-2xl" style="mask-image: linear-gradient(to right, transparent, black 15%); -webkit-mask-image: linear-gradient(to right, transparent, black 15%); min-height: 400px;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURED ACCESSORIES / PRODUCTS -->
+    <section class="featured-products-section py-5 bg-white">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="text-primary fw-bold d-block mb-1">Best Sellers</span>
+                <h2 class="display-6 fw-black">Phụ Kiện Bán Chạy</h2>
+            </div>
+
+            <div class="row g-4">
+                <!-- Product 1 -->
+                <div class="col-6 col-md-3">
+                    <div class="product-card card border bg-white rounded-4 shadow-sm h-100 hover-lift text-center position-relative">
+                        <span class="position-absolute top-0 end-0 bg-danger text-white px-2 py-1 m-2 rounded fw-bold fs-7 z-2">-15%</span>
+                        <div class="p-3 position-relative overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=400&q=80" class="w-100 object-fit-cover rounded-3 product-img transition-transform" style="aspect-ratio: 1/1;" alt="Product">
+                            <!-- Overlay add to cart -->
+                            <div class="cart-overlay position-absolute w-100 h-100 top-0 start-0 d-flex justify-content-center align-items-center opacity-0 transition-all bg-dark bg-opacity-25 rounded-3">
+                                <button class="btn btn-light rounded-circle shadow-medium" style="width: 50px; height: 50px;"><i class="fas fa-cart-plus fs-5 text-primary"></i></button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-0 pb-4 px-3">
+                            <div class="mb-2 text-warning fs-7">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <h6 class="card-title fw-bold text-truncate" title="Bát Ăn Trắng">Bát Ăn Nhựa Dẻo</h6>
+                            <h5 class="text-primary fw-bold mb-0">120.000₫</h5>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product 2 -->
+                <div class="col-6 col-md-3">
+                    <div class="product-card card border bg-white rounded-4 shadow-sm h-100 hover-lift text-center position-relative">
+                        <div class="p-3 position-relative overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=400&q=80" class="w-100 object-fit-cover rounded-3 product-img transition-transform" style="aspect-ratio: 1/1;" alt="Product">
+                            <div class="cart-overlay position-absolute w-100 h-100 top-0 start-0 d-flex justify-content-center align-items-center opacity-0 transition-all bg-dark bg-opacity-25 rounded-3">
+                                <button class="btn btn-light rounded-circle shadow-medium" style="width: 50px; height: 50px;"><i class="fas fa-cart-plus fs-5 text-primary"></i></button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-0 pb-4 px-3">
+                            <div class="mb-2 text-warning fs-7">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <h6 class="card-title fw-bold text-truncate" title="Dây Dắt Chó Dạo Phố">Dây Dắt Chó Dạo Phố</h6>
+                            <h5 class="text-primary fw-bold mb-0">85.000₫</h5>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product 3 -->
+                <div class="col-6 col-md-3">
+                    <div class="product-card card border bg-white rounded-4 shadow-sm h-100 hover-lift text-center position-relative">
+                        <div class="p-3 position-relative overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1596492784531-6e6eb5ea9993?auto=format&fit=crop&w=400&q=80" class="w-100 object-fit-cover rounded-3 product-img transition-transform" style="aspect-ratio: 1/1;" alt="Product">
+                            <div class="cart-overlay position-absolute w-100 h-100 top-0 start-0 d-flex justify-content-center align-items-center opacity-0 transition-all bg-dark bg-opacity-25 rounded-3">
+                                <button class="btn btn-light rounded-circle shadow-medium" style="width: 50px; height: 50px;"><i class="fas fa-cart-plus fs-5 text-primary"></i></button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-0 pb-4 px-3">
+                            <div class="mb-2 text-warning fs-7">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                            </div>
+                            <h6 class="card-title fw-bold text-truncate" title="Thức Ăn Mèo Đóng Hộp">Thức Ăn Mèo Hộp 500g</h6>
+                            <h5 class="text-primary fw-bold mb-0">65.000₫</h5>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product 4 -->
+                <div class="col-6 col-md-3">
+                    <div class="product-card card border bg-white rounded-4 shadow-sm h-100 hover-lift text-center position-relative">
+                        <div class="p-3 position-relative overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1582562124811-c09040d0a901?auto=format&fit=crop&w=400&q=80" class="w-100 object-fit-cover rounded-3 product-img transition-transform" style="aspect-ratio: 1/1;" alt="Product">
+                            <div class="cart-overlay position-absolute w-100 h-100 top-0 start-0 d-flex justify-content-center align-items-center opacity-0 transition-all bg-dark bg-opacity-25 rounded-3">
+                                <button class="btn btn-light rounded-circle shadow-medium" style="width: 50px; height: 50px;"><i class="fas fa-cart-plus fs-5 text-primary"></i></button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-0 pb-4 px-3">
+                            <div class="mb-2 text-warning fs-7">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <h6 class="card-title fw-bold text-truncate" title="Cần Câu Hình Chuột">Lông Vũ Đồ Chơi Cho Mèo</h6>
+                            <h5 class="text-primary fw-bold mb-0">35.000₫</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="/Products/Category/Accessories" class="btn btn-outline-dark rounded-pill px-4 fw-bold shadow-sm">Xem Toàn Bộ Cửa Hàng <i class="fas fa-shopping-bag ms-2"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- BLOG SECTION -->
+    <section class="blog-section py-5" style="background-color: var(--c-bg-light);">
+        <div class="container my-4">
+            <div class="text-center mb-5">
+                <span class="text-primary fw-bold d-block mb-1">Kiến thức & Kinh nghiệm</span>
+                <h2 class="display-6 fw-black">Tin Tức Thú Cưng</h2>
+            </div>
+
+            <div class="row g-4 justify-content-center">
+                <!-- Blog 1 -->
+                <div class="col-md-4">
+                    <div class="card border-0 bg-white rounded-4 shadow-sm overflow-hidden h-100 hover-lift dropdown-hover">
+                        <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80" class="card-img-top object-fit-cover transition-transform blog-img" style="aspect-ratio: 16/10;" alt="Blog image">
+                        <div class="card-body p-4 position-relative">
+                            <div class="position-absolute px-3 py-1 bg-primary text-white rounded-pill fw-bold fs-7 shadow-sm" style="top: -15px; left: 1rem; background-color: var(--c-primary) !important;">Chăm sóc Cún</div>
+                            <h5 class="card-title fw-bold mt-2 lh-base"><a href="/tin-tuc/cach-cham-soc-cho-con-moi-ve-nha" class="text-decoration-none text-dark hover-text-primary transition-all">Cách chăm sóc chó con khi mới mang về nhà</a></h5>
+                            <p class="card-text text-muted small mt-2">Ngày đầu tiên đón cún cưng về nhà là kỷ niệm tuyệt vời nhưng đôi khi làm 2 bên đều căng thẳng...</p>
+                        </div>
+                        <div class="card-footer bg-white border-0 px-4 pb-4 pt-1 d-flex justify-content-between align-items-center">
+                            <span class="small text-muted fw-bold"><i class="far fa-calendar-alt me-1"></i> 11/04/2026</span>
+                            <a href="/tin-tuc/cach-cham-soc-cho-con-moi-ve-nha" class="text-primary text-decoration-none fw-bold fst-italic">Đọc tiếp <i class="fas fa-angle-double-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Blog 2 -->
+                <div class="col-md-4">
+                    <div class="card border-0 bg-white rounded-4 shadow-sm overflow-hidden h-100 hover-lift dropdown-hover">
+                        <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80" class="card-img-top object-fit-cover transition-transform blog-img" style="aspect-ratio: 16/10;" alt="Blog image">
+                        <div class="card-body p-4 position-relative">
+                            <div class="position-absolute px-3 py-1 bg-primary text-white rounded-pill fw-bold fs-7 shadow-sm" style="top: -15px; left: 1rem; background-color: var(--c-primary) !important;">Dành cho Mèo</div>
+                            <h5 class="card-title fw-bold mt-2 lh-base"><a href="/tin-tuc/5-phu-kien-can-thiet-cho-meo" class="text-decoration-none text-dark hover-text-primary transition-all">5 món phụ kiện nhất định phải có khi nuôi mèo</a></h5>
+                            <p class="card-text text-muted small mt-2">Từ trụ cào móng đến khay vệ sinh, hãy trang bị đầy đủ để hoàng thượng nhà bạn sống thoải mái...</p>
+                        </div>
+                        <div class="card-footer bg-white border-0 px-4 pb-4 pt-1 d-flex justify-content-between align-items-center">
+                            <span class="small text-muted fw-bold"><i class="far fa-calendar-alt me-1"></i> 05/04/2026</span>
+                            <a href="/tin-tuc/5-phu-kien-can-thiet-cho-meo" class="text-primary text-decoration-none fw-bold fst-italic">Đọc tiếp <i class="fas fa-angle-double-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Blog 3 -->
+                <div class="col-md-4 d-none d-md-block">
+                    <div class="card border-0 bg-white rounded-4 shadow-sm overflow-hidden h-100 hover-lift dropdown-hover">
+                        <img src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=600&q=80" class="card-img-top object-fit-cover transition-transform blog-img" style="aspect-ratio: 16/10;" alt="Blog image">
+                        <div class="card-body p-4 position-relative">
+                            <div class="position-absolute px-3 py-1 bg-primary text-white rounded-pill fw-bold fs-7 shadow-sm" style="top: -15px; left: 1rem; background-color: var(--c-primary) !important;">Dinh dưỡng</div>
+                            <h5 class="card-title fw-bold mt-2 lh-base"><a href="/tin-tuc/huong-dan-chon-thuc-an-cho-thu-cung" class="text-decoration-none text-dark hover-text-primary transition-all">Hướng dẫn chọn loại thức ăn phù hợp nhất</a></h5>
+                            <p class="card-text text-muted small mt-2">Pate mềm hay hạt khô? Hãy xem biểu đồ dinh dưỡng để biết thể trạng của Pet bạn nên ăn gì...</p>
+                        </div>
+                        <div class="card-footer bg-white border-0 px-4 pb-4 pt-1 d-flex justify-content-between align-items-center">
+                            <span class="small text-muted fw-bold"><i class="far fa-calendar-alt me-1"></i> 28/03/2026</span>
+                            <a href="/tin-tuc/huong-dan-chon-thuc-an-cho-thu-cung" class="text-primary text-decoration-none fw-bold fst-italic">Đọc tiếp <i class="fas fa-angle-double-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
 </div>
