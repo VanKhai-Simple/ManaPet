@@ -1,0 +1,93 @@
+﻿@model Petshop_frontend.Models.Blog
+@{
+    ViewData["Title"] = Model == null ? "Viết bài mới" : "Chỉnh sửa bài viết";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <h3 class="fw-bold mb-4">@(Model == null ? "Soạn thảo bài viết mới" : "Cập nhật bài viết")</h3>
+
+    <form asp-action="@(Model == null ? "Create" : "Edit")" method="post" class="card border-0 shadow-sm rounded-4">
+        @if (Model != null)
+        {
+            <input type="hidden" asp-for="Id" />
+        }
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tiêu đề bài viết</label>
+                        <input asp-for="Title" id="Title" class="form-control form-control-lg rounded-3" placeholder="Nhập tiêu đề..." required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Đường dẫn SEO (Slug)</label>
+                        <input asp-for="Slug" id="Slug" class="form-control rounded-3 bg-light" readonly />
+                        <small class="text-muted fst-italic">Hệ thống tự tạo dựa trên tiêu đề bài viết.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nội dung chi tiết</label>
+                        <textarea asp-for="Content" id="editor" class="form-control" style="min-height: 400px;"></textarea>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 border-start">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-primary">Ảnh đại diện (URL)</label>
+                        <input asp-for="ImageUrl" class="form-control rounded-3 mb-2" placeholder="Dán link ảnh vào đây..." />
+                        <div class="bg-light rounded-3 d-flex align-items-center justify-content-center overflow-hidden border" style="height: 200px;">
+                            <img id="img-preview" src="@(Model?.ImageUrl ?? "/images/default-blog.jpg")" class="w-100 h-100 object-fit-cover" />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Mô tả ngắn</label>
+                        <textarea asp-for="ShortDescription" class="form-control rounded-3" rows="4" placeholder="Viết mô tả tóm tắt cho bài viết..."></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" asp-for="IsPublished">
+                            <label class="form-check-label fw-bold">Cho phép hiển thị bài viết</label>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm">Lưu bài viết</button>
+                        <a asp-action="Index" class="btn btn-light rounded-pill border">Hủy bỏ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.ckeditor.com/ckeditor5/38.0.1/classic/ckeditor.js"></script>
+
+    <script>
+        // 1. Khởi tạo CKEditor 5
+        ClassicEditor
+            .create(document.querySelector('#editor'))
+            .catch(error => { console.error(error); });
+
+        // 2. Preview ảnh khi dán link
+        $('input[name="ImageUrl"]').on('input', function() {
+            $('#img-preview').attr('src', $(this).val());
+        });
+
+        // 3. Tự động tạo Slug khi gõ tiêu đề
+        document.getElementById('Title').addEventListener('input', function (e) {
+            let title = e.target.value;
+            let slug = title.toLowerCase()
+                .normalize('NFD') // Chuẩn hóa Unicode để loại bỏ dấu
+                .replace(/[\u0300-\u036f]/g, '') // Xóa các ký tự dấu
+                .replace(/[đĐ]/g, 'd') // Sửa chữ đ
+                .replace(/[^a-z0-9\s-]/g, '') // Xóa ký tự đặc biệt
+                .replace(/\s+/g, '-') // Thay khoảng trắng bằng dấu -
+                .replace(/-+/g, '-'); // Xóa các dấu - dư thừa
+            document.getElementById('Slug').value = slug;
+        });
+    </script>
+}

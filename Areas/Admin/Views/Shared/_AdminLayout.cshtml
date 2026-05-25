@@ -109,8 +109,8 @@
                 <ul class="sidebar-menu">
                     <li class="header">DANH MỤC QUẢN LÝ</li>
 
-                    @* 1. Dashboard - Chỉ active khi Controller là Home *@
-                    <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">
+                    @* 1. Dashboard - Chỉ active khi đúng Area Admin và Controller Home *@
+                    <li class="@(ViewContext.RouteData.Values["Area"]?.ToString() == "Admin" && ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">
                         <a asp-area="Admin" asp-controller="Home" asp-action="Index">
                             <i class="fa fa-dashboard"></i> <span>Bảng điều khiển</span>
                         </a>
@@ -123,7 +123,7 @@
                         </a>
                     </li>
 
-                    @* 3. Quản lý Đơn hàng - Lưu ý Controller của ông là OrderAdmin *@
+                    @* 3. Quản lý Đơn hàng *@
                     <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "OrderAdmin" ? "active" : "")">
                         <a asp-area="Admin" asp-controller="OrderAdmin" asp-action="Index">
                             <i class="fa fa-shopping-cart"></i> <span>Quản lý Đơn hàng</span>
@@ -137,19 +137,26 @@
                         </a>
                     </li>
 
-                    @* 5. Báo cáo tài chính *@
+                    @* 5. Quản lý Tin tức & Bài viết - Đã sửa icon sang fa-newspaper-o *@
+                    <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Blog" ? "active" : "")">
+                        <a asp-area="Admin" asp-controller="Blog" asp-action="Index">
+                            <i class="fa-solid fa-newspaper"></i> <span> Quản lý Tin tức & Bài viết</span>
+                        </a>
+                    </li>
+
+                    @* 6. Báo cáo tài chính *@
                     <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Finance" ? "active" : "")">
                         <a asp-area="Admin" asp-controller="Finance" asp-action="Index">
-                            <i class="fa fa-line-chart"></i> <span>Báo cáo tài chính</span>
+                            <i class="fa fa-line-chart"> </i> <span>Báo cáo tài chính</span>
                         </a>
                     </li>
 
                     <li class="header">HỆ THỐNG</li>
 
-                    @* 6. Hỗ trợ khách hàng *@
+                    @* 7. Hỗ trợ khách hàng *@
                     <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Chat" ? "active" : "")">
                         <a asp-area="Admin" asp-controller="Chat" asp-action="Index">
-                            <i class="fa-solid fa-message"></i> <span>Hỗ trợ khách hàng</span>
+                            <i class="fa-solid fa-headphones"> </i> <span> Hỗ trợ khách hàng</span>
                             <span class="pull-right-container">
                                 <small class="label pull-right bg-red" id="chat-count">0</small>
                             </span>

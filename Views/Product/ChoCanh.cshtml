@@ -3,14 +3,35 @@
 <div class="container py-5">
     <div class="row mb-4">
         <div class="col-md-12">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb bg-transparent p-0 mb-2">
-                    <li class="breadcrumb-item"><a href="/" class="text-muted">TRANG CHỦ</a></li>
-                    <li class="breadcrumb-item active text-dark font-weight-bold">CHÓ CẢNH</li>
-                </ol>
-            </nav>
-            <div class="filter-header">
-                <i class="fa fa-sliders"></i> <span class="font-weight-bold">XEM SẢN PHẨM THEO GIÁ</span>
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb bg-transparent p-0 mb-2">
+                            <li class="breadcrumb-item"><a href="/" class="text-muted">TRANG CHỦ</a></li>
+                            @* ViewBag.CategoryName sẽ tự đổi thành "CHÓ CẢNH" hoặc "MÈO CẢNH" tương ứng *@
+                            <li class="breadcrumb-item active text-dark font-weight-bold text-uppercase">@ViewBag.CategoryName</li>
+                        </ol>
+                    </nav>
+
+                    <div class="card shadow-sm bg-transparent border-0 bg-light p-3">
+                        <form method="get" action="@Context.Request.Path" class="form-inline d-flex align-items-center flex-wrap gap-2">
+                            <span class="font-weight-bold mr-3"><i class="fa fa-sliders"></i> LỌC THEO GIÁ:</span>
+
+                            <select name="priceRange" class="form-control form-control-sm border-secondary mr-2" onchange="this.form.submit()">
+                                <option value="">-- Tất cả mức giá --</option>
+                                <option value="under-500" selected="@(Context.Request.Query["priceRange"] == "under-500")">Dưới 500.000đ</option>
+                                <option value="500-2000" selected="@(Context.Request.Query["priceRange"] == "500-2000")">500.000đ - 2.000.000đ</option>
+                                <option value="2000-5000" selected="@(Context.Request.Query["priceRange"] == "2000-5000")">2.000.000đ - 5.000.000đ</option>
+                                <option value="over-5000" selected="@(Context.Request.Query["priceRange"] == "over-5000")">Trên 5.000.000đ</option>
+                            </select>
+
+                            @if (!string.IsNullOrEmpty(Context.Request.Query["priceRange"]))
+                            {
+                                <a href="@Context.Request.Path" class="btn btn-sm btn-outline-secondary ml-2">Xóa lọc</a>
+                            }
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -63,7 +84,7 @@
                 <div class="pagination-custom">
                     @for (int i = 1; i <= ViewBag.TotalPages; i++)
                     {
-                        <a href="?page=@i" class="btn-page @(ViewBag.CurrentPage == i ? "active" : "")">@i</a>
+                        <a href="@Context.Request.Path?page=@i&priceRange=@Context.Request.Query["priceRange"]" class="btn-page @(ViewBag.CurrentPage == i ? "active" : "")">@i</a>
                     }
                 </div>
             </div>

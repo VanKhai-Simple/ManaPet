@@ -98,5 +98,39 @@ namespace Petshop_frontend.Controllers
 
             return RedirectToAction(nameof(MyOrders));
         }
+
+        // Đường dẫn: /Orders/CheckoutQR/123
+        [HttpGet]
+        public async Task<IActionResult> CheckoutQR(int id)
+        {
+            // Tìm đơn hàng của khách dựa vào ID
+            var order = await _db.Orders.FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            // Nếu đơn hàng này lỡ đã thanh toán rồi hoặc đã bị hủy, thì không cho quét mã nữa
+            if (order.Status != "Chờ thanh toán")
+            {
+                return RedirectToAction("Success", new { id = order.Id });
+            }
+
+            // Trả về View CheckoutQR kèm thông tin đơn hàng để render mã QR
+            return View(order);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CheckStatus(int id)
+        {
+            var order = await _db.Orders.Select(o => new { o.Id, o.Status }).FirstOrDefaultAsync(o => o.Id == id);
+            if (order == null) return NotFound();
+
+            // Nếu đơn hàng đã được Webhook cập nhật thành "Đã thanh toán", trả về true
+            bool isPaid = order.Status == "Đã thanh toán";
+
+            return Json(new { isPaid = isPaid });
+        }
     }
 }

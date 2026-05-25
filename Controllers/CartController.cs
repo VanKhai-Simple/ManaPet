@@ -171,6 +171,11 @@ namespace Petshop_frontend.Controllers
             await _context.SaveChangesAsync();
 
             // Điều hướng thanh toán
+            if (paymentMethod == "SEPAY")
+            {
+                // Nếu chọn SEPAY, đá khách thẳng sang trang quét mã VietQR tự động mà anh em mình làm lúc nãy!
+                return RedirectToAction("CheckoutQR", "Orders", new { id = order.Id });
+            }
             if (paymentMethod == "VNPAY") return Redirect(GenerateVnPayUrl(order));
             if (paymentMethod == "PAYPAL") return Redirect(GeneratePayPalUrl(order));
 

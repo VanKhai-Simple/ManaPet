@@ -1,0 +1,255 @@
+﻿@model IEnumerable<Petshop_frontend.Models.Product>
+@{
+    ViewData["Title"] = "Cửa Hàng Thú Cưng & Phụ Kiện";
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+    string currentPriceRange = ViewBag.CurrentPriceRange ?? "";
+    int? currentCategoryId = ViewBag.CurrentCategoryId;
+}
+
+@section Styles {
+    <style>
+        .shop-banner {
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            border-bottom: 1px solid #eef2f5;
+        }
+
+        .product-card-shop {
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 1px solid #ebebeb;
+        }
+
+            .product-card-shop:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+                border-color: var(--c-primary, #0d6efd);
+            }
+
+            .product-card-shop .img-container {
+                aspect-ratio: 1/1;
+                overflow: hidden;
+                background-color: #f8f9fa;
+            }
+
+                .product-card-shop .img-container img {
+                    transition: transform 0.5s ease;
+                }
+
+            .product-card-shop:hover .img-container img {
+                transform: scale(1.06);
+            }
+
+        .badge-type, .badge-discount {
+            position: absolute;
+            top: 12px;
+            z-index: 2;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .badge-type {
+            left: 12px;
+        }
+
+        .badge-discount {
+            right: 12px;
+        }
+
+        /* Style cho bộ lọc bên trái */
+        .filter-sidebar {
+            background: #fff;
+            border: 1px solid #eef2f5;
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .filter-link {
+            display: block;
+            padding: 8px 12px;
+            color: #495057;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+            .filter-link:hover, .filter-link.active {
+                background-color: rgba(13, 110, 253, 0.08);
+                color: #0d6efd;
+                font-weight: 600;
+            }
+    </style>
+}
+
+<section class="shop-banner py-5 mb-4">
+    <div class="container text-center py-2">
+        <span class="badge bg-primary bg-opacity-10 text-white rounded-pill px-3 py-2 mb-2 fw-bold text-white">ManaPet Shop</span>
+        <h1 class="display-6 fw-black text-dark mb-2">Tất Cả Sản Phẩm</h1>
+        <p class="text-muted small max-w-2xl mx-auto mb-0">Hiển thị danh sách thú cưng và phụ kiện cao cấp.</p>
+    </div>
+</section>
+
+<div class="container mb-5">
+    <div class="row g-4">
+
+        <div class="col-12 col-lg-3">
+            <div class="filter-sidebar shadow-sm position-sticky" style="top: 20px;">
+                <h5 class="fw-bold mb-3 text-dark"><i class="fas fa-sliders-h me-2 text-primary"></i>Bộ Lọc Tìm Kiếm</h5>
+                <hr class="text-muted opacity-25">
+
+                <div class="mb-4">
+                    <h6 class="fw-bold text-secondary small text-uppercase mb-2">Danh mục nhanh</h6>
+                    <div class="d-flex flex-column gap-1">
+                        <a asp-action="Index" class="filter-link @(currentCategoryId == null ? "active" : "")">Tất cả sản phẩm</a>
+                        <a asp-action="ChoCanh" class="filter-link"><i class="fas fa-dog me-2"></i>Chó Cảnh</a>
+                        <a asp-action="MeoCanh" class="filter-link"><i class="fas fa-cat me-2"></i>Mèo Cảnh</a>
+                        <a asp-action="Accessories" class="filter-link"><i class="fas fa-bone me-2"></i>Phụ Kiện Tổng Hợp</a>
+                        <a asp-action="ThucAn" class="filter-link"><i class="fas fa-cookie-bite me-2"></i>Thức Ăn</a>
+                    </div>
+                </div>
+
+                <div>
+                    <h6 class="fw-bold text-secondary small text-uppercase mb-2">Khoảng Giá</h6>
+                    <div class="d-flex flex-column gap-1">
+                        <a asp-action="Index" asp-route-categoryId="@currentCategoryId" asp-route-priceRange="" class="filter-link @(string.IsNullOrEmpty(currentPriceRange) ? "active" : "")">
+                            Tất cả khoảng giá
+                        </a>
+                        <a asp-action="Index" asp-route-categoryId="@currentCategoryId" asp-route-priceRange="under-500" class="filter-link @(currentPriceRange == "under-500" ? "active" : "")">
+                            Dưới 500.000₫
+                        </a>
+                        <a asp-action="Index" asp-route-categoryId="@currentCategoryId" asp-route-priceRange="500-2000" class="filter-link @(currentPriceRange == "500-2000" ? "active" : "")">
+                            500.000₫ - 2.000.000₫
+                        </a>
+                        <a asp-action="Index" asp-route-categoryId="@currentCategoryId" asp-route-priceRange="2000-5000" class="filter-link @(currentPriceRange == "2000-5000" ? "active" : "")">
+                            2.000.000₫ - 5.000.000₫
+                        </a>
+                        <a asp-action="Index" asp-route-categoryId="@currentCategoryId" asp-route-priceRange="over-5000" class="filter-link @(currentPriceRange == "over-5000" ? "active" : "")">
+                            Trên 500.000₫
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-9">
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var p in Model)
+                    {
+                        var coGiamGia = p.IsDiscount == true && p.DiscountPrice.HasValue && p.DiscountPrice > 0;
+                        var giaHienTai = coGiamGia ? p.DiscountPrice.Value : (p.Price ?? 0);
+
+                        <div class="col">
+                            <div class="card h-100 bg-white rounded-4 shadow-sm overflow-hidden product-card-shop position-relative">
+
+                                <span class="badge @(p.IsPet == true ? "bg-info text-dark" : "bg-secondary text-white") badge-type rounded-pill shadow-sm">
+                                    @(p.IsPet == true ? "Thú Cưng" : "Đồ Dùng")
+                                </span>
+
+                                @if (coGiamGia && p.DiscountPercent > 0)
+                                {
+                                    <span class="badge bg-danger text-white badge-discount shadow-sm">-@p.DiscountPercent%</span>
+                                }
+
+                                <div class="img-container position-relative">
+                                    <img src="@(string.IsNullOrEmpty(p.MainImage) ? "/images/default-product.jpg" : p.MainImage)"
+                                         alt="@p.ProductName"
+                                         class="w-100 h-100 object-fit-cover" />
+                                </div>
+
+                                <div class="card-body p-3 d-flex flex-column justify-content-between">
+                                    <div>
+                                        <span class="text-muted d-block mb-1" style="font-size: 0.75rem;">
+                                            <i class="fas fa-folder-open me-1"></i> @(p.Category?.CategoryName ?? "Chưa phân loại")
+                                        </span>
+                                        <h6 class="card-title text-dark fw-bold text-truncate mb-2" title="@p.ProductName" style="font-size: 0.9rem;">
+                                            @p.ProductName
+                                        </h6>
+                                    </div>
+
+                                    <div class="mt-1">
+                                        <div class="d-flex align-items-center flex-wrap gap-1 mb-2">
+                                            <span class="text-primary fw-black" style="font-size: 1rem;">
+                                                @giaHienTai.ToString("N0")₫
+                                            </span>
+                                            @if (coGiamGia)
+                                            {
+                                                <span class="text-muted text-decoration-line-through" style="font-size: 0.75rem;">
+                                                    @((p.Price ?? 0).ToString("N0"))₫
+                                                </span>
+                                            }
+                                        </div>
+
+                                        <div class="d-flex gap-1">
+                                            <a asp-action="Details" asp-route-id="@p.Id" class="btn btn-xs btn-outline-secondary rounded-pill w-100 fw-bold py-1" style="font-size: 0.8rem;">
+                                                Chi Tiết
+                                            </a>
+                                            @if (p.IsPet != true)
+                                            {
+                                                <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-inline">
+                                                    <input type="hidden" name="productId" value="@p.Id" />
+                                                    <button type="submit" class="btn btn-sm btn-primary rounded-circle shadow-sm" style="width: 32px; height: 32px; padding: 0;">
+                                                        <i class="fas fa-shopping-basket" style="font-size: 0.8rem;"></i>
+                                                    </button>
+                                                </form>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-12 text-center py-5 w-100">
+                        <div class="my-3 text-muted">
+                            <i class="fas fa-box-open display-2 mb-3 text-opacity-25"></i>
+                            <p class="fs-6">Không tìm thấy sản phẩm nào phù hợp bộ lọc.</p>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            @if (totalPages > 1)
+            {
+                <nav class="d-flex justify-content-center mt-5">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                            <a class="page-link rounded-circle mx-1" asp-action="Index"
+                               asp-route-categoryId="@currentCategoryId"
+                               asp-route-priceRange="@currentPriceRange"
+                               asp-route-page="@(currentPage - 1)">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+
+                        @for (int i = 1; i <= totalPages; i++)
+                        {
+                            <li class="page-item @(currentPage == i ? "active" : "")">
+                                <a class="page-link rounded-circle mx-1 @(currentPage == i ? "bg-primary text-white" : "text-dark")"
+                                   asp-action="Index"
+                                   asp-route-categoryId="@currentCategoryId"
+                                   asp-route-priceRange="@currentPriceRange"
+                                   asp-route-page="@i">@i</a>
+                            </li>
+                        }
+
+                        <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                            <a class="page-link rounded-circle mx-1" asp-action="Index"
+                               asp-route-categoryId="@currentCategoryId"
+                               asp-route-priceRange="@currentPriceRange"
+                               asp-route-page="@(currentPage + 1)">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+        </div>
+
+    </div>
+</div>

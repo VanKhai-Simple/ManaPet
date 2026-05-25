@@ -1,0 +1,130 @@
+﻿@model IEnumerable<Petshop_frontend.Models.Blog>
+@{
+    ViewData["Title"] = "Cẩm Nang Thú Cưng";
+}
+
+@section Styles {
+    <style>
+        .blog-banner {
+            background: linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)), url('/images/banner-blog.jpg') center/cover;
+            border-radius: 0 0 32px 32px;
+        }
+
+        .blog-card {
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border-color, #edf1f5);
+            transition: all 0.3s ease;
+        }
+
+            .blog-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 30px rgba(0,0,0,.05);
+                border-color: var(--soft-primary, rgba(13,110,253,.2));
+            }
+
+        .blog-img-wrapper {
+            position: relative;
+            aspect-ratio: 16/10;
+            overflow: hidden;
+            background: #f4f6f8;
+        }
+
+            .blog-img-wrapper img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: 0.5s ease;
+            }
+
+        .blog-card:hover .blog-img-wrapper img {
+            transform: scale(1.05);
+        }
+
+        .blog-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.4;
+            height: 50px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+            .blog-title a {
+                color: #212529;
+                text-decoration: none;
+                transition: color 0.2s;
+            }
+
+                .blog-title a:hover {
+                    color: var(--primary-color, #0d6efd);
+                }
+
+        .blog-desc {
+            font-size: 0.88rem;
+            color: #6c757d;
+            height: 60px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+    </style>
+}
+
+<section class="blog-banner text-white text-center py-5 mb-5">
+    <div class="container py-4">
+        <span class="badge px-3 py-2 rounded-pill mb-2" style="background-color: var(--primary-color, #0d6efd);">Góc Chia Sẻ</span>
+        <h1 class="fw-black display-5 mb-2">Cẩm Nang Nuôi Thú Cưng</h1>
+        <p class="opacity-75 mb-0">Kinh nghiệm và mẹo vặt chăm sóc các bé yêu khoa học nhất.</p>
+    </div>
+</section>
+
+<div class="container mb-5">
+    @if (Model != null && Model.Any())
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var blog in Model)
+            {
+                <div class="col">
+                    <div class="blog-card h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="blog-img-wrapper">
+                                <a asp-action="Details" asp-route-id="@blog.Id">
+                                    <img src="@(string.IsNullOrEmpty(blog.ImageUrl) ? "/images/default-blog.jpg" : blog.ImageUrl)" alt="@blog.Title">
+                                </a>
+                            </div>
+
+                            <div class="p-4">
+                                <div class="text-muted small mb-2" style="font-size: 0.78rem;">
+                                    <span><i class="far fa-calendar-alt me-1"></i> @blog.CreatedAt.ToString("dd/MM/yyyy")</span>
+                                </div>
+                                <h5 class="blog-title mb-2">
+                                    <a asp-action="Details" asp-route-id="@blog.Id">@blog.Title</a>
+                                </h5>
+                                <p class="blog-desc mb-0">@blog.ShortDescription</p>
+                            </div>
+                        </div>
+
+                        <div class="px-4 pb-4 bg-white border-0">
+                            <a asp-action="Details" asp-route-id="@blog.Id" class="btn btn-sm btn-outline-dark rounded-pill px-3 fw-bold" style="font-size: 0.8rem;">
+                                Đọc thêm <i class="fas fa-arrow-right ms-1" style="font-size: 0.7rem;"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5 bg-white rounded-4 shadow-sm border">
+            <i class="fas fa-newspaper display-3 text-muted opacity-25 mb-3"></i>
+            <h5 class="fw-bold">Chưa có bài viết nào</h5>
+            <p class="text-muted mb-0">Cẩm nang nuôi dạy thú cưng sẽ sớm được cập nhật!</p>
+        </div>
+    }
+</div>

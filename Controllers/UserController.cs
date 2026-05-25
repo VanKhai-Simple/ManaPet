@@ -210,7 +210,7 @@ namespace Petshop_frontend.Controllers
 
                 // Quan trọng: Sau khi xác thực Google xong, mình "đổi vé" sang Cookie để duy trì phiên đăng nhập
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
-
+                await HttpContext.SignOutAsync("ExternalCookies");
                 return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)

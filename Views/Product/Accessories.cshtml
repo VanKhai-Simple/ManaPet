@@ -1,75 +1,223 @@
 ﻿@model IEnumerable<Petshop_frontend.Models.Product>
 
-<style>
-    /* Card sản phẩm */
-    .product-card {
-        transition: all 0.3s ease-in-out;
-    }
+@{
+    ViewData["Title"] = "Phụ kiện thú cưng";
+}
 
-        .product-card:hover {
-            transform: translateY(-5px); /* Nhấc nhẹ card lên */
-            box-shadow: 0 10px 20px rgba(0,0,0,0.12) !important;
-        }
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb bg-transparent p-0 mb-2">
+                            <li class="breadcrumb-item"><a href="/" class="text-muted">TRANG CHỦ</a></li>
+                            @* Tự động đổi chữ MÈO CẢNH / PHỤ KIỆN theo dữ liệu từ Controller *@
+                            <li class="breadcrumb-item active text-dark font-weight-bold text-uppercase">@ViewBag.CategoryName</li>
+                        </ol>
+                    </nav>
 
-    /* Overlay chứa nút bấm */
-    .add-to-cart-overlay {
-        position: absolute;
-        bottom: -50px; /* Ban đầu giấu nút ở dưới đáy */
-        left: 0;
-        right: 0;
-        transition: all 0.3s ease;
-        padding: 10px;
-        background: rgba(255, 255, 255, 0.9);
-    }
+                    <div class="card shadow-sm bg-transparent border-0 bg-light p-3">
+                        <form method="get" action="@Context.Request.Path" class="form-inline d-flex align-items-center flex-wrap gap-2">
+                            <span class="font-weight-bold mr-3"><i class="fa fa-sliders"></i> LỌC THEO GIÁ:</span>
 
-    /* Khi hover vào card thì đẩy nút lên */
-    .product-card:hover .add-to-cart-overlay {
-        bottom: 0;
-    }
+                            <select name="priceRange" class="form-control form-control-sm border-secondary mr-2" onchange="this.form.submit()">
+                                <option value="">-- Tất cả mức giá --</option>
+                                <!== Dùng Context.Request.Query để giữ trạng thái đã chọn ==>
+                                <option value="under-500" selected="@(Context.Request.Query["priceRange"] == "under-500")">Dưới 500.000đ</option>
+                                <option value="500-2000" selected="@(Context.Request.Query["priceRange"] == "500-2000")">500.000đ - 2.000.000đ</option>
+                                <option value="2000-5000" selected="@(Context.Request.Query["priceRange"] == "2000-5000")">2.000.000đ - 5.000.000đ</option>
+                                <option value="over-5000" selected="@(Context.Request.Query["priceRange"] == "over-5000")">Trên 5.000.000đ</option>
+                            </select>
 
-    /* Hiệu ứng ảnh khi hover (phóng to nhẹ) */
-    .product-img img {
-        transition: transform 0.5s ease;
-    }
+                            @* Nếu có tìm kiếm từ khóa trước đó, giữ lại luôn để lọc chéo *@
+                            @if (!string.IsNullOrEmpty(Context.Request.Query["searchTerm"]))
+                            {
+                                <input type="hidden" name="searchTerm" value="@Context.Request.Query["searchTerm"]" />
+                            }
 
-    .product-card:hover .product-img img {
-        transform: scale(1.05);
-    }
-
-    .product-name {
-        font-size: 14px;
-        height: 40px; /* Giới hạn độ cao để đều card */
-        overflow: hidden;
-    }
-</style>
-
-<div class="container mt-4">
-    <h2 class="mb-4 text-uppercase">@ViewBag.CategoryName</h2>
+                            @if (!string.IsNullOrEmpty(Context.Request.Query["priceRange"]))
+                            {
+                                <a href="@Context.Request.Path" class="btn btn-sm btn-outline-secondary ml-2">Xóa lọc</a>
+                            }
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="row">
         @foreach (var item in Model)
         {
             <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                <div class="product-card position-relative overflow-hidden shadow-sm rounded bg-white">
-                    <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none text-dark">
-                        <div class="product-img">
-                            <img src="@item.MainImage" class="img-fluid w-100" style="height: 250px; object-fit: cover;">
+                <div class="pet-card shadow-sm rounded">
+                    <a asp-action="Details" asp-route-id="@item.Id" class="card-link">
+                        <div class="img-wrapper rounded-top">
+                            <img src="@item.MainImage" alt="@item.ProductName" class="img-fluid">
+
+                            @if (item.IsDiscount == true)
+                            {
+                                <div class="discount-badge">-@item.DiscountPercent%</div>
+                            }
+
+                            <div class="overlay-btn">
+                                @* Đổi text nút bấm cho đúng tính chất phụ kiện/đồ dùng *@
+                                <button class="btn-add-cart"><i class="fa fa-shopping-basket"></i> MUA NGAY</button>
+                            </div>
                         </div>
-                        <div class="product-info p-3 text-center">
-                            <h6 class="product-name fw-bold mb-1">@item.ProductName</h6>
-                            <p class="product-price text-danger mb-0">
-                                Giá: @(item.Price > 0 ? string.Format("{0:N0}đ", item.Price) : "Liên hệ")
-                            </p>
+                        <div class="card-body text-center p-3">
+                            <h3 class="product-name text-truncate">@item.ProductName.ToUpper()</h3>
+                            <div class="price-wrapper">
+                                @if (item.IsDiscount == true)
+                                {
+                                    <span class="price-current">@(((decimal)(item.DiscountPrice ?? 0)).ToString("N0"))đ</span>
+                                    <span class="price-old text-muted">
+                                        <del>@(((decimal)item.Price).ToString("N0"))đ</del>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="price-current">@(((decimal)item.Price).ToString("N0"))đ</span>
+                                }
+                            </div>
                         </div>
                     </a>
-
-                    <div class="add-to-cart-overlay">
-                        <button class="btn btn-primary w-100 py-2 btn-add-cart" data-id="@item.Id">
-                            <i class="fa fa-shopping-cart"></i> THÊM VÀO GIỎ
-                        </button>
-                    </div>
                 </div>
             </div>
         }
     </div>
+
+    @if (ViewBag.TotalPages > 1)
+    {
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <div class="pagination-custom">
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        <a href="@Context.Request.Path?page=@i&priceRange=@Context.Request.Query["priceRange"]" class="btn-page @(ViewBag.CurrentPage == i ? "active" : "")">@i</a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
 </div>
+
+<style>
+    /* Giữ nguyên hệ thống Style để đồng bộ toàn trang web */
+    .pet-card {
+        background: #fff;
+        border: 1px solid #f0f0f0;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+        .pet-card:hover {
+            border-color: #f39c12; /* Màu cam thương hiệu ManaPet */
+            transform: translateY(-5px);
+        }
+
+    .card-link {
+        text-decoration: none !important;
+        color: inherit;
+    }
+
+    .img-wrapper {
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 1/1;
+    }
+
+        .img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+    .pet-card:hover .img-wrapper img {
+        transform: scale(1.1);
+    }
+
+    .discount-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: #d0021b;
+        color: #fff;
+        padding: 3px 8px;
+        font-weight: bold;
+        border-radius: 3px;
+        font-size: 12px;
+        z-index: 2;
+    }
+
+    .overlay-btn {
+        position: absolute;
+        bottom: -60px;
+        left: 0;
+        width: 100%;
+        transition: 0.3s;
+        padding: 10px;
+        background: rgba(255,255,255,0.9);
+    }
+
+    .pet-card:hover .overlay-btn {
+        bottom: 0;
+    }
+
+    .btn-add-cart {
+        width: 100%;
+        background: #333;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+        .btn-add-cart:hover {
+            background: #f39c12;
+        }
+
+    .product-name {
+        font-size: 14px;
+        font-weight: bold;
+        margin: 10px 0 5px;
+        color: #333;
+    }
+
+    .price-current {
+        color: #d0021b;
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    .price-old {
+        font-size: 13px;
+        margin-left: 5px;
+    }
+
+    .filter-header {
+        border-bottom: 2px solid #333;
+        padding-bottom: 5px;
+        margin-bottom: 20px;
+        display: inline-block;
+    }
+
+    .btn-page {
+        padding: 8px 16px;
+        border: 1px solid #ddd;
+        margin: 0 4px;
+        color: #333;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .btn-page.active {
+            background: #333;
+            color: #fff;
+            border-color: #333;
+        }
+</style>

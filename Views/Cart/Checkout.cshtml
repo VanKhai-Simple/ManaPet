@@ -53,6 +53,18 @@
                             </div>
                         </label>
                     </div>
+
+                    <div class="form-check border p-3 rounded-3 mb-2 shadow-sm pointer-area" style="border-color: var(--soft-primary, #0d6efd) !important; background-color: rgba(13, 110, 253, 0.02);">
+                        <input id="sepay" name="paymentMethod" value="SEPAY" type="radio" class="form-check-input" required>
+                        <label class="form-check-label d-flex align-items-center w-100" for="sepay">
+                            <i class="fas fa-qrcode text-primary me-3 fs-4 animate-qr"></i>
+                            <div>
+                                <span class="fw-bold d-block text-primary">Chuyển khoản Ngân hàng (VietQR Auto) <span class="badge bg-danger animate-pulse small ms-1" style="font-size: 0.65rem;">Khuyên dùng</span></span>
+                                <small class="text-muted">Quét mã QR qua App Bank, hệ thống duyệt đơn tự động sau 3 giây</small>
+                            </div>
+                        </label>
+                    </div>
+
                     <div class="form-check border p-3 rounded-3 mb-2 shadow-sm pointer-area">
                         @* Thêm value="VNPAY" *@
                         <input id="vnpay" name="paymentMethod" value="VNPAY" type="radio" class="form-check-input" required>

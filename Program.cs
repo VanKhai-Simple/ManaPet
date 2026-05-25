@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Petshop_frontend.Helpers;
 using Petshop_frontend.Hubs;
 using Petshop_frontend.Models;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,7 +58,7 @@ IConfigurationRoot cf = new ConfigurationBuilder()
 builder.Services.AddDbContext<ManaPet>(opt => opt.UseSqlServer(cf.GetConnectionString("cnn")));
 
 
-builder.Services.AddSignalR();
+//builder.Services.AddSignalR();
 
 // 1. Kết nối appsettings.json với class CloudinarySettings
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
@@ -76,10 +77,16 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+                       ForwardedHeaders.XForwardedProto
+});
+
 
 //builder.Services.AddControllersWithViews();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();

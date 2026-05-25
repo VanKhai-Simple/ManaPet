@@ -1,33 +1,208 @@
-﻿<h2>Đơn hàng của tôi</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Mã đơn</th>
-            <th>Ngày đặt</th>
-            <th>Tổng tiền</th>
-            <th>Trạng thái</th>
-            <th>Thao tác</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>#@item.Id</td>
-                <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
-                <td>@item.TotalAmount?.ToString("N0") đ</td>
-                <td>
-                    <span class="badge @(item.Status == "Đã hủy" ? "bg-danger" : "bg-info")">@item.Status</span>
-                </td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Xem chi tiết</a>
-                    @if (item.Status == "Chờ xác nhận") {
-                        <form asp-action="CancelOrder" asp-route-id="@item.Id" method="post" style="display:inline">
-                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc muốn hủy đơn?')">Hủy đơn</button>
-                        </form>
+﻿@model IEnumerable<Petshop_frontend.Models.Order>
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+}
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="bg-primary-soft p-3 rounded-circle text-primary">
+                    <i class="fas fa-box-open fs-4"></i>
+                </div>
+                <div>
+                    <h3 class="fw-black mb-1 text-dark">Quản Lý Đơn Hàng</h3>
+                    <p class="text-muted small mb-0">Theo dõi trạng thái và lịch sử mua sắm của bạn tại Pet House</p>
+                </div>
+            </div>
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+                    <div class="bg-white p-2">
+                        <ul class="nav nav-pills nav-justified custom-tabs" id="orderTabs" role="tablist">
+                            <li class="nav-item">
+                                <button class="nav-link active fw-bold py-3" data-status="all">Tất cả (@Model.Count())</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link fw-bold py-3" data-status="Chờ thanh toán">Chờ thanh toán (@Model.Count(o => o.Status == "Chờ thanh toán"))</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link fw-bold py-3" data-status="Đã thanh toán">Đã thanh toán (@Model.Count(o => o.Status == "Đã thanh toán"))</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link fw-bold py-3" data-status="Đã hủy">Đã hủy (@Model.Count(o => o.Status == "Đã hủy"))</button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column gap-3" id="orderListContainer">
+                    @foreach (var item in Model)
+                    {
+                        <div class="card border-0 shadow-sm rounded-4 order-card-item" data-order-status="@item.Status">
+                            <div class="card-header bg-white py-3 border-bottom-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div class="d-flex align-items-center gap-3">
+                                    <span class="fw-bold text-dark fs-5">#@item.Id</span>
+                                    <span class="text-muted small"><i class="far fa-calendar-alt me-1"></i> @item.OrderDate.ToString("dd/MM/yyyy")</span>
+                                </div>
+                                <div>
+                                    @switch (item.Status)
+                                    {
+                                        case "Chờ thanh toán":
+                                            <span class="badge bg-warning-soft text-warning rounded-pill px-3 py-2"><i class="fas fa-spinner fa-spin me-1"></i> Chờ thanh toán</span>
+                                            break;
+                                        case "Đã thanh toán":
+                                            <span class="badge bg-success-soft text-success rounded-pill px-3 py-2"><i class="fas fa-check-circle me-1"></i> Đã thanh toán</span>
+                                            break;
+                                        case "Đã hủy":
+                                            <span class="badge bg-danger-soft text-danger rounded-pill px-3 py-2"><i class="fas fa-times-circle me-1"></i> Đã hủy</span>
+                                            break;
+                                        default:
+                                            <span class="badge bg-info-soft text-info rounded-pill px-3 py-2">@item.Status</span>
+                                            break;
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="card-body py-2">
+                                <div class="d-flex justify-content-between align-items-center border-top border-bottom py-3 flex-wrap gap-3">
+                                    <div class="text-muted small">
+                                        <i class="fas fa-wallet me-1"></i> Hình thức: <span class="text-dark fw-semibold">@("Chuyển khoản / COD")</span>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="text-muted small me-2">Tổng số tiền:</span>
+                                        <span class="h5 fw-black text-danger mb-0">@(item.TotalAmount?.ToString("N0") ?? "0")đ</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-white border-top-0 py-3 d-flex justify-content-end gap-2 flex-wrap">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-light border rounded-pill px-3 fw-bold">
+                                    <i class="far fa-eye me-1"></i> Xem chi tiết
+                                </a>
+
+                                @if (item.Status == "Chờ thanh toán")
+                                {
+                                    <a asp-action="CheckoutQR" asp-route-id="@item.Id" class="btn btn-sm btn-primary rounded-pill px-3 fw-bold shadow-sm">
+                                        <i class="fas fa-qrcode me-1"></i> Thanh toán ngay
+                                    </a>
+                                }
+
+                                @if (item.Status == "Chờ xác nhận" || item.Status == "Chờ thanh toán")
+                                {
+                                    <form asp-action="CancelOrder" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn yêu cầu hủy đơn hàng này không?')">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold">
+                                            Hủy đơn
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
                     }
-                </td>
-            </tr>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5 bg-white rounded-4 shadow-sm border">
+                    <div class="mb-4">
+                        <i class="fas fa-shopping-bag display-1 text-muted opacity-25"></i>
+                    </div>
+                    <h4 class="fw-bold text-dark">Bạn chưa có đơn hàng nào</h4>
+                    <p class="text-muted mb-4">Hãy lượn một vòng Pet House để sắm ngay cho bé yêu những món quà tuyệt vời nhất nhé!</p>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow">
+                        Mua Sắm Ngay <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* CSS Mềm mại theo chuẩn Hiện đại */
+        .bg-primary-soft {
+            background-color: rgba(13, 110, 253, 0.08);
         }
-    </tbody>
-</table>
+
+        /* Màu trạng thái dạng Soft mờ */
+        .bg-warning-soft {
+            background-color: #fffbeb;
+            color: #d97706;
+        }
+
+        .bg-success-soft {
+            background-color: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .bg-danger-soft {
+            background-color: #fef2f2;
+            color: #dc2626;
+        }
+
+        .bg-info-soft {
+            background-color: #f0f9ff;
+            color: #0284c7;
+        }
+
+        /* Style thanh Tabs Shopee */
+        .custom-tabs .nav-link {
+            color: #4b5563;
+            border-radius: 0;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+            .custom-tabs .nav-link.active {
+                background-color: transparent !important;
+                color: var(--primary-color, #0d6efd) !important;
+                border-bottom-color: var(--primary-color, #0d6efd);
+            }
+
+            .custom-tabs .nav-link:hover {
+                color: var(--primary-color, #0d6efd);
+            }
+
+        /* Hiệu ứng hover nhẹ cho thẻ đơn hàng */
+        .order-card-item {
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #f1f5f9;
+        }
+
+            .order-card-item:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.04) !important;
+            }
+
+        .fw-black {
+            font-weight: 900;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        // JS Xử lý bộ lọc Tabs mượt mà không cần load lại trang (Filter Realtime)
+        document.querySelectorAll('#orderTabs button').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Đổi active tab
+                document.querySelector('#orderTabs .active').classList.remove('active');
+                this.classList.add('active');
+
+                let selectedStatus = this.getAttribute('data-status');
+                let cardItems = document.querySelectorAll('.order-card-item');
+
+                cardItems.forEach(card => {
+                    let cardStatus = card.getAttribute('data-order-status');
+                    if (selectedStatus === 'all' || cardStatus === selectedStatus) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+}

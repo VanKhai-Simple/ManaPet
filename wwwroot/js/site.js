@@ -20,6 +20,71 @@ $(document).ready(function () {
 });
 
 
+$(document).ready(function () {
+    let delayTimer;
+
+    $('#smart-search-input').on('input', function () {
+        clearTimeout(delayTimer);
+        let keyword = $(this).val().trim();
+        let $resultBox = $('#search-results-box');
+
+        // Gõ từ 2 ký tự trở lên mới kích hoạt tìm kiếm
+        if (keyword.length < 2) {
+            $resultBox.addClass('d-none').html('');
+            return;
+        }
+
+        delayTimer = setTimeout(function () {
+            $.ajax({
+                // Ông giáo kiểm tra xem Controller viết là /Product/ hay /Products/ để sửa lại đường dẫn này cho khớp nhé
+                url: '/Product/SmartSearch',
+                type: 'GET',
+                data: { term: keyword },
+                success: function (data) {
+                    $resultBox.html('');
+
+                    if (data.length > 0) {
+                        // Tiêu đề nhỏ gọn gàng
+                        let htmlContent = '<div class="px-3 py-2 small text-muted fw-bold border-bottom bg-light" style="font-size: 0.75rem;">SẢN PHẨM GỢI Ý</div>';
+
+                        data.forEach(function (item) {
+                            let formattedPrice = new Intl.NumberFormat('vi-VN').format(item.price) + '₫';
+
+                            htmlContent += `
+                                <a href="/Product/Details/${item.id}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none border-bottom search-item-hover">
+                                    <img src="${item.image}" alt="${item.name}" class="rounded-3 object-fit-cover" style="width: 40px; height: 40px; min-width: 40px;">
+                                    <div class="overflow-hidden flex-grow-1">
+                                        <div class="text-dark fw-bold text-truncate mb-0" style="font-size: 0.85rem;" title="${item.name}">${item.name}</div>
+                                        <div class="fw-bold" style="color: var(--primary-color, #0d6efd); font-size: 0.8rem;">${formattedPrice}</div>
+                                    </div>
+                                </a>
+                            `;
+                        });
+
+                        $resultBox.html(htmlContent).removeClass('d-none');
+                    } else {
+                        $resultBox.html('<div class="p-3 text-center text-muted small" style="font-size: 0.8rem;">Không tìm thấy sản phẩm...</div>').removeClass('d-none');
+                    }
+                }
+            });
+        }, 300);
+    });
+
+    // Click ra ngoài thì ẩn hộp kết quả
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('.header-search-form').length) {
+            $('#search-results-box').addClass('d-none');
+        }
+    });
+
+    // Focus lại vào ô input thì hiện lại kết quả cũ (nếu có)
+    $('#smart-search-input').on('focus', function () {
+        if ($(this).val().trim().length >= 2 && $('#search-results-box').children().length > 0) {
+            $('#search-results-box').removeClass('d-none');
+        }
+    });
+});
+
 // Back to Top Button
 const backToTopBtn = document.getElementById("backToTop");
 

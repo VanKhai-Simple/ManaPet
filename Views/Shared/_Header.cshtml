@@ -20,33 +20,33 @@
                         </a>
                     </li>
                     <li class="nav-item dropdown dropdown-hover">
-                        <a class="nav-link dropdown-toggle fw-bold btn-glow-text" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle fw-bold btn-glow-text" asp-controller="Product" asp-action="ChoCanh" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-paw me-1"></i> Sản phẩm
                         </a>
                         <ul class="dropdown-menu dropdown-menu-custom shadow-sm border-0 border-radius-lg px-2 py-3" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item py-2 rounded" asp-controller="Product" asp-action="ChoCanh"><i class="fas fa-dog me-2 text-warning"></i> Chó cảnh</a></li>
                             <li><a class="dropdown-item py-2 rounded" asp-controller="Product" asp-action="MeoCanh"><i class="fas fa-cat me-2 text-warning"></i> Mèo cảnh</a></li>
+
                             <li><hr class="dropdown-divider opacity-25"></li>
-                            <li><a class="dropdown-item py-2 rounded" href="/Products/Category/Food"><i class="fas fa-bone me-2 text-muted"></i> Thức ăn</a></li>
-                            <li><a class="dropdown-item py-2 rounded" href="/Products/Category/Accessories"><i class="fas fa-hat-cowboy me-2 text-muted"></i> Phụ kiện</a></li>
-                            <li><a class="dropdown-item py-2 rounded" href="/Products/Category/Bed"><i class="fas fa-bed me-2 text-muted"></i> Chuồng / Nhà / Đệm</a></li>
-                            <li><a class="dropdown-item py-2 rounded" href="/Products/Category/Toys"><i class="fas fa-volleyball-ball me-2 text-muted"></i> Đồ chơi</a></li>
-                            <li><a class="dropdown-item py-2 rounded" href="/Products/Category/Care"><i class="fas fa-bath me-2 text-muted"></i> Vệ sinh / chăm sóc</a></li>
+
+                            <li><a class="dropdown-item py-2 rounded" asp-controller="Product" asp-action="ThucAn"><i class="fas fa-bone me-2 text-muted"></i> Thức ăn</a></li>
+                            <li><a class="dropdown-item py-2 rounded" asp-controller="Product" asp-action="Accessories"><i class="fas fa-hat-cowboy me-2 text-muted"></i> Phụ kiện</a></li>
+                            <li><a class="dropdown-item py-2 rounded" asp-controller="Product" asp-action="VeSinhChamSoc"><i class="fas fa-bath me-2 text-muted"></i> Vệ sinh / chăm sóc</a></li>
+
+                            @* Mấy cái dưới này nếu ông giáo chưa làm trang riêng thì có thể tạm thời hướng về trang Phụ Kiện tổng *@
+                            <li><a class="dropdown-item py-2 rounded" asp-controller="Product" asp-action="Accessories"><i class="fas fa-bed me-2 text-muted"></i> Chuồng / Nhà / Đệm</a></li>
+                            <li><a class="dropdown-item py-2 rounded" asp-controller="Product" asp-action="Accessories"><i class="fas fa-volleyball-ball me-2 text-muted"></i> Đồ chơi</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/Services">
+                        <a class="nav-link" asp-controller="Product" asp-action="Services">
                             <i class="fas fa-concierge-bell me-1"></i> Dịch vụ
                         </a>
+
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/tin-tuc">
+                        <a class="nav-link" asp-controller="Blog" asp-action="Index">
                             <i class="fas fa-newspaper me-1"></i> Tin tức
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/lien-he">
-                            <i class="fas fa-envelope me-1"></i> Liên hệ
                         </a>
                     </li>
                 </ul>
@@ -54,11 +54,15 @@
                 <!-- Right Side Action Icons -->
                 <div class="d-flex align-items-center header-right-actions flex-wrap gap-3 mt-3 mt-xl-0">
                     <!-- Search Box -->
-                    <form class="d-flex position-relative header-search-form" action="/Products/Search" method="GET">
-                        <input class="form-control rounded-pill ps-4 pe-5 border-0 bg-white shadow-sm" type="search" placeholder="Tìm kiếm bé yêu..." aria-label="Search" name="q" style="min-width: 250px;">
+                    <form class="d-flex position-relative header-search-form" action="/Product/Search" method="GET" autocomplete="off">
+                        <input id="smart-search-input" class="form-control rounded-pill ps-4 pe-5 border-0 bg-white shadow-sm" type="search" placeholder="Tìm kiếm bé yêu..." aria-label="Search" name="q" style="min-width: 250px;">
+
                         <button class="btn btn-search-icon position-absolute end-0 top-50 translate-middle-y border-0 bg-transparent text-muted" type="submit">
                             <i class="fas fa-search text-primary"></i>
                         </button>
+
+                        <div id="search-results-box" class="shadow-lg position-absolute start-0 w-100 bg-white rounded-4 mt-2 d-none" style="z-index: 9999; max-height: 380px; overflow-y: auto; border: 1px solid var(--border-color, #edf1f5); top: 100%;">
+                        </div>
                     </form>
 
                     <!-- Cart -->
@@ -84,6 +88,11 @@
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 border-radius-lg px-2 py-2 mt-2" aria-labelledby="accountDropdown">
                                     <li><a class="dropdown-item py-2 rounded fw-bold" href="/User/Profile"><i class="fas fa-id-card me-2 text-primary"></i> Hồ sơ</a></li>
+                                    <li>
+                                        <a asp-controller="Orders" asp-action="MyOrders" class="dropdown-item py-2 rounded fw-semibold text-dark">
+                                            <i class="fas fa-shopping-bag text-primary me-2"></i> Đơn hàng của tôi
+                                        </a>
+                                    </li>
                                     <li><hr class="dropdown-divider opacity-25"></li>
                                     <li>
                                         <form asp-controller="User" asp-action="Logout" method="post" class="d-inline w-100 m-0 p-0">
@@ -105,3 +114,5 @@
         </nav>
     </div>
 </header>
+
+
